@@ -12,7 +12,8 @@ class UI {
   static renderPlayer(p: Player): HTMLElement {
     const div: HTMLElement = document.createElement('div');
     div.appendChild(UI.makeTextParagraph(p.name));
-    div.appendChild(UI.makeTextParagraph(`${p.health} / ${p.maxHealth}`));
+    div.appendChild(UI.makeTextParagraph(`Health: ${p.health} / ${p.maxHealth}`));
+    div.appendChild(UI.makeTextParagraph(`Energy: ${p.energy} / ${p.maxEnergy}`));
     return div;
   }
 
