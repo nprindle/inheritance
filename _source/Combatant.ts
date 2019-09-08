@@ -32,5 +32,23 @@ abstract class Combatant {
     return this.health > cost.healthCost && this.energy >= cost.energyCost;
   }
 
+  pay(cost: Cost): void {
+    this.health -= cost.healthCost;
+    this.energy -= cost.energyCost;
+  }
+
+  useTool(index: number, target: Combatant): AbstractEffect {
+    if (index < 0 || index > this.tools.length) {
+      return new NothingEffect();
+    }
+    const tool: Tool = this.tools[index];
+    if (!this.canAfford(tool.cost)) {
+      return new NothingEffect();
+    } else {
+      this.pay(tool.cost);
+      return tool.action.activate();
+    }
+  }
+
   abstract die(): void;
 }

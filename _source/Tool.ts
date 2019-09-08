@@ -3,12 +3,12 @@
 
 abstract class Tool {
   name: string;
-  effect: AbstractAction;
+  action: AbstractAction;
   cost: Cost;
 
-  constructor(name: string, effect: AbstractEffect, cost: Cost) {
+  constructor(name: string, action: AbstractAction, cost: Cost) {
     this.name = name;
-    this.effect = effect;
+    this.action = action;
     this.cost = cost;
   }
 
