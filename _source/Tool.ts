@@ -13,8 +13,8 @@ class Tool {
   }
 
   addModifier(modifier: AbstractEffect) {
-    modifier.next = this.action;
-    this.action = modifier;
+    modifier.next = this.effect;
+    this.effect = modifier;
   }
 
 }

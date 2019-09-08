@@ -7,7 +7,7 @@ class Cost {
   energyCost: number;
   healthCost: number;
 
-  constructor(...costs: [number, CostTypes]) {
+  constructor(...costs: [number, CostTypes][]) {
     this.energyCost = 0;
     this.healthCost = 0;
     for (let i = 0; i < costs.length; i++) {

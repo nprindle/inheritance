@@ -39,11 +39,11 @@ abstract class Combatant {
 
   useTool(index: number, target: Combatant): void {
     if (index < 0 || index > this.tools.length) {
-      return new NothingEffect();
+      return;
     }
     const tool: Tool = this.tools[index];
     if (!this.canAfford(tool.cost)) {
-      return new NothingEffect();
+      return;
     } else {
       this.pay(tool.cost);
       tool.effect.activate(this, target);
