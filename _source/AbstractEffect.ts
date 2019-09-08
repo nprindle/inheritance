@@ -1,10 +1,22 @@
 abstract class AbstractEffect {
   next: AbstractEffect | null;
-  abstract activate(user: Combatant, foe: Combatant): void;
+
+  constructor() {
+    this.next = null;
+  }
+
+  activate(user: Combatant, foe: Combatant): void {
+    this.effect(user, foe);
+    if (typeof this.next === AbstractEffect) {
+      this.next.activate(user, foe);
+    }
+  }
+
+  abstract effect(user: Combatant, foe: Combatant): void;
 }
 
 class NothingEffect extends AbstractEffect { //does nothing
-  activate(user: Combatant, foe: Combatant): void {
+  effect(user: Combatant, foe: Combatant): void {
     return;
   }
 }

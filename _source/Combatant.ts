@@ -37,7 +37,7 @@ abstract class Combatant {
     this.energy -= cost.energyCost;
   }
 
-  useTool(index: number, target: Combatant): AbstractEffect {
+  useTool(index: number, target: Combatant): void {
     if (index < 0 || index > this.tools.length) {
       return new NothingEffect();
     }
@@ -46,7 +46,7 @@ abstract class Combatant {
       return new NothingEffect();
     } else {
       this.pay(tool.cost);
-      return tool.action.activate();
+      tool.effect.activate(this, target);
     }
   }
 
