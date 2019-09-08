@@ -1,7 +1,8 @@
 /// <reference path="AbstractAction.ts" />
+/// <reference path="AbstractEffect" />
 /// <reference path="Cost.ts" />
 
-abstract class Tool {
+class Tool {
   name: string;
   action: AbstractAction;
   cost: Cost;
