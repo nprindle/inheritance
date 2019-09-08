@@ -29,7 +29,7 @@ class CombinationEffect extends AbstractEffect { //combine multiple effects
     this.effects = effects;
   }
 
-  activate(user: Combatant, foe: Combatant): void {
+  effect(user: Combatant, foe: Combatant): void {
     for (let i = 0; i < this.effects.length; i++) {
       this.effects[i].activate(user, foe);
     }
