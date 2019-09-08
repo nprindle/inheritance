@@ -2,12 +2,12 @@
 
 class Player extends Combatant {
 
-  constructor(name: string, health: number, energy: number) {
-    super(name, health, energy);
+  constructor(name: string, health: number, energy: number, ...tools: Tool[]) {
+    super(name, health, energy, ...tools);
   }
 
   die(): void {
-
+    
   }
 
 }
