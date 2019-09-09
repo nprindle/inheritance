@@ -33,7 +33,7 @@ abstract class Combatant {
   }
 
   pay(cost: Cost): void {
-    this.health -= cost.healthCost;
+    this.wound(cost.healthCost);
     this.energy -= cost.energyCost;
   }
 
