@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "removeComments": true,
-    "outFile": "../built.js"
+    "outFile": "../built.js",
+    "target": "ES5"
   },
   "include": [
     "app.ts"
