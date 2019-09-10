@@ -53,7 +53,7 @@ abstract class Combatant {
       return;
     } else {
       this.pay(tool.cost);
-      tool.effect.activate(this, target);
+      tool.use(this, target);
     }
   };
 

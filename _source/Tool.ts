@@ -12,9 +12,13 @@ class Tool {
     this.cost = cost;
   }
 
-  addModifier(modifier: AbstractEffect) {
+  addModifier(modifier: AbstractEffect): void {
     modifier.next = this.effect;
     this.effect = modifier;
+  }
+
+  use(user: Combatant, target: Combatant): void {
+    this.effect.activate(user, target);
   }
 
 }
