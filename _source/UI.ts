@@ -17,4 +17,11 @@ class UI {
     return div;
   }
 
+  static renderTool(t: Tool): HTMLElement {
+    const div: HTMLElement = document.createElement('div');
+    div.appendChild(UI.makeTextParagraph(t.name);
+    div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`));
+    return div;
+  }
+
 }

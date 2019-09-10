@@ -26,4 +26,15 @@ class Cost {
     }
   }
 
+  toString(): string {
+    let acc = []: string[];
+    if (this.energyCost > 0) {
+      acc.push(`${this.energyCost} Energy`);
+    }
+    if (this.healthCost > 0) {
+      acc.push(`${this.healthCost} Health`);
+    }
+    return acc.join(', ');
+  }
+
 }
