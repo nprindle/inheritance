@@ -27,7 +27,7 @@ class Cost {
   }
 
   toString(): string {
-    let acc = []: string[];
+    let acc: string[] = [];
     if (this.energyCost > 0) {
       acc.push(`${this.energyCost} Energy`);
     }

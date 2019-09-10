@@ -26,9 +26,12 @@ function appendText(text, node) {
 var UI = (function () {
     function UI() {
     }
-    UI.makeTextParagraph = function (str, id) {
+    UI.makeTextParagraph = function (str, c, id) {
         var p = document.createElement('p');
         p.innerText = str;
+        if (c) {
+            p.classList.add(c);
+        }
         if (id) {
             p.id = id;
         }
@@ -36,9 +39,25 @@ var UI = (function () {
     };
     UI.renderPlayer = function (p) {
         var div = document.createElement('div');
-        div.appendChild(UI.makeTextParagraph(p.name));
-        div.appendChild(UI.makeTextParagraph("Health: " + p.health + " / " + p.maxHealth));
-        div.appendChild(UI.makeTextParagraph("Energy: " + p.energy + " / " + p.maxEnergy));
+        div.classList.add('player');
+        div.appendChild(UI.makeTextParagraph(p.name, 'name'));
+        div.appendChild(UI.makeTextParagraph("Health: " + p.health + " / " + p.maxHealth, 'health'));
+        div.appendChild(UI.makeTextParagraph("Energy: " + p.energy + " / " + p.maxEnergy, 'energy'));
+        var toolDiv = document.createElement('div');
+        toolDiv.classList.add('tools');
+        for (var i = 0; i < p.tools.length; i++) {
+            var currentDiv = this.renderTool(p.tools[i]);
+            currentDiv.classList.add("tool_" + i);
+            toolDiv.appendChild(currentDiv);
+        }
+        div.appendChild(toolDiv);
+        return div;
+    };
+    UI.renderTool = function (t) {
+        var div = document.createElement('div');
+        div.classList.add('tool');
+        div.appendChild(UI.makeTextParagraph(t.name, 'name'));
+        div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
         return div;
     };
     return UI;
@@ -138,17 +157,39 @@ var Cost = (function () {
                 break;
         }
     };
+    Cost.prototype.toString = function () {
+        var acc = [];
+        if (this.energyCost > 0) {
+            acc.push(this.energyCost + " Energy");
+        }
+        if (this.healthCost > 0) {
+            acc.push(this.healthCost + " Health");
+        }
+        return acc.join(', ');
+    };
     return Cost;
 }());
 var Tool = (function () {
     function Tool(name, effect, cost) {
-        this.name = name;
+        this._name = name;
         this.effect = effect;
         this.cost = cost;
+        this.modifiers = [];
     }
-    Tool.prototype.addModifier = function (modifier) {
+    Object.defineProperty(Tool.prototype, "name", {
+        get: function () {
+            return this.modifiers.join(' ') + " " + this._name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Tool.prototype.addModifier = function (modifier, text) {
         modifier.next = this.effect;
         this.effect = modifier;
+        this.modifiers.push(text);
+    };
+    Tool.prototype.use = function (user, target) {
+        this.effect.activate(user, target);
     };
     return Tool;
 }());
@@ -203,7 +244,7 @@ var Combatant = (function () {
         }
         else {
             this.pay(tool.cost);
-            tool.effect.activate(this, target);
+            tool.use(this, target);
         }
     };
     ;
@@ -235,7 +276,7 @@ var DamageEffect = (function (_super) {
     return DamageEffect;
 }(AbstractEffect));
 var p = new Player('The Kid', 10, 10);
+p.tools = [
+    new Tool('Wrench', new DamageEffect(1), new Cost([10, CostTypes.Energy]))
+];
 document.body.appendChild(UI.renderPlayer(p));
-var effect = new RepeatingEffect(10);
-effect.next = new DamageEffect(1);
-effect.activate(p, p);

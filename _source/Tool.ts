@@ -5,7 +5,7 @@ class Tool {
   _name: string;
   effect: AbstractEffect;
   cost: Cost;
-  modifiers: string[],
+  modifiers: string[];
 
   constructor(name: string, effect: AbstractEffect, cost: Cost) {
     this._name = name;
