@@ -28,14 +28,21 @@ abstract class Combatant {
     }
   };
 
+  heal(amount: number): void {
+    this.health += amount;
+    if (this.health > this.maxHealth) {
+      this.health = this.maxHealth;
+    }
+  };
+
   canAfford(cost: Cost): boolean {
     return this.health > cost.healthCost && this.energy >= cost.energyCost;
-  }
+  };
 
   pay(cost: Cost): void {
     this.wound(cost.healthCost);
     this.energy -= cost.energyCost;
-  }
+  };
 
   useTool(index: number, target: Combatant): void {
     if (index < 0 || index > this.tools.length) {
@@ -48,7 +55,7 @@ abstract class Combatant {
       this.pay(tool.cost);
       tool.effect.activate(this, target);
     }
-  }
+  };
 
   abstract die(): void;
 }
