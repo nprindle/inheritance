@@ -3,13 +3,13 @@
 
 class Tool {
   _name: string;
-  effect: AbstractEffect;
+  effects: AbstractEffect[];
   cost: Cost;
   modifiers: string[];
 
-  constructor(name: string, effect: AbstractEffect, cost: Cost) {
+  constructor(name: string, cost: Cost, ...effects: AbstractEffect[]) {
     this._name = name;
-    this.effect = effect;
+    this.effects = effects;
     this.cost = cost;
     this.modifiers = [];
   }
@@ -19,13 +19,14 @@ class Tool {
   }
 
   addModifier(modifier: AbstractEffect, text: string): void {
-    modifier.next = this.effect;
-    this.effect = modifier;
+    this.effects.push(modifier);
     this.modifiers.push(text);
   }
 
   use(user: Combatant, target: Combatant): void {
-    this.effect.activate(user, target);
+    for (let i = 0; i < this.effects.length; i++) {
+      this.effects[i].activate(user, target);
+    }
   }
 
 }

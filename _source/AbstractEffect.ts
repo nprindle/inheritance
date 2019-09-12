@@ -1,15 +1,7 @@
 abstract class AbstractEffect {
-  next: AbstractEffect | null;
-
-  constructor() {
-    this.next = null;
-  }
 
   activate(user: Combatant, foe: Combatant): void {
     this.effect(user, foe);
-    if (this.next instanceof AbstractEffect) {
-      this.next.activate(user, foe);
-    }
   }
 
   abstract effect(user: Combatant, foe: Combatant): void;
