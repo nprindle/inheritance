@@ -30,8 +30,10 @@ function setUpFight(i: number): void {
 }
 
 function offerModifier(): void {
-  document.body.appendChild(UI.makeTextParagraph('You wanna modifier?'));
-  document.body.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
+  const div = UI.makeDiv('offer');
+  div.appendChild(UI.makeTextParagraph('You wanna modifier?'));
+  div.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
+  document.body.appendChild(div);
 }
 
 function moveOn(): void {
