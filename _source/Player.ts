@@ -6,8 +6,4 @@ class Player extends Combatant {
     super(name, health, energy, ...tools);
   }
 
-  die(): void {
-
-  }
-
 }

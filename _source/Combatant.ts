@@ -7,6 +7,7 @@ abstract class Combatant {
   energy: number;
   maxEnergy: number;
   tools: Tool[];
+  deathFunc: Function;
 
   constructor(name: string, health: number, energy: number, ...tools: Tool[]) {
     this.name = name;
@@ -15,6 +16,7 @@ abstract class Combatant {
     this.energy = energy;
     this.maxEnergy = energy;
     this.tools = tools;
+    this.deathFunc = function() {};
   };
 
   status(): string {
@@ -62,5 +64,12 @@ abstract class Combatant {
     }
   };
 
-  abstract die(): void;
+  die(): void {
+    this.deathFunc.call(this);
+  }
+
+  setDeathFunc(f: Function): void {
+    this.deathFunc = f;
+  }
+
 }

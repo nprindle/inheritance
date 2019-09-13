@@ -6,8 +6,4 @@ class Enemy extends Combatant {
     super(name, health, energy, ...tools);
   }
 
-  die(): void {
-    
-  }
-
 }
