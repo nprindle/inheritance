@@ -1,5 +1,6 @@
 /// <reference path="AbstractEffect" />
 /// <reference path="Cost.ts" />
+/// <reference path="Strings.ts" />
 
 class Tool {
   _name: string;
@@ -32,7 +33,7 @@ class Tool {
   effectsString(): string {
     let acc = [];
     for (let i = 0; i < this.effects.length; i++) {
-      acc.push(this.effects[i].toString() + '.');
+      acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
     }
     return acc.join(' ');
   }
