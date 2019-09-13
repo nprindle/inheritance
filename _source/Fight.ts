@@ -11,7 +11,9 @@ class Fight {
 
   constructor(p: Player, e: Enemy) {
     this.player = p;
+    p.refresh();
     this.enemy = e;
+    e.refresh();
     this.playersTurn = true;
     //i know this is gross.
     let closure = this;
