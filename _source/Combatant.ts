@@ -35,6 +35,10 @@ abstract class Combatant {
     }
   };
 
+  refresh(): void {
+    this.energy = this.maxEnergy;
+  }
+
   canAfford(cost: Cost): boolean {
     return this.health > cost.healthCost && this.energy >= cost.energyCost;
   };

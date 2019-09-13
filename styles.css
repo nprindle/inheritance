@@ -1,4 +1,10 @@
-.player {
+.arena {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.player, .enemy {
   display: flex;
   flex-direction: column;
 }

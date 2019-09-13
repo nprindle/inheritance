@@ -42,15 +42,21 @@ class UI {
     return b;
   }
 
-  static renderPlayer(p: Player): HTMLElement {
-    const div: HTMLElement = UI.makeDiv('player');
-    div.appendChild(UI.makeTextParagraph(p.name, 'name'));
-    div.appendChild(UI.makeTextParagraph(`Health: ${p.health} / ${p.maxHealth}`, 'health'));
-    div.appendChild(UI.makeTextParagraph(`Energy: ${p.energy} / ${p.maxEnergy}`, 'energy'));
+  static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean): HTMLElement {
+    let which;
+    if (c instanceof Player) {
+      which = 'player';
+    } else {
+      which = 'enemy';
+    }
+    const div: HTMLElement = UI.makeDiv(which);
+    div.appendChild(UI.makeTextParagraph(c.name, 'name'));
+    div.appendChild(UI.makeTextParagraph(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
+    div.appendChild(UI.makeTextParagraph(`Energy: ${c.energy} / ${c.maxEnergy}`, 'energy'));
     const toolDiv: HTMLElement = document.createElement('div');
     toolDiv.classList.add('tools');
-    for (let i = 0; i < p.tools.length; i++) {
-      let currentDiv: HTMLElement = this.renderTool(p.tools[i], p, i);
+    for (let i = 0; i < c.tools.length; i++) {
+      let currentDiv: HTMLElement = this.renderTool(c.tools[i], c, i, target, isTurn);
       currentDiv.classList.add(`tool_${i}`);
       toolDiv.appendChild(currentDiv);
     }
@@ -58,16 +64,16 @@ class UI {
     return div;
   }
 
-  static renderTool(t: Tool, p?: Player, i?: number): HTMLElement {
+  static renderTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean): HTMLElement {
     const div: HTMLElement = UI.makeDiv('tool');
     div.appendChild(UI.makeTextParagraph(t.name, 'name'));
     div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
     div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
     if (p && i !== undefined) {
       div.appendChild(UI.makeButton('Use', function(e: MouseEvent) {
-        p.useTool(i, p);
+        c.useTool(i, target);
         UI.redraw();
-      }, !p.canAfford(t.cost), 'use'));
+      }, !c.canAfford(t.cost) || !isTurn, 'use'));
     }
     return div;
   }
@@ -77,7 +83,9 @@ class UI {
   }
 
   static redraw() {
-    UI.redrawFunction();
+    if (UI.redrawFunction) {
+      UI.redrawFunction();
+    }
   }
 
 }

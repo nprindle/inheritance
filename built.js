@@ -63,31 +63,38 @@ var UI = (function () {
         });
         return b;
     };
-    UI.renderPlayer = function (p) {
-        var div = UI.makeDiv('player');
-        div.appendChild(UI.makeTextParagraph(p.name, 'name'));
-        div.appendChild(UI.makeTextParagraph("Health: " + p.health + " / " + p.maxHealth, 'health'));
-        div.appendChild(UI.makeTextParagraph("Energy: " + p.energy + " / " + p.maxEnergy, 'energy'));
+    UI.renderCombatant = function (c, target, isTurn) {
+        var which;
+        if (c instanceof Player) {
+            which = 'player';
+        }
+        else {
+            which = 'enemy';
+        }
+        var div = UI.makeDiv(which);
+        div.appendChild(UI.makeTextParagraph(c.name, 'name'));
+        div.appendChild(UI.makeTextParagraph("Health: " + c.health + " / " + c.maxHealth, 'health'));
+        div.appendChild(UI.makeTextParagraph("Energy: " + c.energy + " / " + c.maxEnergy, 'energy'));
         var toolDiv = document.createElement('div');
         toolDiv.classList.add('tools');
-        for (var i = 0; i < p.tools.length; i++) {
-            var currentDiv = this.renderTool(p.tools[i], p, i);
+        for (var i = 0; i < c.tools.length; i++) {
+            var currentDiv = this.renderTool(c.tools[i], c, i, target, isTurn);
             currentDiv.classList.add("tool_" + i);
             toolDiv.appendChild(currentDiv);
         }
         div.appendChild(toolDiv);
         return div;
     };
-    UI.renderTool = function (t, p, i) {
+    UI.renderTool = function (t, c, i, target, isTurn) {
         var div = UI.makeDiv('tool');
         div.appendChild(UI.makeTextParagraph(t.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
         div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
         if (p && i !== undefined) {
             div.appendChild(UI.makeButton('Use', function (e) {
-                p.useTool(i, p);
+                c.useTool(i, target);
                 UI.redraw();
-            }, !p.canAfford(t.cost), 'use'));
+            }, !c.canAfford(t.cost) || !isTurn, 'use'));
         }
         return div;
     };
@@ -95,7 +102,9 @@ var UI = (function () {
         UI.redrawFunction = f;
     };
     UI.redraw = function () {
-        UI.redrawFunction();
+        if (UI.redrawFunction) {
+            UI.redrawFunction();
+        }
     };
     return UI;
 }());
@@ -278,6 +287,9 @@ var Combatant = (function () {
         }
     };
     ;
+    Combatant.prototype.refresh = function () {
+        this.energy = this.maxEnergy;
+    };
     Combatant.prototype.canAfford = function (cost) {
         return this.health > cost.healthCost && this.energy >= cost.energyCost;
     };
@@ -331,8 +343,58 @@ var DamageEffect = (function (_super) {
     };
     return DamageEffect;
 }(AbstractEffect));
+var Enemy = (function (_super) {
+    __extends(Enemy, _super);
+    function Enemy(name, health, energy) {
+        var tools = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            tools[_i - 3] = arguments[_i];
+        }
+        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+    }
+    Enemy.prototype.die = function () {
+    };
+    return Enemy;
+}(Combatant));
+var Fight = (function () {
+    function Fight(p, e) {
+        this.player = p;
+        this.enemy = e;
+        this.playersTurn = true;
+        var closure = this;
+        UI.setRedrawFunction(function () { closure.redraw(); });
+        this.draw();
+    }
+    Fight.prototype.endTurn = function () {
+        this.playersTurn = !this.playersTurn;
+        this.player.refresh();
+        this.enemy.refresh();
+        console.log('turn ended :)');
+        UI.redraw();
+    };
+    Fight.prototype.endTurnButton = function () {
+        var closure = this;
+        return UI.makeButton('End Turn', function () { closure.endTurn(); }, false, 'endturn');
+    };
+    Fight.prototype.draw = function () {
+        this.div = UI.makeDiv('arena');
+        document.body.appendChild(this.div);
+        this.redraw();
+    };
+    Fight.prototype.redraw = function () {
+        this.div.innerHTML = '';
+        this.div.appendChild(UI.renderCombatant(this.player, this.enemy, this.playersTurn));
+        this.div.appendChild(UI.renderCombatant(this.enemy, this.player, !this.playersTurn));
+        this.div.appendChild(this.endTurnButton());
+    };
+    return Fight;
+}());
 var p = new Player('The Kid', 10, 10);
 p.tools = [
-    new Tool('Wrench', new Cost([10, CostTypes.Energy]), new DamageEffect(1))
+    new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1))
 ];
-document.body.appendChild(UI.renderPlayer(p));
+var e = new Enemy('Goldfish', 10, 10);
+e.tools = [
+    new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect())
+];
+var f = new Fight(p, e);
