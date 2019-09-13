@@ -3,6 +3,7 @@
 /// <reference path="Player.ts" />
 /// <reference path="effects.ts" />
 /// <reference path="Fight.ts" />
+/// <reference path="Modifier.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
 
@@ -11,6 +12,11 @@ var numEvents: number = 0;
 p.tools = [
   new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
   new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1))
+];
+
+const modifiers: Modifier[] = [
+  new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
+  new Modifier('Spiky', 'Weapon does 1 damage, too. x2 Cost', [ModifierTypes.CostMult, 2], new DamageEffect(1))
 ];
 
 function setUpFight(i: number): void {
@@ -24,11 +30,13 @@ function setUpFight(i: number): void {
 }
 
 function offerModifier(): void {
-
+  document.body.appendChild(UI.makeTextParagraph('You wanna modifier?'));
+  document.body.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
 }
 
 function moveOn(): void {
   numEvents++;
+  document.body.innerHTML = '';
   switch (numEvents % 2) {
     case 0:
       setUpFight(Math.floor(numEvents / 2));

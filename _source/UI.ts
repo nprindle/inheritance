@@ -56,7 +56,7 @@ class UI {
     const toolDiv: HTMLElement = document.createElement('div');
     toolDiv.classList.add('tools');
     for (let i = 0; i < c.tools.length; i++) {
-      let currentDiv: HTMLElement = this.renderTool(c.tools[i], c, i, target, isTurn);
+      let currentDiv: HTMLElement = UI.renderCombatTool(c.tools[i], c, i, target, isTurn);
       currentDiv.classList.add(`tool_${i}`);
       toolDiv.appendChild(currentDiv);
     }
@@ -64,7 +64,7 @@ class UI {
     return div;
   }
 
-  static renderTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean): HTMLElement {
+  static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean) {
     const div: HTMLElement = UI.makeDiv('tool');
     div.appendChild(UI.makeTextParagraph(t.name, 'name'));
     div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
@@ -74,6 +74,28 @@ class UI {
         c.useTool(i, target);
         UI.redraw();
       }, !c.canAfford(t.cost) || !isTurn, 'use'));
+    }
+    return div;
+  }
+
+  static renderOfferTool(t: Tool, m: Modifier) {
+    const div: HTMLElement = UI.makeDiv('tool');
+    div.appendChild(UI.makeTextParagraph(t.name, 'name'));
+    div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
+    div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+    div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
+      m.apply(t);
+      moveOn();
+    }, false, 'apply'));
+    return div;
+  }
+
+  static renderModifier(m: Modifier, p: Player) {
+    const div: HTMLElement = UI.makeDiv('modifier');
+    div.appendChild(UI.makeTextParagraph(m.name, 'name'));
+    div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
+    for (let i = 0; i < p.tools.length; i++) {
+      div.appendChild(UI.renderOfferTool(p.tools[i], m));
     }
     return div;
   }

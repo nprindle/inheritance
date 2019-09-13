@@ -22,12 +22,10 @@ class Tool {
     if (this.multiplier > 1) {
       multString = ` x${this.multiplier}`;
     }
+    if (this.modifiers.length === 0) {
+      return `${this._name}${multString}`;
+    }
     return `${this.modifiers.join(' ')} ${this._name}${multString}`;
-  }
-
-  addModifier(modifier: AbstractEffect, text: string): void {
-    this.effects.push(modifier);
-    this.modifiers.push(text);
   }
 
   use(user: Combatant, target: Combatant): void {

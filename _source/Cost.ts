@@ -37,4 +37,9 @@ class Cost {
     return acc.join(', ');
   }
 
+  scale(i: number): void {
+    this.healthCost *= i;
+    this.energyCost *= i;
+  }
+
 }

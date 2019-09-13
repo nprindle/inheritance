@@ -78,14 +78,14 @@ var UI = (function () {
         var toolDiv = document.createElement('div');
         toolDiv.classList.add('tools');
         for (var i = 0; i < c.tools.length; i++) {
-            var currentDiv = this.renderTool(c.tools[i], c, i, target, isTurn);
+            var currentDiv = UI.renderCombatTool(c.tools[i], c, i, target, isTurn);
             currentDiv.classList.add("tool_" + i);
             toolDiv.appendChild(currentDiv);
         }
         div.appendChild(toolDiv);
         return div;
     };
-    UI.renderTool = function (t, c, i, target, isTurn) {
+    UI.renderCombatTool = function (t, c, i, target, isTurn) {
         var div = UI.makeDiv('tool');
         div.appendChild(UI.makeTextParagraph(t.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
@@ -95,6 +95,26 @@ var UI = (function () {
                 c.useTool(i, target);
                 UI.redraw();
             }, !c.canAfford(t.cost) || !isTurn, 'use'));
+        }
+        return div;
+    };
+    UI.renderOfferTool = function (t, m) {
+        var div = UI.makeDiv('tool');
+        div.appendChild(UI.makeTextParagraph(t.name, 'name'));
+        div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
+        div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+        div.appendChild(UI.makeButton("Apply " + m.name, function (e) {
+            m.apply(t);
+            moveOn();
+        }, false, 'apply'));
+        return div;
+    };
+    UI.renderModifier = function (m, p) {
+        var div = UI.makeDiv('modifier');
+        div.appendChild(UI.makeTextParagraph(m.name, 'name'));
+        div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
+        for (var i = 0; i < p.tools.length; i++) {
+            div.appendChild(UI.renderOfferTool(p.tools[i], m));
         }
         return div;
     };
@@ -209,6 +229,10 @@ var Cost = (function () {
         }
         return acc.join(', ');
     };
+    Cost.prototype.scale = function (i) {
+        this.healthCost *= i;
+        this.energyCost *= i;
+    };
     return Cost;
 }());
 var Strings = (function () {
@@ -237,15 +261,14 @@ var Tool = (function () {
             if (this.multiplier > 1) {
                 multString = " x" + this.multiplier;
             }
+            if (this.modifiers.length === 0) {
+                return "" + this._name + multString;
+            }
             return this.modifiers.join(' ') + " " + this._name + multString;
         },
         enumerable: true,
         configurable: true
     });
-    Tool.prototype.addModifier = function (modifier, text) {
-        this.effects.push(modifier);
-        this.modifiers.push(text);
-    };
     Tool.prototype.use = function (user, target) {
         for (var i = 0; i < this.multiplier; i++) {
             for (var i_1 = 0; i_1 < this.effects.length; i_1++) {
@@ -385,7 +408,9 @@ var Enemy = (function (_super) {
 var Fight = (function () {
     function Fight(p, e) {
         this.player = p;
+        p.refresh();
         this.enemy = e;
+        e.refresh();
         this.playersTurn = true;
         var closure = this;
         UI.setRedrawFunction(function () { closure.redraw(); });
@@ -425,11 +450,62 @@ var Fight = (function () {
     };
     return Fight;
 }());
+var ModifierTypes;
+(function (ModifierTypes) {
+    ModifierTypes["CostMult"] = "Cost Mult";
+    ModifierTypes["MultAdd"] = "Mult Add";
+    ModifierTypes["Effect"] = "Effect";
+})(ModifierTypes || (ModifierTypes = {}));
+var Modifier = (function () {
+    function Modifier(name, desc) {
+        var args = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        this.name = name;
+        this.desc = desc;
+        this.effects = [];
+        this.costMultiplier = 1;
+        this.multiplierAdd = 0;
+        for (var i = 0; i < args.length; i++) {
+            var curr = args[i];
+            if (curr instanceof AbstractEffect) {
+                this.effects.push(curr);
+            }
+            else if (curr instanceof Array && typeof curr[0] === 'string' && typeof curr[1] === 'number') {
+                this.addTuple(curr);
+            }
+        }
+    }
+    Modifier.prototype.addTuple = function (t) {
+        switch (t[0]) {
+            case ModifierTypes.CostMult:
+                this.costMultiplier = t[1];
+                break;
+            case ModifierTypes.MultAdd:
+                this.multiplierAdd = t[1];
+                break;
+        }
+    };
+    Modifier.prototype.apply = function (t) {
+        t.modifiers.push(this.name);
+        t.cost.scale(this.costMultiplier);
+        t.multiplier += this.multiplierAdd;
+        for (var i = 0; i < this.effects.length; i++) {
+            t.effects.push(this.effects[i]);
+        }
+    };
+    return Modifier;
+}());
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
     new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
     new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1))
+];
+var modifiers = [
+    new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
+    new Modifier('Spiky', 'Weapon does 1 damage, too. x2 Cost', [ModifierTypes.CostMult, 2], new DamageEffect(1))
 ];
 function setUpFight(i) {
     var e = new Enemy('Goldfish', 10 + i * 5, 10);
@@ -440,9 +516,12 @@ function setUpFight(i) {
     var f = new Fight(p, e);
 }
 function offerModifier() {
+    document.body.appendChild(UI.makeTextParagraph('You wanna modifier?'));
+    document.body.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
 }
 function moveOn() {
     numEvents++;
+    document.body.innerHTML = '';
     switch (numEvents % 2) {
         case 0:
             setUpFight(Math.floor(numEvents / 2));
