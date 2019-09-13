@@ -5,12 +5,20 @@ abstract class AbstractEffect {
   }
 
   abstract effect(user: Combatant, foe: Combatant): void;
+
+  abstract toString(): string;
+
 }
 
 class NothingEffect extends AbstractEffect { //does nothing
   effect(user: Combatant, foe: Combatant): void {
     return;
   }
+
+  toString(): string {
+    return 'do nothing';
+  }
+
 }
 
 class CombinationEffect extends AbstractEffect { //combine multiple effects
@@ -28,38 +36,35 @@ class CombinationEffect extends AbstractEffect { //combine multiple effects
     }
   }
 
+  toString(): string {
+    let acc = [];
+    for (let i = 0; i < this.effects.length; i++) {
+      acc.push(this.effects[i].toString());
+    }
+    return acc.join(' ');
+  }
+
 }
 
 class RepeatingEffect extends AbstractEffect {
 
   times: number;
+  next: AbstractEffect;
 
-  constructor(times: number) {
+  constructor(next: AbstractEffect, times: number) {
     super();
+    this.next = next;
     this.times = times;
   }
 
   effect(user: Combatant, foe: Combatant): void {
-    if (this.next instanceof AbstractEffect) {
-      for (let i = 0; i < this.times - 1; i++) {
-        this.next.activate(user, foe);
-      }
+    for (let i = 0; i < this.times; i++) {
+      this.next.activate(user, foe);
     }
   }
 
-}
-
-class AppendingEffect extends AbstractEffect {
-
-  text: string;
-
-  constructor(text: string) {
-    super();
-    this.text = text;
-  }
-
-  effect(user: Combatant, foe: Combatant): void {
-    document.body.appendChild(document.createTextNode(this.text));
+  toString(): string {
+    return `${this.next.toString()} ${this.times} times`;
   }
 
 }

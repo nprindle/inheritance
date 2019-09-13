@@ -12,4 +12,8 @@ class DamageEffect extends AbstractEffect {
     target.wound(this.damage);
   }
 
+  toString(): string {
+    return `do ${this.damage} damage`;
+  }
+
 }

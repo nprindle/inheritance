@@ -34,6 +34,7 @@ class UI {
     div.classList.add('tool');
     div.appendChild(UI.makeTextParagraph(t.name, 'name'));
     div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
+    div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
     return div;
   }
 

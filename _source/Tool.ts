@@ -29,4 +29,12 @@ class Tool {
     }
   }
 
+  effectsString(): string {
+    let acc = [];
+    for (let i = 0; i < this.effects.length; i++) {
+      acc.push(this.effects[i].toString() + '.');
+    }
+    return acc.join(' ');
+  }
+
 }
