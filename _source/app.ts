@@ -16,7 +16,7 @@ p.tools = [
 
 const modifiers: Modifier[] = [
   new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
-  new Modifier('Spiky', 'Weapon does 1 damage, too. x2 Cost', [ModifierTypes.CostMult, 2], new DamageEffect(1))
+  new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1))
 ];
 
 function setUpFight(i: number): void {

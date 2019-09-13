@@ -42,4 +42,9 @@ class Cost {
     this.energyCost *= i;
   }
 
+  addCost(c: Cost): void {
+    this.healthCost += c.healthCost;
+    this.energyCost += c.energyCost;
+  }
+
 }

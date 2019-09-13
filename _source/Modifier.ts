@@ -1,8 +1,10 @@
 /// <reference path="AbstractEffect.ts" />
+/// <reference path="Cost.ts" />
 
 enum ModifierTypes {
   CostMult = 'Cost Mult',
   MultAdd = 'Mult Add',
+  AddEnergyCost = 'Energy Cost Add',
   Effect = 'Effect'
 }
 
@@ -12,6 +14,7 @@ class Modifier {
   desc: string;
   effects: AbstractEffect[];
   costMultiplier: number;
+  costAdd: Cost;
   multiplierAdd: number;
 
   constructor(name: string, desc: string, ...args: ([ModifierTypes, number] | AbstractEffect)[]) {
@@ -20,6 +23,7 @@ class Modifier {
     this.effects = [];
     this.costMultiplier = 1;
     this.multiplierAdd = 0;
+    this.costAdd = new Cost();
     for (let i = 0; i < args.length; i++) {
       let curr = args[i];
       if (curr instanceof AbstractEffect) {
@@ -38,12 +42,16 @@ class Modifier {
       case ModifierTypes.MultAdd:
         this.multiplierAdd = t[1];
         break;
+      case ModifierTypes.AddEnergyCost:
+        this.costAdd.addTuple([t[1], CostTypes.Energy]);
+        break;
     }
   }
 
   apply(t: Tool): void {
     t.modifiers.push(this.name);
     t.cost.scale(this.costMultiplier);
+    t.cost.addCost(this.costAdd);
     t.multiplier += this.multiplierAdd;
     for (let i = 0; i < this.effects.length; i++) {
       t.effects.push(this.effects[i]);

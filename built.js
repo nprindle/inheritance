@@ -245,6 +245,10 @@ var Cost = (function () {
         this.healthCost *= i;
         this.energyCost *= i;
     };
+    Cost.prototype.addCost = function (c) {
+        this.healthCost += c.healthCost;
+        this.energyCost += c.energyCost;
+    };
     return Cost;
 }());
 var Strings = (function () {
@@ -466,6 +470,7 @@ var ModifierTypes;
 (function (ModifierTypes) {
     ModifierTypes["CostMult"] = "Cost Mult";
     ModifierTypes["MultAdd"] = "Mult Add";
+    ModifierTypes["AddEnergyCost"] = "Energy Cost Add";
     ModifierTypes["Effect"] = "Effect";
 })(ModifierTypes || (ModifierTypes = {}));
 var Modifier = (function () {
@@ -479,6 +484,7 @@ var Modifier = (function () {
         this.effects = [];
         this.costMultiplier = 1;
         this.multiplierAdd = 0;
+        this.costAdd = new Cost();
         for (var i = 0; i < args.length; i++) {
             var curr = args[i];
             if (curr instanceof AbstractEffect) {
@@ -497,11 +503,15 @@ var Modifier = (function () {
             case ModifierTypes.MultAdd:
                 this.multiplierAdd = t[1];
                 break;
+            case ModifierTypes.AddEnergyCost:
+                this.costAdd.addTuple([t[1], CostTypes.Energy]);
+                break;
         }
     };
     Modifier.prototype.apply = function (t) {
         t.modifiers.push(this.name);
         t.cost.scale(this.costMultiplier);
+        t.cost.addCost(this.costAdd);
         t.multiplier += this.multiplierAdd;
         for (var i = 0; i < this.effects.length; i++) {
             t.effects.push(this.effects[i]);
@@ -517,7 +527,7 @@ p.tools = [
 ];
 var modifiers = [
     new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
-    new Modifier('Spiky', 'Weapon does 1 damage, too. x2 Cost', [ModifierTypes.CostMult, 2], new DamageEffect(1))
+    new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1))
 ];
 function setUpFight(i) {
     var e = new Enemy('Goldfish', 10 + i * 5, 10);
