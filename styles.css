@@ -11,7 +11,8 @@
 
 .tool {
   border-left: 1px solid black;
-  padding: 15px;
+  padding-left: 20px;
+  margin: 10px 0px;
 }
 
 button {
