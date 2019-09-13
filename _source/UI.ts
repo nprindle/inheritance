@@ -1,6 +1,8 @@
 class UI {
 
-  static makeTextParagraph(str: string, c?: string, id?: string) {
+  static redrawFunction: Function;
+
+  static makeTextParagraph(str: string, c?: string, id?: string): HTMLElement {
     const p: HTMLElement = document.createElement('p');
     p.innerText = str;
     if (c) {
@@ -12,6 +14,23 @@ class UI {
     return p;
   }
 
+  static makeButton(str: string, func: Function, disabled: boolean, c?: string, id?: string): HTMLButtonElement {
+    const b: HTMLButtonElement = document.createElement('button');
+    b.type = 'button';
+    b.disabled = disabled;
+    b.innerText = str;
+    if (c) {
+      b.classList.add(c);
+    }
+    if (id) {
+      b.id = id;
+    }
+    b.addEventListener('click', function (this: HTMLElement, ev: MouseEvent) {
+      func.call(this, ev);
+    });
+    return b;
+  }
+
   static renderPlayer(p: Player): HTMLElement {
     const div: HTMLElement = document.createElement('div');
     div.classList.add('player');
@@ -21,7 +40,7 @@ class UI {
     const toolDiv: HTMLElement = document.createElement('div');
     toolDiv.classList.add('tools');
     for (let i = 0; i < p.tools.length; i++) {
-      let currentDiv: HTMLElement = this.renderTool(p.tools[i]);
+      let currentDiv: HTMLElement = this.renderTool(p.tools[i], p, i);
       currentDiv.classList.add(`tool_${i}`);
       toolDiv.appendChild(currentDiv);
     }
@@ -29,13 +48,26 @@ class UI {
     return div;
   }
 
-  static renderTool(t: Tool): HTMLElement {
+  static renderTool(t: Tool, p?: Player, i?: number): HTMLElement {
     const div: HTMLElement = document.createElement('div');
     div.classList.add('tool');
     div.appendChild(UI.makeTextParagraph(t.name, 'name'));
     div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
     div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+    if (p && i !== undefined) {
+      div.appendChild(UI.makeButton('Use', function(e: MouseEvent) {
+        p.useTool(i, p);
+      }, !p.canAfford(t.cost), 'use'));
+    }
     return div;
+  }
+
+  static setRedrawFunction(f: Function) {
+    UI.redrawFunction = f;
+  }
+
+  static redraw() {
+    UI.redrawFunction();
   }
 
 }

@@ -37,6 +37,22 @@ var UI = (function () {
         }
         return p;
     };
+    UI.makeButton = function (str, func, disabled, c, id) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.disabled = disabled;
+        b.innerText = str;
+        if (c) {
+            b.classList.add(c);
+        }
+        if (id) {
+            b.id = id;
+        }
+        b.addEventListener('click', function (ev) {
+            func.call(this, ev);
+        });
+        return b;
+    };
     UI.renderPlayer = function (p) {
         var div = document.createElement('div');
         div.classList.add('player');
@@ -46,31 +62,39 @@ var UI = (function () {
         var toolDiv = document.createElement('div');
         toolDiv.classList.add('tools');
         for (var i = 0; i < p.tools.length; i++) {
-            var currentDiv = this.renderTool(p.tools[i]);
+            var currentDiv = this.renderTool(p.tools[i], p, i);
             currentDiv.classList.add("tool_" + i);
             toolDiv.appendChild(currentDiv);
         }
         div.appendChild(toolDiv);
         return div;
     };
-    UI.renderTool = function (t) {
+    UI.renderTool = function (t, p, i) {
         var div = document.createElement('div');
         div.classList.add('tool');
         div.appendChild(UI.makeTextParagraph(t.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
+        div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+        if (p && i !== undefined) {
+            div.appendChild(UI.makeButton('Use', function (e) {
+                p.useTool(i, p);
+            }, !p.canAfford(t.cost), 'use'));
+        }
         return div;
+    };
+    UI.setRedrawFunction = function (f) {
+        UI.redrawFunction = f;
+    };
+    UI.redraw = function () {
+        UI.redrawFunction();
     };
     return UI;
 }());
 var AbstractEffect = (function () {
     function AbstractEffect() {
-        this.next = null;
     }
     AbstractEffect.prototype.activate = function (user, foe) {
         this.effect(user, foe);
-        if (this.next instanceof AbstractEffect) {
-            this.next.activate(user, foe);
-        }
     };
     return AbstractEffect;
 }());
@@ -81,6 +105,9 @@ var NothingEffect = (function (_super) {
     }
     NothingEffect.prototype.effect = function (user, foe) {
         return;
+    };
+    NothingEffect.prototype.toString = function () {
+        return 'do nothing';
     };
     return NothingEffect;
 }(AbstractEffect));
@@ -100,35 +127,32 @@ var CombinationEffect = (function (_super) {
             this.effects[i].activate(user, foe);
         }
     };
+    CombinationEffect.prototype.toString = function () {
+        var acc = [];
+        for (var i = 0; i < this.effects.length; i++) {
+            acc.push(this.effects[i].toString());
+        }
+        return acc.join(' ');
+    };
     return CombinationEffect;
 }(AbstractEffect));
 var RepeatingEffect = (function (_super) {
     __extends(RepeatingEffect, _super);
-    function RepeatingEffect(times) {
+    function RepeatingEffect(next, times) {
         var _this = _super.call(this) || this;
+        _this.next = next;
         _this.times = times;
         return _this;
     }
     RepeatingEffect.prototype.effect = function (user, foe) {
-        if (this.next instanceof AbstractEffect) {
-            for (var i = 0; i < this.times - 1; i++) {
-                this.next.activate(user, foe);
-            }
+        for (var i = 0; i < this.times; i++) {
+            this.next.activate(user, foe);
         }
     };
-    return RepeatingEffect;
-}(AbstractEffect));
-var AppendingEffect = (function (_super) {
-    __extends(AppendingEffect, _super);
-    function AppendingEffect(text) {
-        var _this = _super.call(this) || this;
-        _this.text = text;
-        return _this;
-    }
-    AppendingEffect.prototype.effect = function (user, foe) {
-        document.body.appendChild(document.createTextNode(this.text));
+    RepeatingEffect.prototype.toString = function () {
+        return this.next.toString() + " " + this.times + " times";
     };
-    return AppendingEffect;
+    return RepeatingEffect;
 }(AbstractEffect));
 var CostTypes;
 (function (CostTypes) {
@@ -169,10 +193,22 @@ var Cost = (function () {
     };
     return Cost;
 }());
+var Strings = (function () {
+    function Strings() {
+    }
+    Strings.capitalize = function (str) {
+        return str.charAt(0).toUpperCase() + str.substring(1);
+    };
+    return Strings;
+}());
 var Tool = (function () {
-    function Tool(name, effect, cost) {
+    function Tool(name, cost) {
+        var effects = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            effects[_i - 2] = arguments[_i];
+        }
         this._name = name;
-        this.effect = effect;
+        this.effects = effects;
         this.cost = cost;
         this.modifiers = [];
     }
@@ -184,12 +220,20 @@ var Tool = (function () {
         configurable: true
     });
     Tool.prototype.addModifier = function (modifier, text) {
-        modifier.next = this.effect;
-        this.effect = modifier;
+        this.effects.push(modifier);
         this.modifiers.push(text);
     };
     Tool.prototype.use = function (user, target) {
-        this.effect.activate(user, target);
+        for (var i = 0; i < this.effects.length; i++) {
+            this.effects[i].activate(user, target);
+        }
+    };
+    Tool.prototype.effectsString = function () {
+        var acc = [];
+        for (var i = 0; i < this.effects.length; i++) {
+            acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
+        }
+        return acc.join(' ');
     };
     return Tool;
 }());
@@ -273,10 +317,13 @@ var DamageEffect = (function (_super) {
     DamageEffect.prototype.effect = function (user, target) {
         target.wound(this.damage);
     };
+    DamageEffect.prototype.toString = function () {
+        return "do " + this.damage + " damage";
+    };
     return DamageEffect;
 }(AbstractEffect));
 var p = new Player('The Kid', 10, 10);
 p.tools = [
-    new Tool('Wrench', new DamageEffect(1), new Cost([10, CostTypes.Energy]))
+    new Tool('Wrench', new Cost([10, CostTypes.Energy]), new DamageEffect(1))
 ];
 document.body.appendChild(UI.renderPlayer(p));
