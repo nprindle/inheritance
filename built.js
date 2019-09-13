@@ -235,7 +235,7 @@ var Tool = (function () {
         get: function () {
             var multString = '';
             if (this.multiplier > 1) {
-                multString = ' x2';
+                multString = " x" + this.multiplier;
             }
             return this.modifiers.join(' ') + " " + this._name + multString;
         },
@@ -247,8 +247,10 @@ var Tool = (function () {
         this.modifiers.push(text);
     };
     Tool.prototype.use = function (user, target) {
-        for (var i = 0; i < this.effects.length; i++) {
-            this.effects[i].activate(user, target);
+        for (var i = 0; i < this.multiplier; i++) {
+            for (var i_1 = 0; i_1 < this.effects.length; i_1++) {
+                this.effects[i_1].activate(user, target);
+            }
         }
     };
     Tool.prototype.effectsString = function () {
@@ -272,6 +274,7 @@ var Combatant = (function () {
         this.energy = energy;
         this.maxEnergy = energy;
         this.tools = tools;
+        this.deathFunc = function () { };
     }
     ;
     Combatant.prototype.status = function () {
@@ -281,6 +284,7 @@ var Combatant = (function () {
     Combatant.prototype.wound = function (damage) {
         this.health -= damage;
         if (this.health <= 0) {
+            this.health = 0;
             this.die();
         }
     };
@@ -318,6 +322,12 @@ var Combatant = (function () {
         }
     };
     ;
+    Combatant.prototype.die = function () {
+        this.deathFunc.call(this);
+    };
+    Combatant.prototype.setDeathFunc = function (f) {
+        this.deathFunc = f;
+    };
     return Combatant;
 }());
 var Player = (function (_super) {
@@ -329,8 +339,6 @@ var Player = (function (_super) {
         }
         return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
     }
-    Player.prototype.die = function () {
-    };
     return Player;
 }(Combatant));
 var DamageEffect = (function (_super) {
@@ -372,8 +380,6 @@ var Enemy = (function (_super) {
         }
         return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
     }
-    Enemy.prototype.die = function () {
-    };
     return Enemy;
 }(Combatant));
 var Fight = (function () {
@@ -383,6 +389,12 @@ var Fight = (function () {
         this.playersTurn = true;
         var closure = this;
         UI.setRedrawFunction(function () { closure.redraw(); });
+        this.player.setDeathFunc(function () {
+            closure.end();
+        });
+        this.enemy.setDeathFunc(function () {
+            closure.end();
+        });
         this.draw();
     }
     Fight.prototype.endTurn = function () {
@@ -407,16 +419,37 @@ var Fight = (function () {
         this.div.appendChild(UI.renderCombatant(this.enemy, this.player, !this.playersTurn));
         this.div.appendChild(this.endTurnButton());
     };
+    Fight.prototype.end = function () {
+        document.body.removeChild(this.div);
+        moveOn();
+    };
     return Fight;
 }());
 var p = new Player('The Kid', 10, 10);
+var numEvents = 0;
 p.tools = [
     new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
-    new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)),
+    new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1))
 ];
-var e = new Enemy('Goldfish', 10, 10);
-e.tools = [
-    new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
-    new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(1))
-];
-var f = new Fight(p, e);
+function setUpFight(i) {
+    var e = new Enemy('Goldfish', 10 + i * 5, 10);
+    e.tools = [
+        new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
+        new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(1 + i))
+    ];
+    var f = new Fight(p, e);
+}
+function offerModifier() {
+}
+function moveOn() {
+    numEvents++;
+    switch (numEvents % 2) {
+        case 0:
+            setUpFight(Math.floor(numEvents / 2));
+            break;
+        case 1:
+            offerModifier();
+            break;
+    }
+}
+setUpFight(0);

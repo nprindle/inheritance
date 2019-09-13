@@ -16,6 +16,12 @@ class Fight {
     //i know this is gross.
     let closure = this;
     UI.setRedrawFunction(function() {closure.redraw()});
+    this.player.setDeathFunc(function() {
+      closure.end();
+    });
+    this.enemy.setDeathFunc(function() {
+      closure.end();
+    });
     this.draw();
   }
 
@@ -43,6 +49,11 @@ class Fight {
     this.div.appendChild(UI.renderCombatant(this.player, this.enemy, this.playersTurn));
     this.div.appendChild(UI.renderCombatant(this.enemy, this.player, !this.playersTurn));
     this.div.appendChild(this.endTurnButton());
+  }
+
+  end(): void {
+    document.body.removeChild(this.div);
+    moveOn();
   }
 
 }
