@@ -1,4 +1,4 @@
-.arena {
+.arena, .offer {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
