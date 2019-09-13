@@ -1,7 +1,7 @@
 .arena {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-around;
 }
 
 .player, .enemy {
@@ -26,4 +26,10 @@ button:disabled {
   background: #CCC;
   color: #666;
   cursor: auto;
+}
+
+.endturn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
 }
