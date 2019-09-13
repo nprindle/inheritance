@@ -48,6 +48,7 @@ var UI = (function () {
         return p;
     };
     UI.makeButton = function (str, func, disabled, c, id) {
+        if (disabled === void 0) { disabled = false; }
         var b = document.createElement('button');
         b.type = 'button';
         b.disabled = disabled;
@@ -109,12 +110,23 @@ var UI = (function () {
         }, false, 'apply'));
         return div;
     };
-    UI.renderModifier = function (m, p) {
+    UI.renderModifier = function (m, p, refusable) {
+        if (refusable === void 0) { refusable = true; }
         var div = UI.makeDiv('modifier');
         div.appendChild(UI.makeTextParagraph(m.name, 'name'));
         div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
         for (var i = 0; i < p.tools.length; i++) {
             div.appendChild(UI.renderOfferTool(p.tools[i], m));
+        }
+        if (refusable) {
+            div.appendChild(UI.makeButton('No Thank You', function () {
+                moveOn();
+            }));
+        }
+        else {
+            div.appendChild(UI.makeButton("Can't Refuse!", function () {
+                moveOn();
+            }, true));
         }
         return div;
     };

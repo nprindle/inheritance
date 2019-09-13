@@ -25,7 +25,7 @@ class UI {
     return p;
   }
 
-  static makeButton(str: string, func: Function, disabled: boolean, c?: string, id?: string): HTMLButtonElement {
+  static makeButton(str: string, func: Function, disabled: boolean = false, c?: string, id?: string): HTMLButtonElement {
     const b: HTMLButtonElement = document.createElement('button');
     b.type = 'button';
     b.disabled = disabled;
@@ -90,12 +90,21 @@ class UI {
     return div;
   }
 
-  static renderModifier(m: Modifier, p: Player) {
+  static renderModifier(m: Modifier, p: Player, refusable: boolean = true) {
     const div: HTMLElement = UI.makeDiv('modifier');
     div.appendChild(UI.makeTextParagraph(m.name, 'name'));
     div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
     for (let i = 0; i < p.tools.length; i++) {
       div.appendChild(UI.renderOfferTool(p.tools[i], m));
+    }
+    if (refusable) {
+      div.appendChild(UI.makeButton('No Thank You', function() {
+        moveOn();
+      }));
+    } else {
+      div.appendChild(UI.makeButton("Can't Refuse!", function() {
+        moveOn();
+      }, true));
     }
     return div;
   }
