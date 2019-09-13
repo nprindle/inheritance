@@ -26,6 +26,16 @@ function appendText(text, node) {
 var UI = (function () {
     function UI() {
     }
+    UI.makeDiv = function (c, id) {
+        var div = document.createElement('div');
+        if (c) {
+            div.classList.add(c);
+        }
+        if (id) {
+            div.id = id;
+        }
+        return div;
+    };
     UI.makeTextParagraph = function (str, c, id) {
         var p = document.createElement('p');
         p.innerText = str;
@@ -54,8 +64,7 @@ var UI = (function () {
         return b;
     };
     UI.renderPlayer = function (p) {
-        var div = document.createElement('div');
-        div.classList.add('player');
+        var div = UI.makeDiv('player');
         div.appendChild(UI.makeTextParagraph(p.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Health: " + p.health + " / " + p.maxHealth, 'health'));
         div.appendChild(UI.makeTextParagraph("Energy: " + p.energy + " / " + p.maxEnergy, 'energy'));
@@ -70,14 +79,14 @@ var UI = (function () {
         return div;
     };
     UI.renderTool = function (t, p, i) {
-        var div = document.createElement('div');
-        div.classList.add('tool');
+        var div = UI.makeDiv('tool');
         div.appendChild(UI.makeTextParagraph(t.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
         div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
         if (p && i !== undefined) {
             div.appendChild(UI.makeButton('Use', function (e) {
                 p.useTool(i, p);
+                UI.redraw();
             }, !p.canAfford(t.cost), 'use'));
         }
         return div;
