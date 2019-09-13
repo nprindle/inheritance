@@ -229,10 +229,15 @@ var Tool = (function () {
         this.effects = effects;
         this.cost = cost;
         this.modifiers = [];
+        this.multiplier = 1;
     }
     Object.defineProperty(Tool.prototype, "name", {
         get: function () {
-            return this.modifiers.join(' ') + " " + this._name;
+            var multString = '';
+            if (this.multiplier > 1) {
+                multString = ' x2';
+            }
+            return this.modifiers.join(' ') + " " + this._name + multString;
         },
         enumerable: true,
         configurable: true
@@ -343,6 +348,21 @@ var DamageEffect = (function (_super) {
     };
     return DamageEffect;
 }(AbstractEffect));
+var HealingEffect = (function (_super) {
+    __extends(HealingEffect, _super);
+    function HealingEffect(amount) {
+        var _this = _super.call(this) || this;
+        _this.amount = amount;
+        return _this;
+    }
+    HealingEffect.prototype.effect = function (user, target) {
+        user.heal(this.amount);
+    };
+    HealingEffect.prototype.toString = function () {
+        return "recover " + this.amount + " health";
+    };
+    return HealingEffect;
+}(AbstractEffect));
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
     function Enemy(name, health, energy) {
@@ -391,10 +411,12 @@ var Fight = (function () {
 }());
 var p = new Player('The Kid', 10, 10);
 p.tools = [
-    new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1))
+    new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
+    new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)),
 ];
 var e = new Enemy('Goldfish', 10, 10);
 e.tools = [
-    new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect())
+    new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
+    new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(1))
 ];
 var f = new Fight(p, e);
