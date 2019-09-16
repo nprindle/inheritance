@@ -91,11 +91,14 @@ var UI = (function () {
         div.appendChild(UI.makeTextParagraph(t.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
         div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+        if (t.usesPerTurn < Infinity) {
+            div.appendChild(UI.makeTextParagraph("(" + t.usesLeft + " use(s) left this turn)"));
+        }
         if (p && i !== undefined) {
             div.appendChild(UI.makeButton('Use', function (e) {
                 c.useTool(i, target);
                 UI.redraw();
-            }, !c.canAfford(t.cost) || !isTurn, 'use'));
+            }, !c.canAfford(t.cost) || !isTurn || t.usesLeft <= 0, 'use'));
         }
         return div;
     };
@@ -322,6 +325,10 @@ var Tool = (function () {
                 this.effects[i_1].activate(user, target);
             }
         }
+        this.usesLeft--;
+    };
+    Tool.prototype.refresh = function () {
+        this.usesLeft = this.usesPerTurn;
     };
     Tool.prototype.effectsString = function () {
         var acc = [];
@@ -368,6 +375,9 @@ var Combatant = (function () {
     ;
     Combatant.prototype.refresh = function () {
         this.energy = this.maxEnergy;
+        for (var i = 0; i < this.tools.length; i++) {
+            this.tools[i].refresh();
+        }
     };
     Combatant.prototype.canAfford = function (cost) {
         return this.health > cost.healthCost && this.energy >= cost.energyCost;
@@ -548,7 +558,8 @@ var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
     new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
-    new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1))
+    new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)),
+    new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1))
 ];
 var modifiers = [
     new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),

@@ -68,6 +68,11 @@ class Tool {
         this.effects[i].activate(user, target);
       }
     }
+    this.usesLeft--;
+  }
+
+  refresh(): void {
+    this.usesLeft = this.usesPerTurn;
   }
 
   effectsString(): string {

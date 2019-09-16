@@ -69,11 +69,14 @@ class UI {
     div.appendChild(UI.makeTextParagraph(t.name, 'name'));
     div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
     div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+    if (t.usesPerTurn < Infinity) {
+      div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
+    }
     if (p && i !== undefined) {
       div.appendChild(UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
-      }, !c.canAfford(t.cost) || !isTurn, 'use'));
+      }, !c.canAfford(t.cost) || !isTurn || t.usesLeft <= 0, 'use'));
     }
     return div;
   }

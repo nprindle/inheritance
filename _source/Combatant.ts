@@ -40,6 +40,9 @@ abstract class Combatant {
 
   refresh(): void {
     this.energy = this.maxEnergy;
+    for (let i = 0; i < this.tools.length; i++) {
+      this.tools[i].refresh();
+    }
   }
 
   canAfford(cost: Cost): boolean {
