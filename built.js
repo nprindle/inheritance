@@ -259,6 +259,23 @@ var Strings = (function () {
     };
     return Strings;
 }());
+var ToolMod = (function () {
+    function ToolMod() {
+    }
+    return ToolMod;
+}());
+var UsesMod = (function (_super) {
+    __extends(UsesMod, _super);
+    function UsesMod(n) {
+        var _this = _super.call(this) || this;
+        _this.num = n;
+        return _this;
+    }
+    UsesMod.prototype.apply = function (t) {
+        t.usesPerTurn = this.num;
+    };
+    return UsesMod;
+}(ToolMod));
 var Tool = (function () {
     function Tool(name, cost) {
         var effects = [];
@@ -266,10 +283,20 @@ var Tool = (function () {
             effects[_i - 2] = arguments[_i];
         }
         this._name = name;
-        this.effects = effects;
         this.cost = cost;
+        this.effects = [];
         this.modifiers = [];
         this.multiplier = 1;
+        this.usesPerTurn = Infinity;
+        for (var i = 0; i < effects.length; i++) {
+            var curr = effects[i];
+            if (curr instanceof AbstractEffect) {
+                this.effects.push(curr);
+            }
+            else if (curr instanceof ToolMod) {
+                curr.apply(this);
+            }
+        }
     }
     Object.defineProperty(Tool.prototype, "name", {
         get: function () {

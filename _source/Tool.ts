@@ -2,19 +2,49 @@
 /// <reference path="Cost.ts" />
 /// <reference path="Strings.ts" />
 
+abstract class ToolMod {
+  abstract apply(t: Tool): void;
+}
+
+class UsesMod extends ToolMod {
+
+  num: number;
+
+  constructor(n: number) {
+    super();
+    this.num = n;
+  }
+
+  apply(t: Tool): void {
+    t.usesPerTurn = this.num;
+  }
+
+}
+
 class Tool {
   _name: string;
   effects: AbstractEffect[];
   cost: Cost;
   modifiers: string[];
   multiplier: number;
+  usesPerTurn: number;
+  usesLeft: number;
 
-  constructor(name: string, cost: Cost, ...effects: AbstractEffect[]) {
+  constructor(name: string, cost: Cost, ...effects: (AbstractEffect | ToolMod)[]) {
     this._name = name;
-    this.effects = effects;
     this.cost = cost;
+    this.effects = [];
     this.modifiers = [];
     this.multiplier = 1;
+    this.usesPerTurn = Infinity;
+    for (let i = 0; i < effects.length; i++) {
+      let curr = effects[i];
+      if (curr instanceof AbstractEffect) {
+        this.effects.push(curr);
+      } else if (curr instanceof ToolMod) {
+        curr.apply(this);
+      }
+    }
   }
 
   get name() {
