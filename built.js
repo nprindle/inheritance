@@ -313,6 +313,10 @@ var Tool = (function () {
         configurable: true
     });
     Tool.prototype.use = function (user, target) {
+        if (!user.canAfford(this.cost) || this.usesLeft <= 0) {
+            return;
+        }
+        user.pay(this.cost);
         for (var i = 0; i < this.multiplier; i++) {
             for (var i_1 = 0; i_1 < this.effects.length; i_1++) {
                 this.effects[i_1].activate(user, target);
@@ -379,13 +383,7 @@ var Combatant = (function () {
             return;
         }
         var tool = this.tools[index];
-        if (!this.canAfford(tool.cost)) {
-            return;
-        }
-        else {
-            this.pay(tool.cost);
-            tool.use(this, target);
-        }
+        tool.use(this, target);
     };
     ;
     Combatant.prototype.die = function () {

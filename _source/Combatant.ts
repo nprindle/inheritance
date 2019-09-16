@@ -56,12 +56,7 @@ abstract class Combatant {
       return;
     }
     const tool: Tool = this.tools[index];
-    if (!this.canAfford(tool.cost)) {
-      return;
-    } else {
-      this.pay(tool.cost);
-      tool.use(this, target);
-    }
+    tool.use(this, target);
   };
 
   die(): void {

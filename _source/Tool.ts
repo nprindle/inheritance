@@ -59,6 +59,10 @@ class Tool {
   }
 
   use(user: Combatant, target: Combatant): void {
+    if (!user.canAfford(this.cost) || this.usesLeft <= 0) {
+      return;
+    }
+    user.pay(this.cost);
     for (let i = 0; i < this.multiplier; i++) {
       for (let i = 0; i < this.effects.length; i++) {
         this.effects[i].activate(user, target);
