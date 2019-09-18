@@ -11,7 +11,8 @@ var numEvents: number = 0;
 
 p.tools = [
   new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
-  new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1))
+  new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)),
+  new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1))
 ];
 
 const modifiers: Modifier[] = [
