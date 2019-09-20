@@ -57,5 +57,5 @@ window.onload = function() {
 }
 
 if (window.innerHeight === 0) {
-  window.console.log(tools);
+  window.console.log('tools', tools);
 }
