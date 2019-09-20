@@ -4,13 +4,15 @@
 /// <reference path="effects.ts" />
 /// <reference path="Fight.ts" />
 /// <reference path="Modifier.ts" />
+/// <reference path="ItemPool.ts" />
+/// <reference path="tools.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
 
 var numEvents: number = 0;
 
 p.tools = [
-  new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
+  tools.get('wrench'),
   new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)),
   new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1))
 ];

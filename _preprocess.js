@@ -10,3 +10,4 @@ function makeDirectoryReferences(dir, ...lines) {
 }
 
 makeDirectoryReferences('effects');
+makeDirectoryReferences('tools');

@@ -554,10 +554,30 @@ var Modifier = (function () {
     };
     return Modifier;
 }());
+var ItemPool = (function () {
+    function ItemPool() {
+        this.items = {};
+    }
+    ItemPool.prototype.add = function (key, item) {
+        this.items[key] = item;
+    };
+    ItemPool.prototype.get = function (key) {
+        if (this.items[key].clone) {
+            return this.items[key].clone();
+        }
+        else {
+            return this.items[key];
+        }
+    };
+    return ItemPool;
+}());
+var tools = new ItemPool();
+console.log("it's happening...");
+tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
-    new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)),
+    tools.get('wrench'),
     new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)),
     new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1))
 ];
