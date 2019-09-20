@@ -55,3 +55,7 @@ function moveOn(): void {
 window.onload = function() {
   setUpFight(0);
 }
+
+if (window.innerHeight === 0) {
+  window.console.log(tools);
+}
