@@ -572,14 +572,15 @@ var ItemPool = (function () {
     return ItemPool;
 }());
 var tools = new ItemPool();
-console.log("it's happening...");
+tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
+tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
     tools.get('wrench'),
-    new Tool('Generic Brand Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)),
-    new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1))
+    tools.get('bandages'),
+    tools.get('singleton')
 ];
 var modifiers = [
     new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
