@@ -16,7 +16,7 @@ for (let k in processor.tools.items) {
   toolLines.push(`Cost: ${tool.cost.toString()}\n`);
   toolLines.push(`${tool.effectsString()}\n`);
   if (tool.usesPerTurn < Infinity) {
-    toolLines.push(`(Usable ${tool.usesPerTurn} times per turn.)\n`);
+    toolLines.push(`Usable ${tool.usesPerTurn} time(s) per turn.\n`);
   }
 }
 fs.writeFileSync('_tools.md', toolLines.join('\n'));
