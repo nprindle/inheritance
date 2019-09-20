@@ -591,4 +591,6 @@ function moveOn() {
             break;
     }
 }
-setUpFight(0);
+window.onload = function () {
+    setUpFight(0);
+};

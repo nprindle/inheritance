@@ -50,4 +50,6 @@ function moveOn(): void {
   }
 }
 
-setUpFight(0);
+window.onload = function() {
+  setUpFight(0);
+}
