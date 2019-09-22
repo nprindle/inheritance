@@ -13,6 +13,15 @@
   border-left: 1px solid black;
   padding-left: 20px;
   margin: 10px 0px;
+  position: relative;
+}
+
+.tool .multiplier {
+  position: absolute;
+  top: 0px;
+  right: 5px;
+  font-weight: bold;
+  margin: 0;
 }
 
 button {
