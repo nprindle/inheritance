@@ -67,7 +67,7 @@ class UI {
   static renderTool(t: Tool): HTMLElement {
     const div: HTMLElement = UI.makeDiv('tool');
     div.appendChild(UI.makeTextParagraph(t.name, 'name'));
-    div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
+    div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'cost'));
     div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
     if (t.multiplier > 1) {
       div.appendChild(UI.makeTextParagraph(`x${t.multiplier}`, 'multiplier'));

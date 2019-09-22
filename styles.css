@@ -1,3 +1,7 @@
+html {
+  font-family: sans-serif;
+}
+
 .arena, .offer {
   display: flex;
   flex-direction: row;
@@ -9,6 +13,11 @@
   flex-direction: column;
 }
 
+.player > .name, .enemy > .name {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 .player > p, .enemy > p {
   margin: 8px;
 }
@@ -18,6 +27,10 @@
   padding-left: 20px;
   margin: 10px 0px;
   position: relative;
+}
+
+.tool .name {
+  font-weight: bold;
 }
 
 .tool .multiplier {
