@@ -15,7 +15,6 @@ html {
 
 .player > .name, .enemy > .name {
   font-weight: bold;
-  text-decoration: underline;
 }
 
 .player > p, .enemy > p {
