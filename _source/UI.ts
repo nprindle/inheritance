@@ -64,11 +64,19 @@ class UI {
     return div;
   }
 
-  static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean) {
+  static renderTool(t: Tool): HTMLElement {
     const div: HTMLElement = UI.makeDiv('tool');
     div.appendChild(UI.makeTextParagraph(t.name, 'name'));
     div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
     div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+    if (t.multiplier > 1) {
+      div.appendChild(UI.makeTextParagraph(`x${t.multiplier}`, 'multiplier'));
+    }
+    return div;
+  }
+
+  static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean) {
+    const div: HTMLElement = UI.renderTool(t);
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
     }
@@ -82,10 +90,7 @@ class UI {
   }
 
   static renderOfferTool(t: Tool, m: Modifier) {
-    const div: HTMLElement = UI.makeDiv('tool');
-    div.appendChild(UI.makeTextParagraph(t.name, 'name'));
-    div.appendChild(UI.makeTextParagraph(`Cost: ${t.cost.toString()}`, 'name'));
-    div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+    const div: HTMLElement = UI.renderTool(t);
     div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
       m.apply(t);
       moveOn();

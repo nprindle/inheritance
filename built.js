@@ -86,11 +86,18 @@ var UI = (function () {
         div.appendChild(toolDiv);
         return div;
     };
-    UI.renderCombatTool = function (t, c, i, target, isTurn) {
+    UI.renderTool = function (t) {
         var div = UI.makeDiv('tool');
         div.appendChild(UI.makeTextParagraph(t.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
         div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+        if (t.multiplier > 1) {
+            div.appendChild(UI.makeTextParagraph("x" + t.multiplier, 'multiplier'));
+        }
+        return div;
+    };
+    UI.renderCombatTool = function (t, c, i, target, isTurn) {
+        var div = UI.renderTool(t);
         if (t.usesPerTurn < Infinity) {
             div.appendChild(UI.makeTextParagraph("(" + t.usesLeft + " use(s) left this turn)"));
         }
@@ -103,10 +110,7 @@ var UI = (function () {
         return div;
     };
     UI.renderOfferTool = function (t, m) {
-        var div = UI.makeDiv('tool');
-        div.appendChild(UI.makeTextParagraph(t.name, 'name'));
-        div.appendChild(UI.makeTextParagraph("Cost: " + t.cost.toString(), 'name'));
-        div.appendChild(UI.makeTextParagraph(t.effectsString(), 'effect'));
+        var div = UI.renderTool(t);
         div.appendChild(UI.makeButton("Apply " + m.name, function (e) {
             m.apply(t);
             moveOn();
@@ -304,9 +308,6 @@ var Tool = (function () {
     Object.defineProperty(Tool.prototype, "name", {
         get: function () {
             var multString = '';
-            if (this.multiplier > 1) {
-                multString = " x" + this.multiplier;
-            }
             if (this.modifiers.length === 0) {
                 return "" + this._name + multString;
             }

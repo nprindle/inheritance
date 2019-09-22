@@ -12,7 +12,7 @@ Cost: 1 Energy
 
 Do 5 damage.
 
-(Usable 1 times per turn.)
+Usable 1 time(s) per turn.
 
 ## Wrench
 
