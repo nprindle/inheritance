@@ -6,4 +6,4 @@ There's a spooky tower full of Mad Science Machines. Our hero's climbing the tow
 
 ## Building
 
-To compile, use `tsc --build _source/tsconfig.json` from the project's root directory.
+To compile, run the script `_build.sh`. The script runs the preprocessor, compiles the processed code, and then runs the postprocessor.
