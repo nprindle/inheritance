@@ -49,9 +49,6 @@ class Tool {
 
   get name() {
     let multString = '';
-    if (this.multiplier > 1) {
-      multString = ` x${this.multiplier}`;
-    }
     if (this.modifiers.length === 0) {
       return `${this._name}${multString}`;
     }
@@ -82,5 +79,5 @@ class Tool {
     }
     return acc.join(' ');
   }
-  
+
 }
