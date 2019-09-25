@@ -47,4 +47,10 @@ class Cost {
     this.energyCost += c.energyCost;
   }
 
+  clone(): Cost {
+    let c = new Cost();
+    c.addCost(this);
+    return c;
+  }
+
 }

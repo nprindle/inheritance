@@ -166,6 +166,9 @@ var NothingEffect = (function (_super) {
     NothingEffect.prototype.toString = function () {
         return 'do nothing';
     };
+    NothingEffect.prototype.clone = function () {
+        return new NothingEffect();
+    };
     return NothingEffect;
 }(AbstractEffect));
 var CombinationEffect = (function (_super) {
@@ -191,6 +194,9 @@ var CombinationEffect = (function (_super) {
         }
         return acc.join(' ');
     };
+    CombinationEffect.prototype.clone = function () {
+        return new (CombinationEffect.bind.apply(CombinationEffect, __spreadArrays([void 0], this.effects.map(function (x) { return x.clone(); }))))();
+    };
     return CombinationEffect;
 }(AbstractEffect));
 var RepeatingEffect = (function (_super) {
@@ -208,6 +214,9 @@ var RepeatingEffect = (function (_super) {
     };
     RepeatingEffect.prototype.toString = function () {
         return this.next.toString() + " " + this.times + " times";
+    };
+    RepeatingEffect.prototype.clone = function () {
+        return new RepeatingEffect(this.next.clone(), this.times);
     };
     return RepeatingEffect;
 }(AbstractEffect));
@@ -255,6 +264,11 @@ var Cost = (function () {
     Cost.prototype.addCost = function (c) {
         this.healthCost += c.healthCost;
         this.energyCost += c.energyCost;
+    };
+    Cost.prototype.clone = function () {
+        var c = new Cost();
+        c.addCost(this);
+        return c;
     };
     return Cost;
 }());
@@ -337,6 +351,14 @@ var Tool = (function () {
             acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
         }
         return acc.join(' ');
+    };
+    Tool.prototype.clone = function () {
+        var effectsClones = this.effects.map(function (x) { return x.clone(); });
+        var t = new (Tool.bind.apply(Tool, __spreadArrays([void 0, this.name, this.cost.clone()], effectsClones)))();
+        t.usesPerTurn = this.usesPerTurn;
+        t.multiplier = this.multiplier;
+        t.modifiers = this.modifiers;
+        return t;
     };
     return Tool;
 }());
@@ -429,6 +451,9 @@ var DamageEffect = (function (_super) {
     DamageEffect.prototype.toString = function () {
         return "do " + this.damage + " damage";
     };
+    DamageEffect.prototype.clone = function () {
+        return new DamageEffect(this.damage);
+    };
     return DamageEffect;
 }(AbstractEffect));
 var HealingEffect = (function (_super) {
@@ -443,6 +468,9 @@ var HealingEffect = (function (_super) {
     };
     HealingEffect.prototype.toString = function () {
         return "recover " + this.amount + " health";
+    };
+    HealingEffect.prototype.clone = function () {
+        return new HealingEffect(this.amount);
     };
     return HealingEffect;
 }(AbstractEffect));
@@ -564,7 +592,7 @@ var ItemPool = (function () {
     };
     ItemPool.prototype.get = function (key) {
         if (this.items[key].clone) {
-            return this.items[key].clone();
+            return this.items[key];
         }
         else {
             return this.items[key];

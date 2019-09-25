@@ -80,4 +80,13 @@ class Tool {
     return acc.join(' ');
   }
 
+  clone(): Tool {
+    let effectsClones = this.effects.map(x => x.clone());
+    let t = new Tool(this.name, this.cost.clone(), ...effectsClones);
+    t.usesPerTurn = this.usesPerTurn;
+    t.multiplier = this.multiplier;
+    t.modifiers = this.modifiers;
+    return t;
+  }
+
 }
