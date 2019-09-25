@@ -54,7 +54,7 @@ class Modifier {
     t.cost.addCost(this.costAdd);
     t.multiplier += this.multiplierAdd;
     for (let i = 0; i < this.effects.length; i++) {
-      t.effects.push(this.effects[i]);
+      t.effects.push(this.effects[i].clone());
     }
   }
 

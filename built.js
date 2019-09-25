@@ -578,7 +578,7 @@ var Modifier = (function () {
         t.cost.addCost(this.costAdd);
         t.multiplier += this.multiplierAdd;
         for (var i = 0; i < this.effects.length; i++) {
-            t.effects.push(this.effects[i]);
+            t.effects.push(this.effects[i].clone());
         }
     };
     return Modifier;
@@ -592,7 +592,7 @@ var ItemPool = (function () {
     };
     ItemPool.prototype.get = function (key) {
         if (this.items[key].clone) {
-            return this.items[key];
+            return this.items[key].clone();
         }
         else {
             return this.items[key];
