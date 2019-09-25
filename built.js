@@ -586,9 +586,11 @@ var Modifier = (function () {
 var ItemPool = (function () {
     function ItemPool() {
         this.items = {};
+        this.keys = [];
     }
     ItemPool.prototype.add = function (key, item) {
         this.items[key] = item;
+        this.keys.push(key);
     };
     ItemPool.prototype.get = function (key) {
         if (this.items[key].clone) {
@@ -598,23 +600,26 @@ var ItemPool = (function () {
             return this.items[key];
         }
     };
+    ItemPool.prototype.getRandom = function () {
+        var key = this.keys[Math.floor(Math.random() * this.keys.length)];
+        return this.get(key);
+    };
     return ItemPool;
 }());
 var tools = new ItemPool();
+var modifiers = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([1, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
+modifiers.add('jittering', new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
+modifiers.add('spiky', new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
     tools.get('wrench'),
     tools.get('bandages'),
     tools.get('singleton')
-];
-var modifiers = [
-    new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
-    new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1))
 ];
 function setUpFight(i) {
     var e = new Enemy('Goldfish', 10 + i * 5, 10);
@@ -627,7 +632,8 @@ function setUpFight(i) {
 function offerModifier() {
     var div = UI.makeDiv('offer');
     div.appendChild(UI.makeTextParagraph('You wanna modifier?'));
-    div.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
+    var offer = modifiers.getRandom();
+    div.appendChild(UI.renderModifier(offer, p));
     document.body.appendChild(div);
 }
 function moveOn() {

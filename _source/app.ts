@@ -6,6 +6,7 @@
 /// <reference path="Modifier.ts" />
 /// <reference path="ItemPool.ts" />
 /// <reference path="tools.ts" />
+/// <reference path="modifiers.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
 
@@ -15,11 +16,6 @@ p.tools = [
   tools.get('wrench'),
   tools.get('bandages'),
   tools.get('singleton')
-];
-
-const modifiers: Modifier[] = [
-  new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
-  new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1))
 ];
 
 function setUpFight(i: number): void {
@@ -35,7 +31,8 @@ function setUpFight(i: number): void {
 function offerModifier(): void {
   const div = UI.makeDiv('offer');
   div.appendChild(UI.makeTextParagraph('You wanna modifier?'));
-  div.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
+  const offer = modifiers.getRandom();
+  div.appendChild(UI.renderModifier(offer, p));
   document.body.appendChild(div);
 }
 
