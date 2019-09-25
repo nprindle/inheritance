@@ -121,7 +121,7 @@ var UI = (function () {
         if (refusable === void 0) { refusable = true; }
         var div = UI.makeDiv('modifier');
         div.appendChild(UI.makeTextParagraph(m.name, 'name'));
-        div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
+        div.appendChild(UI.makeTextParagraph(m.describe(), 'desc'));
         for (var i = 0; i < p.tools.length; i++) {
             div.appendChild(UI.renderOfferTool(p.tools[i], m));
         }

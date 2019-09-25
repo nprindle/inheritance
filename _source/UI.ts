@@ -101,7 +101,7 @@ class UI {
   static renderModifier(m: Modifier, p: Player, refusable: boolean = true) {
     const div: HTMLElement = UI.makeDiv('modifier');
     div.appendChild(UI.makeTextParagraph(m.name, 'name'));
-    div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
+    div.appendChild(UI.makeTextParagraph(m.describe(), 'desc'));
     for (let i = 0; i < p.tools.length; i++) {
       div.appendChild(UI.renderOfferTool(p.tools[i], m));
     }
