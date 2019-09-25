@@ -1,5 +1,10 @@
 # The Prototype Inheritance
 
+## Useful Links
+
+* [Tool Making Guide](_source/tools/README.md)
+* [Tool List](_tools.md)
+
 ## What's This About?
 
 There's a spooky tower full of Mad Science Machines. Our hero's climbing the tower, accumulating strange weapons, because that's what you do when there's a spooky tower.
