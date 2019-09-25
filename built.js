@@ -552,6 +552,7 @@ var ModifierTypes;
     ModifierTypes[ModifierTypes["MultAdd"] = 1] = "MultAdd";
     ModifierTypes[ModifierTypes["AddEnergyCost"] = 2] = "AddEnergyCost";
     ModifierTypes[ModifierTypes["Effect"] = 3] = "Effect";
+    ModifierTypes[ModifierTypes["UsesPerTurn"] = 4] = "UsesPerTurn";
 })(ModifierTypes || (ModifierTypes = {}));
 var Modifier = (function () {
     function Modifier(name) {
@@ -563,13 +564,14 @@ var Modifier = (function () {
         this.effects = [];
         this.costMultiplier = 1;
         this.multiplierAdd = 0;
+        this.usesPerTurn = Infinity;
         this.costAdd = new Cost();
         for (var i = 0; i < args.length; i++) {
             var curr = args[i];
             if (curr instanceof AbstractEffect) {
                 this.effects.push(curr);
             }
-            else if (curr instanceof Array && typeof curr[0] === 'string' && typeof curr[1] === 'number') {
+            else if (curr instanceof Array && typeof curr[0] === 'number' && typeof curr[1] === 'number') {
                 this.addTuple(curr);
             }
         }
@@ -585,6 +587,9 @@ var Modifier = (function () {
             case ModifierTypes.AddEnergyCost:
                 this.costAdd.addTuple([t[1], CostTypes.Energy]);
                 break;
+            case ModifierTypes.UsesPerTurn:
+                this.usesPerTurn = t[1];
+                break;
         }
     };
     Modifier.prototype.apply = function (t) {
@@ -592,6 +597,7 @@ var Modifier = (function () {
         t.cost.scale(this.costMultiplier);
         t.cost.addCost(this.costAdd);
         t.multiplier += this.multiplierAdd;
+        t.usesPerTurn = Math.min(this.usesPerTurn, t.usesPerTurn);
         for (var i = 0; i < this.effects.length; i++) {
             t.effects.push(this.effects[i].clone());
         }
@@ -607,10 +613,14 @@ var Modifier = (function () {
         if (this.costAdd.magnitude() > 0) {
             acc.push(this.costAdd.addString());
         }
+        if (this.usesPerTurn < Infinity) {
+            acc.push("limited to " + this.usesPerTurn + " use(s) per turn");
+        }
         if (this.effects.length > 0) {
             var effectStrings = this.effects.map(function (x) { return x.toString(); });
             acc.push("Add effect(s): " + effectStrings.map(function (x) { return Strings.capitalize(x); }).join(' '));
         }
+        console.log(acc);
         return Strings.conjoin(acc);
     };
     return Modifier;
@@ -645,6 +655,7 @@ tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), ne
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([1, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
+modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
