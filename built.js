@@ -554,13 +554,12 @@ var ModifierTypes;
     ModifierTypes["Effect"] = "Effect";
 })(ModifierTypes || (ModifierTypes = {}));
 var Modifier = (function () {
-    function Modifier(name, desc) {
+    function Modifier(name) {
         var args = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            args[_i - 2] = arguments[_i];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
         }
         this.name = name;
-        this.desc = desc;
         this.effects = [];
         this.costMultiplier = 1;
         this.multiplierAdd = 0;
@@ -645,8 +644,8 @@ tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new 
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([1, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
-modifiers.add('jittering', new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
-modifiers.add('spiky', new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
+modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
+modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [

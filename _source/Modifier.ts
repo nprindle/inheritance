@@ -12,15 +12,13 @@ enum ModifierTypes {
 class Modifier {
 
   name: string;
-  desc: string;
   effects: AbstractEffect[];
   costMultiplier: number;
   costAdd: Cost;
   multiplierAdd: number;
 
-  constructor(name: string, desc: string, ...args: ([ModifierTypes, number] | AbstractEffect)[]) {
+  constructor(name: string, ...args: ([ModifierTypes, number] | AbstractEffect)[]) {
     this.name = name;
-    this.desc = desc;
     this.effects = [];
     this.costMultiplier = 1;
     this.multiplierAdd = 0;
