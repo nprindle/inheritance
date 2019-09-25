@@ -3,10 +3,10 @@
 /// <reference path="Strings.ts" />
 
 enum ModifierTypes {
-  CostMult = 'Cost Mult',
-  MultAdd = 'Mult Add',
-  AddEnergyCost = 'Energy Cost Add',
-  Effect = 'Effect'
+  CostMult,
+  MultAdd,
+  AddEnergyCost,
+  Effect
 }
 
 class Modifier {

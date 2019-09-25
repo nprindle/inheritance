@@ -1,6 +1,6 @@
 enum CostTypes {
-  Health = 'Health',
-  Energy = 'Energy'
+  Health,
+  Energy
 }
 
 class Cost {

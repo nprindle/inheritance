@@ -222,8 +222,8 @@ var RepeatingEffect = (function (_super) {
 }(AbstractEffect));
 var CostTypes;
 (function (CostTypes) {
-    CostTypes["Health"] = "Health";
-    CostTypes["Energy"] = "Energy";
+    CostTypes[CostTypes["Health"] = 0] = "Health";
+    CostTypes[CostTypes["Energy"] = 1] = "Energy";
 })(CostTypes || (CostTypes = {}));
 var Cost = (function () {
     function Cost() {
@@ -548,10 +548,10 @@ var Fight = (function () {
 }());
 var ModifierTypes;
 (function (ModifierTypes) {
-    ModifierTypes["CostMult"] = "Cost Mult";
-    ModifierTypes["MultAdd"] = "Mult Add";
-    ModifierTypes["AddEnergyCost"] = "Energy Cost Add";
-    ModifierTypes["Effect"] = "Effect";
+    ModifierTypes[ModifierTypes["CostMult"] = 0] = "CostMult";
+    ModifierTypes[ModifierTypes["MultAdd"] = 1] = "MultAdd";
+    ModifierTypes[ModifierTypes["AddEnergyCost"] = 2] = "AddEnergyCost";
+    ModifierTypes[ModifierTypes["Effect"] = 3] = "Effect";
 })(ModifierTypes || (ModifierTypes = {}));
 var Modifier = (function () {
     function Modifier(name) {
