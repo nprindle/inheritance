@@ -1,5 +1,6 @@
 /// <reference path="AbstractEffect.ts" />
 /// <reference path="Cost.ts" />
+/// <reference path="Strings.ts" />
 
 enum ModifierTypes {
   CostMult = 'Cost Mult',
@@ -56,6 +57,24 @@ class Modifier {
     for (let i = 0; i < this.effects.length; i++) {
       t.effects.push(this.effects[i].clone());
     }
+  }
+
+  describe(): string {
+    let acc = [];
+    if (this.costMultiplier !== 1) {
+      acc.push(`cost x${this.costMultiplier}`);
+    }
+    if (this.multiplierAdd > 0) {
+      acc.push(`multiplier +${this.multiplierAdd}`);
+    }
+    if (this.costAdd.magnitude() > 0) {
+      acc.push(this.costAdd.addString());
+    }
+    if (this.effects.length > 0) {
+      let effectStrings = this.effects.map(x => x.toString());
+      acc.push(`Add effect(s): ${effectStrings.map(x => Strings.capitalize(x)).join(' ')}`);
+    }
+    return Strings.conjoin(acc);
   }
 
 }

@@ -15,6 +15,10 @@ class Cost {
     }
   }
 
+  magnitude(): number {
+    return this.energyCost + this.healthCost;
+  }
+
   addTuple(cost: [number, CostTypes]): void {
     switch (cost[1]) {
       case CostTypes.Health:
@@ -33,6 +37,17 @@ class Cost {
     }
     if (this.healthCost > 0) {
       acc.push(`${this.healthCost} Health`);
+    }
+    return acc.join(', ');
+  }
+
+  addString(): string {
+    let acc: string[] = [];
+    if (this.energyCost > 0) {
+      acc.push(`+${this.energyCost} Energy Cost`);
+    }
+    if (this.healthCost > 0) {
+      acc.push(`+${this.healthCost} Health Cost`);
     }
     return acc.join(', ');
   }

@@ -237,6 +237,9 @@ var Cost = (function () {
             this.addTuple(costs[i]);
         }
     }
+    Cost.prototype.magnitude = function () {
+        return this.energyCost + this.healthCost;
+    };
     Cost.prototype.addTuple = function (cost) {
         switch (cost[1]) {
             case CostTypes.Health:
@@ -254,6 +257,16 @@ var Cost = (function () {
         }
         if (this.healthCost > 0) {
             acc.push(this.healthCost + " Health");
+        }
+        return acc.join(', ');
+    };
+    Cost.prototype.addString = function () {
+        var acc = [];
+        if (this.energyCost > 0) {
+            acc.push("+" + this.energyCost + " Energy Cost");
+        }
+        if (this.healthCost > 0) {
+            acc.push("+" + this.healthCost + " Health Cost");
         }
         return acc.join(', ');
     };
@@ -277,6 +290,9 @@ var Strings = (function () {
     }
     Strings.capitalize = function (str) {
         return str.charAt(0).toUpperCase() + str.substring(1);
+    };
+    Strings.conjoin = function (strs) {
+        return strs.map(function (x) { return Strings.capitalize(x) + "."; }).join(' ');
     };
     return Strings;
 }());
@@ -581,6 +597,23 @@ var Modifier = (function () {
             t.effects.push(this.effects[i].clone());
         }
     };
+    Modifier.prototype.describe = function () {
+        var acc = [];
+        if (this.costMultiplier !== 1) {
+            acc.push("cost x" + this.costMultiplier);
+        }
+        if (this.multiplierAdd > 0) {
+            acc.push("multiplier +" + this.multiplierAdd);
+        }
+        if (this.costAdd.magnitude() > 0) {
+            acc.push(this.costAdd.addString());
+        }
+        if (this.effects.length > 0) {
+            var effectStrings = this.effects.map(function (x) { return x.toString(); });
+            acc.push("Add effect(s): " + effectStrings.map(function (x) { return Strings.capitalize(x); }).join(' '));
+        }
+        return Strings.conjoin(acc);
+    };
     return Modifier;
 }());
 var ItemPool = (function () {
@@ -653,4 +686,5 @@ window.onload = function () {
 };
 if (window.innerHeight === 0) {
     window.console.log('tools', tools);
+    window.console.log('modifiers', modifiers);
 }

@@ -55,4 +55,5 @@ window.onload = function() {
 
 if (window.innerHeight === 0) {
   window.console.log('tools', tools);
+  window.console.log('modifiers', modifiers);
 }
