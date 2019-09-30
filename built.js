@@ -105,12 +105,15 @@ var UI = (function () {
             div.appendChild(UI.makeButton('Use', function (e) {
                 c.useTool(i, target);
                 UI.redraw();
-            }, !c.canAfford(t.cost) || !isTurn || t.usesLeft <= 0, 'use'));
+            }, !t.usableBy(c) || !isTurn, 'use'));
         }
         return div;
     };
     UI.renderOfferTool = function (t, m) {
         var div = UI.renderTool(t);
+        if (t.usesPerTurn < Infinity) {
+            div.appendChild(UI.makeTextParagraph("usable " + t.usesPerTurn + " time(s) per turn"));
+        }
         div.appendChild(UI.makeButton("Apply " + m.name, function (e) {
             m.apply(t);
             moveOn();
@@ -346,8 +349,11 @@ var Tool = (function () {
         enumerable: true,
         configurable: true
     });
+    Tool.prototype.usableBy = function (user) {
+        return user.canAfford(this.cost) && this.usesLeft > 0;
+    };
     Tool.prototype.use = function (user, target) {
-        if (!user.canAfford(this.cost) || this.usesLeft <= 0) {
+        if (!this.usableBy(user)) {
             return;
         }
         user.pay(this.cost);
@@ -620,7 +626,6 @@ var Modifier = (function () {
             var effectStrings = this.effects.map(function (x) { return x.toString(); });
             acc.push("Add effect(s): " + effectStrings.map(function (x) { return Strings.capitalize(x); }).join(' '));
         }
-        console.log(acc);
         return Strings.conjoin(acc);
     };
     return Modifier;

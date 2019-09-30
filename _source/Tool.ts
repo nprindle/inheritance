@@ -55,8 +55,12 @@ class Tool {
     return `${this.modifiers.join(' ')} ${this._name}${multString}`;
   }
 
+  usableBy(user: Combatant): boolean {
+    return user.canAfford(this.cost) && this.usesLeft > 0;
+  }
+
   use(user: Combatant, target: Combatant): void {
-    if (!user.canAfford(this.cost) || this.usesLeft <= 0) {
+    if (!this.usableBy(user)) {
       return;
     }
     user.pay(this.cost);

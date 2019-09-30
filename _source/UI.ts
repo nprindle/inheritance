@@ -84,13 +84,16 @@ class UI {
       div.appendChild(UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
-      }, !c.canAfford(t.cost) || !isTurn || t.usesLeft <= 0, 'use'));
+      }, !t.usableBy(c) || !isTurn, 'use'));
     }
     return div;
   }
 
   static renderOfferTool(t: Tool, m: Modifier) {
     const div: HTMLElement = UI.renderTool(t);
+    if (t.usesPerTurn < Infinity) {
+      div.appendChild(UI.makeTextParagraph(`usable ${t.usesPerTurn} time(s) per turn`));
+    }
     div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
       m.apply(t);
       moveOn();
