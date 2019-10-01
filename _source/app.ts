@@ -6,6 +6,7 @@
 /// <reference path="Modifier.ts" />
 /// <reference path="ItemPool.ts" />
 /// <reference path="tools.ts" />
+/// <reference path="map/Floor.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
 
@@ -53,7 +54,10 @@ function moveOn(): void {
 }
 
 window.onload = function() {
-  setUpFight(0);
+  //setUpFight(0);
+  var newFloor = new Floor(5, 5, 10, 15);
+  UI.setRedrawFunction(function() {newFloor.redraw()});
+  UI.redraw();
 }
 
 if (window.innerHeight === 0) {

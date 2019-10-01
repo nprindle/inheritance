@@ -2,10 +2,15 @@ class UI {
 
   static redrawFunction: Function;
 
-  static makeDiv(c?: string, id?: string) {
+  static makeDiv(c?: string, cList? : string[], id?: string) {
     const div: HTMLElement = document.createElement('div');
     if (c) {
       div.classList.add(c);
+    }
+    if (cList) {
+      for (var i = 0; i < cList.length; i++) {
+        div.classList.add(cList[i]);
+      }
     }
     if (id) {
       div.id = id;
