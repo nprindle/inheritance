@@ -59,3 +59,18 @@ button:disabled {
   top: 16px;
   right: 16px;
 }
+
+.fakeclick {
+  animation-duration: 0.5s;
+  animation-name: fakeclick;
+}
+
+@keyframes fakeclick {
+  from {
+    box-shadow: 0px 0px 1px #000;
+  }
+
+  to {
+    box-shadow: 0px 0px 20px #FFF;
+  }
+}

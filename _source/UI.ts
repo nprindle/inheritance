@@ -42,6 +42,14 @@ class UI {
     return b;
   }
 
+  static fakeClick(elem: HTMLElement): void {
+    elem.classList.remove('fakeclick');
+    elem.classList.add('fakeclick');
+    window.setTimeout(function() {
+      elem.classList.remove('fakeclick');
+    }, 1000);
+  }
+
   static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean): HTMLElement {
     let which;
     if (c instanceof Player) {
