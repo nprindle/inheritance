@@ -36,18 +36,20 @@ class UI {
     if (id) {
       b.id = id;
     }
-    b.addEventListener('click', function (this: HTMLElement, ev: MouseEvent) {
+    b.onclick = function (ev: MouseEvent) {
+      ev.preventDefault;
       func.call(this, ev);
-    });
+    };
     return b;
   }
 
   static fakeClick(elem: HTMLElement): void {
+    //TODO: structure this more reasonably
     elem.classList.remove('fakeclick');
     elem.classList.add('fakeclick');
     window.setTimeout(function() {
-      elem.classList.remove('fakeclick');
-    }, 1000);
+      elem.onclick(new MouseEvent('click'));
+    }, 500);
   }
 
   static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean): HTMLElement {
