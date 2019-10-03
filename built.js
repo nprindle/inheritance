@@ -59,12 +59,21 @@ var UI = (function () {
         if (id) {
             b.id = id;
         }
-        b.addEventListener('click', function (ev) {
+        b.onclick = function (ev) {
+            ev.preventDefault;
             func.call(this, ev);
-        });
+        };
         return b;
     };
-    UI.renderCombatant = function (c, target, isTurn) {
+    UI.fakeClick = function (elem) {
+        elem.classList.remove('fakeclick');
+        elem.classList.add('fakeclick');
+        window.setTimeout(function () {
+            elem.onclick(new MouseEvent('click'));
+            elem.classList.remove('fakeclick');
+        }, 500);
+    };
+    UI.renderCombatant = function (c, target, isTurn, buttonArr) {
         var which;
         if (c instanceof Player) {
             which = 'player';
@@ -79,7 +88,7 @@ var UI = (function () {
         var toolDiv = document.createElement('div');
         toolDiv.classList.add('tools');
         for (var i = 0; i < c.tools.length; i++) {
-            var currentDiv = UI.renderCombatTool(c.tools[i], c, i, target, isTurn);
+            var currentDiv = UI.renderCombatTool(c.tools[i], c, i, target, isTurn, buttonArr);
             currentDiv.classList.add("tool_" + i);
             toolDiv.appendChild(currentDiv);
         }
@@ -96,16 +105,20 @@ var UI = (function () {
         }
         return div;
     };
-    UI.renderCombatTool = function (t, c, i, target, isTurn) {
+    UI.renderCombatTool = function (t, c, i, target, isTurn, buttonArr) {
         var div = UI.renderTool(t);
         if (t.usesPerTurn < Infinity) {
             div.appendChild(UI.makeTextParagraph("(" + t.usesLeft + " use(s) left this turn)"));
         }
         if (p && i !== undefined) {
-            div.appendChild(UI.makeButton('Use', function (e) {
+            var b = UI.makeButton('Use', function (e) {
                 c.useTool(i, target);
                 UI.redraw();
-            }, !t.usableBy(c) || !isTurn, 'use'));
+            }, !t.usableBy(c) || !isTurn, 'use');
+            div.appendChild(b);
+            if (buttonArr !== undefined) {
+                buttonArr.push(b);
+            }
         }
         return div;
     };
@@ -433,6 +446,15 @@ var Combatant = (function () {
         this.energy -= cost.energyCost;
     };
     ;
+    Combatant.prototype.validMoves = function () {
+        var result = [];
+        for (var i = 0; i < this.tools.length; i++) {
+            if (this.tools[i].usableBy(this)) {
+                result.push(i);
+            }
+        }
+        return result;
+    };
     Combatant.prototype.useTool = function (index, target) {
         if (index < 0 || index > this.tools.length) {
             return;
@@ -496,6 +518,14 @@ var HealingEffect = (function (_super) {
     };
     return HealingEffect;
 }(AbstractEffect));
+var Random = (function () {
+    function Random() {
+    }
+    Random.fromArray = function (arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    };
+    return Random;
+}());
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
     function Enemy(name, health, energy) {
@@ -505,6 +535,13 @@ var Enemy = (function (_super) {
         }
         return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
     }
+    Enemy.prototype.think = function (target) {
+        var moves = this.validMoves();
+        if (moves.length === 0) {
+            return -1;
+        }
+        return Random.fromArray(moves);
+    };
     return Enemy;
 }(Combatant));
 var Fight = (function () {
@@ -514,6 +551,7 @@ var Fight = (function () {
         this.enemy = e;
         e.refresh();
         this.playersTurn = true;
+        this.enemyButtons = [];
         var closure = this;
         UI.setRedrawFunction(function () { closure.redraw(); });
         this.player.setDeathFunc(function () {
@@ -529,11 +567,29 @@ var Fight = (function () {
         this.player.refresh();
         this.enemy.refresh();
         console.log('turn ended :)');
+        this.enemyButtons = [];
         UI.redraw();
+        if (!this.playersTurn) {
+            this.makeEnemyMove();
+        }
+    };
+    Fight.prototype.makeEnemyMove = function () {
+        var move = this.enemy.think(this.player);
+        if (move === -1) {
+            UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
+            return;
+        }
+        else {
+            UI.fakeClick(this.enemyButtons[move]);
+            var closure_1 = this;
+            window.setTimeout(function () {
+                closure_1.makeEnemyMove();
+            }, 750);
+        }
     };
     Fight.prototype.endTurnButton = function () {
         var closure = this;
-        return UI.makeButton('End Turn', function () { closure.endTurn(); }, false, 'endturn');
+        return UI.makeButton('End Turn', function () { closure.endTurn(); }, !this.playersTurn, 'endturn');
     };
     Fight.prototype.draw = function () {
         this.div = UI.makeDiv('arena');
@@ -543,8 +599,10 @@ var Fight = (function () {
     Fight.prototype.redraw = function () {
         this.div.innerHTML = '';
         this.div.appendChild(UI.renderCombatant(this.player, this.enemy, this.playersTurn));
-        this.div.appendChild(UI.renderCombatant(this.enemy, this.player, !this.playersTurn));
-        this.div.appendChild(this.endTurnButton());
+        this.div.appendChild(UI.renderCombatant(this.enemy, this.player, false, this.enemyButtons));
+        var etb = this.endTurnButton();
+        this.div.appendChild(etb);
+        this.enemyButtons.push(etb);
     };
     Fight.prototype.end = function () {
         document.body.removeChild(this.div);

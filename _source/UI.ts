@@ -49,10 +49,11 @@ class UI {
     elem.classList.add('fakeclick');
     window.setTimeout(function() {
       elem.onclick(new MouseEvent('click'));
+      elem.classList.remove('fakeclick');
     }, 500);
   }
 
-  static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean): HTMLElement {
+  static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean, buttonArr?: HTMLElement[]): HTMLElement {
     let which;
     if (c instanceof Player) {
       which = 'player';
@@ -66,7 +67,7 @@ class UI {
     const toolDiv: HTMLElement = document.createElement('div');
     toolDiv.classList.add('tools');
     for (let i = 0; i < c.tools.length; i++) {
-      let currentDiv: HTMLElement = UI.renderCombatTool(c.tools[i], c, i, target, isTurn);
+      let currentDiv: HTMLElement = UI.renderCombatTool(c.tools[i], c, i, target, isTurn, buttonArr);
       currentDiv.classList.add(`tool_${i}`);
       toolDiv.appendChild(currentDiv);
     }
@@ -85,16 +86,20 @@ class UI {
     return div;
   }
 
-  static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean) {
+  static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean, buttonArr?: HTMLElement[]) {
     const div: HTMLElement = UI.renderTool(t);
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
     }
     if (p && i !== undefined) {
-      div.appendChild(UI.makeButton('Use', function(e: MouseEvent) {
+      let b = UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
-      }, !t.usableBy(c) || !isTurn, 'use'));
+      }, !t.usableBy(c) || !isTurn, 'use');
+      div.appendChild(b);
+      if (buttonArr !== undefined){
+        buttonArr.push(b);
+      }
     }
     return div;
   }

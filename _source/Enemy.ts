@@ -9,6 +9,9 @@ class Enemy extends Combatant {
 
   think(target: Combatant): number {
     let moves = this.validMoves();
+    if (moves.length === 0) {
+      return -1;
+    }
     return Random.fromArray(moves);
   }
 
