@@ -25,6 +25,18 @@ class UI {
     return p;
   }
 
+  static makeHeader(str: string, c?: string, id?: string, level: number = 1): HTMLElement {
+    const h: HTMLElement = document.createElement(`h${level}`);
+    h.innerText = str;
+    if (c) {
+      h.classList.add(c);
+    }
+    if (id) {
+      h.id = id;
+    }
+    return h;
+  }
+
   static makeButton(str: string, func: Function, disabled: boolean = false, c?: string, id?: string): HTMLButtonElement {
     const b: HTMLButtonElement = document.createElement('button');
     b.type = 'button';
@@ -131,6 +143,15 @@ class UI {
       div.appendChild(UI.makeButton("Can't Refuse!", function() {
         moveOn();
       }, true));
+    }
+    return div;
+  }
+
+  static renderTitleScreen(options: [string, Function][]) {
+    const div: HTMLElement = UI.makeDiv('titlescreen');
+    div.appendChild(UI.makeHeader('The Prototype Inheritance', 'titletext'));
+    for (let i = 0; i < options.length; i++) {
+      div.appendChild(UI.makeButton(options[i][0], options[i][1]));
     }
     return div;
   }

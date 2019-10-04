@@ -40,6 +40,18 @@ var UI = (function () {
         }
         return p;
     };
+    UI.makeHeader = function (str, c, id, level) {
+        if (level === void 0) { level = 1; }
+        var h = document.createElement("h" + level);
+        h.innerText = str;
+        if (c) {
+            h.classList.add(c);
+        }
+        if (id) {
+            h.id = id;
+        }
+        return h;
+    };
     UI.makeButton = function (str, func, disabled, c, id) {
         if (disabled === void 0) { disabled = false; }
         var b = document.createElement('button');
@@ -143,6 +155,14 @@ var UI = (function () {
             div.appendChild(UI.makeButton("Can't Refuse!", function () {
                 moveOn();
             }, true));
+        }
+        return div;
+    };
+    UI.renderTitleScreen = function (options) {
+        var div = UI.makeDiv('titlescreen');
+        div.appendChild(UI.makeHeader('The Prototype Inheritance', 'titletext'));
+        for (var i = 0; i < options.length; i++) {
+            div.appendChild(UI.makeButton(options[i][0], options[i][1]));
         }
         return div;
     };
@@ -727,6 +747,7 @@ p.tools = [
     tools.get('singleton')
 ];
 function setUpFight(i) {
+    document.body.innerHTML = '';
     var e = new Enemy('Goldfish', 10 + i * 5, 10);
     e.tools = [
         new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
@@ -754,7 +775,9 @@ function moveOn() {
     }
 }
 window.onload = function () {
-    setUpFight(0);
+    document.body.appendChild(UI.renderTitleScreen([
+        ['New Game', function () { setUpFight(0); }]
+    ]));
 };
 if (window.innerHeight === 0) {
     window.console.log('tools', tools);

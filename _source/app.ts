@@ -19,6 +19,7 @@ p.tools = [
 ];
 
 function setUpFight(i: number): void {
+  document.body.innerHTML = '';
   const e: Enemy = new Enemy('Goldfish', 10 + i * 5, 10);
   e.tools = [
     new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
@@ -50,7 +51,11 @@ function moveOn(): void {
 }
 
 window.onload = function() {
-  setUpFight(0);
+  document.body.appendChild(
+    UI.renderTitleScreen([
+      ['New Game', function() {setUpFight(0)}]
+    ])
+  );
 }
 
 if (window.innerHeight === 0) {

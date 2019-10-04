@@ -75,6 +75,12 @@ button:disabled {
   }
 }
 
+.titlescreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .titletext {
   background: url(assets/titletexture3.png) repeat;
   background-clip: text;
