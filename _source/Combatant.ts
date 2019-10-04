@@ -19,6 +19,8 @@ abstract class Combatant {
     this.deathFunc = function() {};
   };
 
+  abstract clone(): Combatant;
+
   status(): string {
     return `${this.name}: ${this.health} / ${this.maxHealth}`;
   };

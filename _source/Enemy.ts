@@ -15,4 +15,8 @@ class Enemy extends Combatant {
     return Random.fromArray(moves);
   }
 
+  clone(): Enemy {
+    return new Enemy(this.name, this.health, this.energy, ...this.tools.map(x => x.clone()));
+  }
+
 }

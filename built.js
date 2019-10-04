@@ -11,13 +11,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 function appendText(text, node) {
     if (node === void 0) { node = document.body; }
     var textnode = document.createTextNode(text);
@@ -211,7 +204,7 @@ var CombinationEffect = (function (_super) {
         return acc.join(' ');
     };
     CombinationEffect.prototype.clone = function () {
-        return new (CombinationEffect.bind.apply(CombinationEffect, __spreadArrays([void 0], this.effects.map(function (x) { return x.clone(); }))))();
+        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
     };
     return CombinationEffect;
 }(AbstractEffect));
@@ -389,7 +382,7 @@ var Tool = (function () {
     };
     Tool.prototype.clone = function () {
         var effectsClones = this.effects.map(function (x) { return x.clone(); });
-        var t = new (Tool.bind.apply(Tool, __spreadArrays([void 0, this.name, this.cost.clone()], effectsClones)))();
+        var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
         t.usesPerTurn = this.usesPerTurn;
         t.multiplier = this.multiplier;
         t.modifiers = this.modifiers;
@@ -478,8 +471,11 @@ var Player = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
+    Player.prototype.clone = function () {
+        return new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+    };
     return Player;
 }(Combatant));
 var DamageEffect = (function (_super) {
@@ -533,7 +529,7 @@ var Enemy = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
     Enemy.prototype.think = function (target) {
         var moves = this.validMoves();
@@ -541,6 +537,9 @@ var Enemy = (function (_super) {
             return -1;
         }
         return Random.fromArray(moves);
+    };
+    Enemy.prototype.clone = function () {
+        return new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
     };
     return Enemy;
 }(Combatant));
