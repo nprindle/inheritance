@@ -8,6 +8,8 @@ abstract class AbstractEffect {
 
   abstract toString(): string;
 
+  abstract clone(): AbstractEffect;
+
 }
 
 class NothingEffect extends AbstractEffect { //does nothing
@@ -17,6 +19,10 @@ class NothingEffect extends AbstractEffect { //does nothing
 
   toString(): string {
     return 'do nothing';
+  }
+
+  clone(): NothingEffect {
+    return new NothingEffect();
   }
 
 }
@@ -44,6 +50,10 @@ class CombinationEffect extends AbstractEffect { //combine multiple effects
     return acc.join(' ');
   }
 
+  clone(): CombinationEffect {
+    return new CombinationEffect(...this.effects.map(x => x.clone()));
+  }
+
 }
 
 class RepeatingEffect extends AbstractEffect {
@@ -65,6 +75,10 @@ class RepeatingEffect extends AbstractEffect {
 
   toString(): string {
     return `${this.next.toString()} ${this.times} times`;
+  }
+
+  clone(): RepeatingEffect {
+    return new RepeatingEffect(this.next.clone(), this.times);
   }
 
 }

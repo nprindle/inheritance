@@ -36,13 +36,24 @@ class UI {
     if (id) {
       b.id = id;
     }
-    b.addEventListener('click', function (this: HTMLElement, ev: MouseEvent) {
+    b.onclick = function (ev: MouseEvent) {
+      ev.preventDefault;
       func.call(this, ev);
-    });
+    };
     return b;
   }
 
-  static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean): HTMLElement {
+  static fakeClick(elem: HTMLElement): void {
+    //TODO: structure this more reasonably
+    elem.classList.remove('fakeclick');
+    elem.classList.add('fakeclick');
+    window.setTimeout(function() {
+      elem.onclick(new MouseEvent('click'));
+      elem.classList.remove('fakeclick');
+    }, 500);
+  }
+
+  static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean, buttonArr?: HTMLElement[]): HTMLElement {
     let which;
     if (c instanceof Player) {
       which = 'player';
@@ -56,7 +67,7 @@ class UI {
     const toolDiv: HTMLElement = document.createElement('div');
     toolDiv.classList.add('tools');
     for (let i = 0; i < c.tools.length; i++) {
-      let currentDiv: HTMLElement = UI.renderCombatTool(c.tools[i], c, i, target, isTurn);
+      let currentDiv: HTMLElement = UI.renderCombatTool(c.tools[i], c, i, target, isTurn, buttonArr);
       currentDiv.classList.add(`tool_${i}`);
       toolDiv.appendChild(currentDiv);
     }
@@ -75,22 +86,29 @@ class UI {
     return div;
   }
 
-  static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean) {
+  static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean, buttonArr?: HTMLElement[]) {
     const div: HTMLElement = UI.renderTool(t);
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
     }
     if (p && i !== undefined) {
-      div.appendChild(UI.makeButton('Use', function(e: MouseEvent) {
+      let b = UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
-      }, !c.canAfford(t.cost) || !isTurn || t.usesLeft <= 0, 'use'));
+      }, !t.usableBy(c) || !isTurn, 'use');
+      div.appendChild(b);
+      if (buttonArr !== undefined){
+        buttonArr.push(b);
+      }
     }
     return div;
   }
 
   static renderOfferTool(t: Tool, m: Modifier) {
     const div: HTMLElement = UI.renderTool(t);
+    if (t.usesPerTurn < Infinity) {
+      div.appendChild(UI.makeTextParagraph(`usable ${t.usesPerTurn} time(s) per turn`));
+    }
     div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
       m.apply(t);
       moveOn();
@@ -101,7 +119,7 @@ class UI {
   static renderModifier(m: Modifier, p: Player, refusable: boolean = true) {
     const div: HTMLElement = UI.makeDiv('modifier');
     div.appendChild(UI.makeTextParagraph(m.name, 'name'));
-    div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
+    div.appendChild(UI.makeTextParagraph(m.describe(), 'desc'));
     for (let i = 0; i < p.tools.length; i++) {
       div.appendChild(UI.renderOfferTool(p.tools[i], m));
     }

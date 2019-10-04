@@ -16,4 +16,8 @@ class DamageEffect extends AbstractEffect {
     return `do ${this.damage} damage`;
   }
 
+  clone(): DamageEffect {
+    return new DamageEffect(this.damage);
+  }
+
 }
