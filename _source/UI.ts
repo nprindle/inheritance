@@ -154,9 +154,11 @@ class UI {
   static renderTitleScreen(options: [string, Function][]): HTMLElement {
     const div: HTMLElement = UI.makeDiv('titlescreen');
     div.appendChild(UI.renderMainTitle());
+    const buttons: HTMLElement = UI.makeDiv('buttons');
     for (let i = 0; i < options.length; i++) {
-      div.appendChild(UI.makeButton(options[i][0], options[i][1]));
+      buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
     }
+    div.appendChild(buttons);
     return div;
   }
 

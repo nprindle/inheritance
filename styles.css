@@ -75,10 +75,31 @@ button:disabled {
   }
 }
 
+/*TODO: how do we distribute the buttons sensibly*/
+
 .titlescreen {
   display: flex;
   flex-direction: column;
   align-items: center;
+  align-content: center;
+  justify-content: space-between;
+  margin: 0;
+}
+
+.titlescreen > .buttons {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.titlescreen button {
+  font-size: 24px;
+  padding: 5px;
+  border-width: 2px;
+  display: block;
+  margin: 5px;
 }
 
 .titletext {
