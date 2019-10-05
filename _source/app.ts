@@ -7,6 +7,7 @@
 /// <reference path="ItemPool.ts" />
 /// <reference path="tools.ts" />
 /// <reference path="modifiers.ts" />
+/// <reference path="CreditsEntry.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
 
@@ -50,10 +51,24 @@ function moveOn(): void {
   }
 }
 
+function showCredits(): void {
+  document.body.innerHTML = '';
+  document.body.appendChild(
+    UI.renderCredits([
+      new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+      new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+      new CreditsEntry('Grace Rarer', 'Programming'),
+      new CreditsEntry('Mitchell Philipp', 'Programming'),
+      new CreditsEntry('Seong Ryoo', 'Art'),
+    ])
+  );
+}
+
 window.onload = function() {
   document.body.appendChild(
     UI.renderTitleScreen([
-      ['New Game', function() {setUpFight(0)}]
+      ['New Game', function() {setUpFight(0)}],
+      ['Credits', function() {showCredits()}]
     ])
   );
 }

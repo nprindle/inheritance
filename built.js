@@ -158,12 +158,29 @@ var UI = (function () {
         }
         return div;
     };
+    UI.renderMainTitle = function () {
+        return UI.makeHeader('The Prototype Inheritance', 'titletext');
+    };
     UI.renderTitleScreen = function (options) {
         var div = UI.makeDiv('titlescreen');
-        div.appendChild(UI.makeHeader('The Prototype Inheritance', 'titletext'));
+        div.appendChild(UI.renderMainTitle());
         for (var i = 0; i < options.length; i++) {
             div.appendChild(UI.makeButton(options[i][0], options[i][1]));
         }
+        return div;
+    };
+    UI.renderCreditsEntry = function (entry) {
+        var div = UI.makeDiv('entry');
+        div.appendChild(UI.makeHeader(entry.name, 'name'));
+        div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+        return div;
+    };
+    UI.renderCredits = function (credits) {
+        var div = UI.makeDiv('credits');
+        div.appendChild(UI.renderMainTitle());
+        credits.map(function (x) { return UI.renderCreditsEntry(x); }).forEach(function (val) {
+            div.appendChild(val);
+        });
         return div;
     };
     UI.setRedrawFunction = function (f) {
@@ -739,6 +756,17 @@ tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new Dama
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
+var CreditsEntry = (function () {
+    function CreditsEntry(name) {
+        var roles = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            roles[_i - 1] = arguments[_i];
+        }
+        this.name = name;
+        this.roles = roles;
+    }
+    return CreditsEntry;
+}());
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
@@ -774,9 +802,20 @@ function moveOn() {
             break;
     }
 }
+function showCredits() {
+    document.body.innerHTML = '';
+    document.body.appendChild(UI.renderCredits([
+        new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+        new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+        new CreditsEntry('Grace Rarer', 'Programming'),
+        new CreditsEntry('Mitchell Philipp', 'Programming'),
+        new CreditsEntry('Seong Ryoo', 'Art'),
+    ]));
+}
 window.onload = function () {
     document.body.appendChild(UI.renderTitleScreen([
-        ['New Game', function () { setUpFight(0); }]
+        ['New Game', function () { setUpFight(0); }],
+        ['Credits', function () { showCredits(); }]
     ]));
 };
 if (window.innerHeight === 0) {

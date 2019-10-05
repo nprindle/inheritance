@@ -87,6 +87,7 @@ button:disabled {
   color: transparent;
   font-size: 96px;
   animation: bgscroll infinite linear 8s;
+  text-align: center;
 }
 
 @keyframes bgscroll {
@@ -97,4 +98,14 @@ button:disabled {
   to {
     background-position: 0px -512px;
   }
+}
+
+.credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.entry {
+  text-align: center;
 }

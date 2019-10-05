@@ -147,12 +147,32 @@ class UI {
     return div;
   }
 
-  static renderTitleScreen(options: [string, Function][]) {
+  static renderMainTitle(): HTMLElement {
+    return UI.makeHeader('The Prototype Inheritance', 'titletext');
+  }
+
+  static renderTitleScreen(options: [string, Function][]): HTMLElement {
     const div: HTMLElement = UI.makeDiv('titlescreen');
-    div.appendChild(UI.makeHeader('The Prototype Inheritance', 'titletext'));
+    div.appendChild(UI.renderMainTitle());
     for (let i = 0; i < options.length; i++) {
       div.appendChild(UI.makeButton(options[i][0], options[i][1]));
     }
+    return div;
+  }
+
+  static renderCreditsEntry(entry: CreditsEntry): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('entry');
+    div.appendChild(UI.makeHeader(entry.name, 'name'));
+    div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+    return div;
+  }
+
+  static renderCredits(credits: CreditsEntry[]): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('credits');
+    div.appendChild(UI.renderMainTitle());
+    credits.map(x => UI.renderCreditsEntry(x)).forEach(val => {
+      div.appendChild(val);
+    });
     return div;
   }
 
