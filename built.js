@@ -11,6 +11,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 function appendText(text, node) {
     if (node === void 0) { node = document.body; }
     var textnode = document.createTextNode(text);
@@ -204,7 +211,7 @@ var CombinationEffect = (function (_super) {
         return acc.join(' ');
     };
     CombinationEffect.prototype.clone = function () {
-        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
+        return new (CombinationEffect.bind.apply(CombinationEffect, __spreadArrays([void 0], this.effects.map(function (x) { return x.clone(); }))))();
     };
     return CombinationEffect;
 }(AbstractEffect));
@@ -382,7 +389,7 @@ var Tool = (function () {
     };
     Tool.prototype.clone = function () {
         var effectsClones = this.effects.map(function (x) { return x.clone(); });
-        var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
+        var t = new (Tool.bind.apply(Tool, __spreadArrays([void 0, this.name, this.cost.clone()], effectsClones)))();
         t.usesPerTurn = this.usesPerTurn;
         t.multiplier = this.multiplier;
         t.modifiers = this.modifiers;
@@ -471,10 +478,10 @@ var Player = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, [name, health, energy].concat(tools)) || this;
+        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
     }
     Player.prototype.clone = function () {
-        return new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+        return new (Player.bind.apply(Player, __spreadArrays([void 0, this.name, this.health, this.energy], this.tools.map(function (x) { return x.clone(); }))))();
     };
     return Player;
 }(Combatant));
@@ -529,17 +536,21 @@ var Enemy = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, [name, health, energy].concat(tools)) || this;
+        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
     }
-    Enemy.prototype.think = function (target) {
-        var moves = this.validMoves();
-        if (moves.length === 0) {
-            return -1;
-        }
-        return Random.fromArray(moves);
-    };
     Enemy.prototype.clone = function () {
-        return new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+        var copy = new (Enemy.bind.apply(Enemy, __spreadArrays([void 0, this.name, this.health, this.energy], this.tools.map(function (x) { return x.clone(); }))))();
+        copy.utilityFunction = this.utilityFunction;
+        return copy;
+    };
+    Enemy.prototype.utilityFunction = function (simulatedBot, simulatedHuman) {
+        if (simulatedBot.health == 0) {
+            return Number.MIN_VALUE;
+        }
+        if (simulatedHuman.health == 0) {
+            return Number.MAX_VALUE;
+        }
+        return simulatedBot.health - simulatedHuman.health;
     };
     return Enemy;
 }(Combatant));
@@ -569,20 +580,22 @@ var Fight = (function () {
         this.enemyButtons = [];
         UI.redraw();
         if (!this.playersTurn) {
-            this.makeEnemyMove();
+            var enemyMoveSequence = AI.bestMoveSequence(this.enemy, this.player, 2000);
+            this.makeNextEnemyMove(enemyMoveSequence);
         }
     };
-    Fight.prototype.makeEnemyMove = function () {
-        var move = this.enemy.think(this.player);
-        if (move === -1) {
+    Fight.prototype.makeNextEnemyMove = function (moveSequence) {
+        if (moveSequence.length <= 0) {
             UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
             return;
         }
         else {
+            var move = moveSequence.shift();
+            console.log("Move: " + move);
             UI.fakeClick(this.enemyButtons[move]);
             var closure_1 = this;
             window.setTimeout(function () {
-                closure_1.makeEnemyMove();
+                closure_1.makeNextEnemyMove(moveSequence);
             }, 750);
         }
     };
@@ -760,3 +773,51 @@ if (window.innerHeight === 0) {
     window.console.log('tools', tools);
     window.console.log('modifiers', modifiers);
 }
+var AI = (function () {
+    function AI(aiCombatant, humanCombatant) {
+        this.botCopy = aiCombatant.clone();
+        this.humanCopy = humanCombatant.clone();
+        this.bestSequence = [];
+        this.bestSequenceScore = this.botCopy.utilityFunction(this.botCopy, this.humanCopy);
+    }
+    AI.prototype.search = function (iterations) {
+        var startTime = new Date();
+        for (var i = 0; i < iterations; i++) {
+            var movesList = [];
+            var dummyBot = this.botCopy.clone();
+            var dummyHuman = this.humanCopy.clone();
+            dummyBot.refresh();
+            dummyHuman.refresh();
+            while (true) {
+                var possibleMoves = dummyBot.validMoves();
+                if (dummyBot.health == 0) {
+                    break;
+                }
+                if (possibleMoves.length == 0) {
+                    break;
+                }
+                possibleMoves.push(-1);
+                var chosenMove = Random.fromArray(possibleMoves);
+                if (chosenMove == -1) {
+                    break;
+                }
+                dummyBot.useTool(chosenMove, dummyHuman);
+                movesList.push(chosenMove);
+            }
+            var consequence = dummyBot.utilityFunction(dummyBot, dummyHuman);
+            if (consequence > this.bestSequenceScore) {
+                this.bestSequenceScore = consequence;
+                this.bestSequence = movesList;
+            }
+        }
+        var finishTime = new Date();
+        var duration = finishTime.getTime() - startTime.getTime();
+        console.log("Sim time (milliseconds): " + duration);
+    };
+    AI.bestMoveSequence = function (aiCombatant, humanCombatant, simIterations) {
+        var sim = new AI(aiCombatant, humanCombatant);
+        sim.search(simIterations);
+        return sim.bestSequence;
+    };
+    return AI;
+}());
