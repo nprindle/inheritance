@@ -37,20 +37,22 @@ class Fight {
     this.enemyButtons = [];
     UI.redraw();
     if (!this.playersTurn) {
-      this.makeEnemyMove();
+      let enemyMoveSequence = AI.bestMoveSequence(this.enemy, this.player, 2000);
+      this.makeNextEnemyMove(enemyMoveSequence);
     }
   }
 
-  makeEnemyMove(): void {
-    let move = this.enemy.think(this.player);
-    if (move === -1) {
+  makeNextEnemyMove(moveSequence: number[]): void {
+    if(moveSequence.length <= 0) {
       UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
       return;
     } else {
+      let move = moveSequence.shift();
+      console.log("Move: " + move);
       UI.fakeClick(this.enemyButtons[move]);
       let closure = this;
       window.setTimeout(function() {
-        closure.makeEnemyMove();
+        closure.makeNextEnemyMove(moveSequence);
       }, 750);
     }
   }
