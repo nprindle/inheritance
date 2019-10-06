@@ -7,6 +7,7 @@
 /// <reference path="ItemPool.ts" />
 /// <reference path="tools.ts" />
 /// <reference path="modifiers.ts" />
+/// <reference path="CreditsEntry.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
 
@@ -19,6 +20,7 @@ p.tools = [
 ];
 
 function setUpFight(i: number): void {
+  document.body.innerHTML = '';
   const e: Enemy = new Enemy('Goldfish', 10 + i * 5, 10);
   e.tools = [
     new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
@@ -49,8 +51,26 @@ function moveOn(): void {
   }
 }
 
+function showCredits(): void {
+  document.body.innerHTML = '';
+  document.body.appendChild(
+    UI.renderCredits([
+      new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+      new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+      new CreditsEntry('Grace Rarer', 'Programming'),
+      new CreditsEntry('Mitchell Philipp', 'Programming'),
+      new CreditsEntry('Seong Ryoo', 'Art'),
+    ])
+  );
+}
+
 window.onload = function() {
-  setUpFight(0);
+  document.body.appendChild(
+    UI.renderTitleScreen([
+      ['New Game', function() {setUpFight(0)}],
+      ['Credits', function() {showCredits()}]
+    ])
+  );
 }
 
 if (window.innerHeight === 0) {

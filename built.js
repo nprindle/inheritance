@@ -11,13 +11,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 function appendText(text, node) {
     if (node === void 0) { node = document.body; }
     var textnode = document.createTextNode(text);
@@ -46,6 +39,18 @@ var UI = (function () {
             p.id = id;
         }
         return p;
+    };
+    UI.makeHeader = function (str, c, id, level) {
+        if (level === void 0) { level = 1; }
+        var h = document.createElement("h" + level);
+        h.innerText = str;
+        if (c) {
+            h.classList.add(c);
+        }
+        if (id) {
+            h.id = id;
+        }
+        return h;
     };
     UI.makeButton = function (str, func, disabled, c, id) {
         if (disabled === void 0) { disabled = false; }
@@ -153,6 +158,33 @@ var UI = (function () {
         }
         return div;
     };
+    UI.renderMainTitle = function () {
+        return UI.makeHeader('The Prototype Inheritance', 'titletext');
+    };
+    UI.renderTitleScreen = function (options) {
+        var div = UI.makeDiv('titlescreen');
+        div.appendChild(UI.renderMainTitle());
+        var buttons = UI.makeDiv('buttons');
+        for (var i = 0; i < options.length; i++) {
+            buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
+        }
+        div.appendChild(buttons);
+        return div;
+    };
+    UI.renderCreditsEntry = function (entry) {
+        var div = UI.makeDiv('entry');
+        div.appendChild(UI.makeHeader(entry.name, 'name'));
+        div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+        return div;
+    };
+    UI.renderCredits = function (credits) {
+        var div = UI.makeDiv('credits');
+        div.appendChild(UI.renderMainTitle());
+        credits.map(function (x) { return UI.renderCreditsEntry(x); }).forEach(function (val) {
+            div.appendChild(val);
+        });
+        return div;
+    };
     UI.setRedrawFunction = function (f) {
         UI.redrawFunction = f;
     };
@@ -211,7 +243,7 @@ var CombinationEffect = (function (_super) {
         return acc.join(' ');
     };
     CombinationEffect.prototype.clone = function () {
-        return new (CombinationEffect.bind.apply(CombinationEffect, __spreadArrays([void 0], this.effects.map(function (x) { return x.clone(); }))))();
+        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
     };
     return CombinationEffect;
 }(AbstractEffect));
@@ -389,7 +421,7 @@ var Tool = (function () {
     };
     Tool.prototype.clone = function () {
         var effectsClones = this.effects.map(function (x) { return x.clone(); });
-        var t = new (Tool.bind.apply(Tool, __spreadArrays([void 0, this.name, this.cost.clone()], effectsClones)))();
+        var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
         t.usesPerTurn = this.usesPerTurn;
         t.multiplier = this.multiplier;
         t.modifiers = this.modifiers;
@@ -478,10 +510,10 @@ var Player = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
     Player.prototype.clone = function () {
-        return new (Player.bind.apply(Player, __spreadArrays([void 0, this.name, this.health, this.energy], this.tools.map(function (x) { return x.clone(); }))))();
+        return new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
     };
     return Player;
 }(Combatant));
@@ -536,10 +568,10 @@ var Enemy = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
     Enemy.prototype.clone = function () {
-        var copy = new (Enemy.bind.apply(Enemy, __spreadArrays([void 0, this.name, this.health, this.energy], this.tools.map(function (x) { return x.clone(); }))))();
+        var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
         copy.utilityFunction = this.utilityFunction;
         return copy;
     };
@@ -732,6 +764,17 @@ tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new Dama
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
+var CreditsEntry = (function () {
+    function CreditsEntry(name) {
+        var roles = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            roles[_i - 1] = arguments[_i];
+        }
+        this.name = name;
+        this.roles = roles;
+    }
+    return CreditsEntry;
+}());
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
@@ -740,6 +783,7 @@ p.tools = [
     tools.get('singleton')
 ];
 function setUpFight(i) {
+    document.body.innerHTML = '';
     var e = new Enemy('Goldfish', 10 + i * 5, 10);
     e.tools = [
         new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
@@ -766,8 +810,21 @@ function moveOn() {
             break;
     }
 }
+function showCredits() {
+    document.body.innerHTML = '';
+    document.body.appendChild(UI.renderCredits([
+        new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+        new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+        new CreditsEntry('Grace Rarer', 'Programming'),
+        new CreditsEntry('Mitchell Philipp', 'Programming'),
+        new CreditsEntry('Seong Ryoo', 'Art'),
+    ]));
+}
 window.onload = function () {
-    setUpFight(0);
+    document.body.appendChild(UI.renderTitleScreen([
+        ['New Game', function () { setUpFight(0); }],
+        ['Credits', function () { showCredits(); }]
+    ]));
 };
 if (window.innerHeight === 0) {
     window.console.log('tools', tools);

@@ -25,6 +25,18 @@ class UI {
     return p;
   }
 
+  static makeHeader(str: string, c?: string, id?: string, level: number = 1): HTMLElement {
+    const h: HTMLElement = document.createElement(`h${level}`);
+    h.innerText = str;
+    if (c) {
+      h.classList.add(c);
+    }
+    if (id) {
+      h.id = id;
+    }
+    return h;
+  }
+
   static makeButton(str: string, func: Function, disabled: boolean = false, c?: string, id?: string): HTMLButtonElement {
     const b: HTMLButtonElement = document.createElement('button');
     b.type = 'button';
@@ -132,6 +144,37 @@ class UI {
         moveOn();
       }, true));
     }
+    return div;
+  }
+
+  static renderMainTitle(): HTMLElement {
+    return UI.makeHeader('The Prototype Inheritance', 'titletext');
+  }
+
+  static renderTitleScreen(options: [string, Function][]): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('titlescreen');
+    div.appendChild(UI.renderMainTitle());
+    const buttons: HTMLElement = UI.makeDiv('buttons');
+    for (let i = 0; i < options.length; i++) {
+      buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
+    }
+    div.appendChild(buttons);
+    return div;
+  }
+
+  static renderCreditsEntry(entry: CreditsEntry): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('entry');
+    div.appendChild(UI.makeHeader(entry.name, 'name'));
+    div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+    return div;
+  }
+
+  static renderCredits(credits: CreditsEntry[]): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('credits');
+    div.appendChild(UI.renderMainTitle());
+    credits.map(x => UI.renderCreditsEntry(x)).forEach(val => {
+      div.appendChild(val);
+    });
     return div;
   }
 
