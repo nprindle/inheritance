@@ -47,6 +47,7 @@ button {
   font-size: 16px;
   cursor: pointer;
   box-shadow: #000 2px 2px;
+  position: relative;
 }
 
 button:hover {
