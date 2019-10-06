@@ -177,12 +177,15 @@ var UI = (function () {
         div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
         return div;
     };
-    UI.renderCredits = function (credits) {
+    UI.renderCredits = function (credits, endfunc) {
         var div = UI.makeDiv('credits');
         div.appendChild(UI.renderMainTitle());
         credits.map(function (x) { return UI.renderCreditsEntry(x); }).forEach(function (val) {
             div.appendChild(val);
         });
+        if (endfunc) {
+            div.appendChild(UI.makeButton('Return to Title', endfunc));
+        }
         return div;
     };
     UI.setRedrawFunction = function (f) {
@@ -192,6 +195,14 @@ var UI = (function () {
         if (UI.redrawFunction) {
             UI.redrawFunction();
         }
+    };
+    UI.fillScreen = function () {
+        var elems = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            elems[_i] = arguments[_i];
+        }
+        document.body.innerHTML = '';
+        elems.forEach(function (elem) { return document.body.appendChild(elem); });
     };
     return UI;
 }());
@@ -775,6 +786,30 @@ var CreditsEntry = (function () {
     }
     return CreditsEntry;
 }());
+var Game = (function () {
+    function Game() {
+    }
+    Game.showTitle = function () {
+        UI.fillScreen(UI.renderTitleScreen([
+            ['New Game', function () { }],
+            ['Settings', function () { }],
+            ['Files', function () { }],
+            ['Credits', function () { return Game.showCredits(); }],
+        ]));
+    };
+    Game.newRun = function () {
+    };
+    Game.showCredits = function () {
+        UI.fillScreen(UI.renderCredits([
+            new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+            new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+            new CreditsEntry('Grace Rarer', 'Programming'),
+            new CreditsEntry('Mitchell Philipp', 'Programming'),
+            new CreditsEntry('Seong Ryoo', 'Art'),
+        ], function () { return Game.showTitle(); }));
+    };
+    return Game;
+}());
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
@@ -821,10 +856,7 @@ function showCredits() {
     ]));
 }
 window.onload = function () {
-    document.body.appendChild(UI.renderTitleScreen([
-        ['New Game', function () { setUpFight(0); }],
-        ['Credits', function () { showCredits(); }]
-    ]));
+    Game.showTitle();
 };
 if (window.innerHeight === 0) {
     window.console.log('tools', tools);

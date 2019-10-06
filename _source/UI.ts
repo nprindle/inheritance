@@ -169,12 +169,15 @@ class UI {
     return div;
   }
 
-  static renderCredits(credits: CreditsEntry[]): HTMLElement {
+  static renderCredits(credits: CreditsEntry[], endfunc?: Function): HTMLElement {
     const div: HTMLElement = UI.makeDiv('credits');
     div.appendChild(UI.renderMainTitle());
     credits.map(x => UI.renderCreditsEntry(x)).forEach(val => {
       div.appendChild(val);
     });
+    if (endfunc) {
+      div.appendChild(UI.makeButton('Return to Title', endfunc));
+    }
     return div;
   }
 
@@ -186,6 +189,11 @@ class UI {
     if (UI.redrawFunction) {
       UI.redrawFunction();
     }
+  }
+
+  static fillScreen(...elems: HTMLElement[]): void {
+    document.body.innerHTML = '';
+    elems.forEach(elem => document.body.appendChild(elem));
   }
 
 }

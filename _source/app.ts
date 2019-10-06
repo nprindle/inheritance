@@ -8,6 +8,7 @@
 /// <reference path="tools.ts" />
 /// <reference path="modifiers.ts" />
 /// <reference path="CreditsEntry.ts" />
+/// <reference path="Game.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
 
@@ -65,12 +66,7 @@ function showCredits(): void {
 }
 
 window.onload = function() {
-  document.body.appendChild(
-    UI.renderTitleScreen([
-      ['New Game', function() {setUpFight(0)}],
-      ['Credits', function() {showCredits()}]
-    ])
-  );
+  Game.showTitle();
 }
 
 if (window.innerHeight === 0) {

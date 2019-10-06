@@ -1,0 +1,30 @@
+class Game {
+
+    static showTitle(): void {
+        UI.fillScreen(
+            UI.renderTitleScreen([
+                ['New Game', () => {}],
+                ['Settings', () => {}], //TODO: settings
+                ['Files', () => {}], //TODO: files (what should we call these?)
+                ['Credits', () => Game.showCredits()],
+            ])
+        );
+    }
+
+    static newRun(): void {
+
+    }
+    
+    static showCredits(): void {
+        UI.fillScreen(
+            UI.renderCredits([
+                new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+                new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+                new CreditsEntry('Grace Rarer', 'Programming'),
+                new CreditsEntry('Mitchell Philipp', 'Programming'),
+                new CreditsEntry('Seong Ryoo', 'Art'),
+            ], () => Game.showTitle())
+        );
+    }
+
+}
