@@ -39,7 +39,7 @@ class ItemPool<T> {
 
   add(key: string, item: T, ...tags: string[]): void {
     this.items[key] = new ItemPoolEntry<T>(key, item, ...tags);
-    this.keys.push();
+    this.keys.push(key);
   }
 
   get(key: string): T {
@@ -62,3 +62,6 @@ class ItemPool<T> {
 
 const tools = new ItemPool<Tool>();
 const modifiers = new ItemPool<Modifier>();
+const characters = new ItemPool<Player>();
+
+characters.add('kid', new Player('The Kid', 10, 10));
