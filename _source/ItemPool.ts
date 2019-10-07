@@ -1,13 +1,13 @@
 /// <reference path="Tool.ts" />
 /// <reference path="Modifier.ts" />
 
-class ItemPoolEntry<T extends { clone: () => T }> {
+class ItemPoolEntry<T extends { clone: () => T }, E> {
 
   key: string;
   value: T;
-  tags: string[];
+  tags: E[];
 
-  constructor(key: string, value: T, ...tags: string[]) {
+  constructor(key: string, value: T, ...tags: E[]) {
     this.key = key;
     this.value = value;
     this.tags = tags;
@@ -17,13 +17,13 @@ class ItemPoolEntry<T extends { clone: () => T }> {
     return this.value.clone();
   }
 
-  hasTags(...tags: string[]) { //returns true if it has any of the tags
+  hasTags(...tags: E[]) { //returns true if it has any of the tags
     return this.tags.some(x => tags.indexOf(x) !== -1);
   }
 
 }
 
-class ItemPool<T extends { clone: () => T }> {
+class ItemPool<T extends { clone: () => T }, E> {
 
   items: Object;
   keys: string[];
@@ -33,8 +33,8 @@ class ItemPool<T extends { clone: () => T }> {
     this.keys = [];
   }
 
-  add(key: string, item: T, ...tags: string[]): void {
-    this.items[key] = new ItemPoolEntry<T>(key, item, ...tags);
+  add(key: string, item: T, ...tags: E[]): void {
+    this.items[key] = new ItemPoolEntry<T, E>(key, item, ...tags);
     this.keys.push(key);
   }
 
@@ -46,7 +46,7 @@ class ItemPool<T extends { clone: () => T }> {
   }
 
   getRandom(): T {
-    let key = this.keys[Math.floor(Math.random() * this.keys.length)];
+    let key = Random.fromArray(this.keys);
     return this.get(key);
   }
 
@@ -56,8 +56,8 @@ class ItemPool<T extends { clone: () => T }> {
 
 }
 
-const tools = new ItemPool<Tool>();
-const modifiers = new ItemPool<Modifier>();
-const characters = new ItemPool<Player>();
+const tools = new ItemPool<Tool, string>();
+const modifiers = new ItemPool<Modifier, string>();
+const characters = new ItemPool<Player, string>();
 
 characters.add('kid', new Player('The Kid', 10, 10));
