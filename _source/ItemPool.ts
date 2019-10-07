@@ -1,10 +1,10 @@
 /// <reference path="Tool.ts" />
 /// <reference path="Modifier.ts" />
 
-class ItemPoolEntry<T> {
+class ItemPoolEntry<T extends { clone: () => T }> {
 
   key: string;
-  value: any; //TODO: use better typing here
+  value: T;
   tags: string[];
 
   constructor(key: string, value: T, ...tags: string[]) {
@@ -14,20 +14,16 @@ class ItemPoolEntry<T> {
   }
 
   get(): T { //get(): T images. good for stock photo
-    if (this.value.clone) {
-      return this.value.clone();
-    } else {
-      return this.value;
-    }
+    return this.value.clone();
   }
 
   hasTags(...tags: string[]) { //returns true if it has any of the tags
-    return this.tags.filter(x => tags.indexOf(x) !== -1).length > 0;
+    return this.tags.some(x => tags.indexOf(x) !== -1);
   }
 
 }
 
-class ItemPool<T> {
+class ItemPool<T extends { clone: () => T }> {
 
   items: Object;
   keys: string[];
