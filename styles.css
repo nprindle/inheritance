@@ -96,7 +96,7 @@ button.endturn:active {
 
 /*TODO: how do we distribute the buttons sensibly*/
 
-.titlescreen {
+.titlescreen, .credits, .charselect {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -113,7 +113,7 @@ button.endturn:active {
   flex-wrap: wrap;
 }
 
-.titlescreen button, .credits button {
+.titlescreen button, .credits button, .charselect button {
   font-size: 24px;
   padding: 5px;
   border-width: 2px;
@@ -138,12 +138,6 @@ button.endturn:active {
   to {
     background-position: 0px -512px;
   }
-}
-
-.credits {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .entry {

@@ -3,7 +3,7 @@ class Game {
     static showTitle(): void {
         UI.fillScreen(
             UI.renderTitleScreen([
-                ['New Game', () => {}],
+                ['New Game', () => Game.showCharSelect()],
                 ['Settings', () => {}], //TODO: settings
                 ['Files', () => {}], //TODO: files (what should we call these?)
                 ['Credits', () => Game.showCredits()],
@@ -11,7 +11,14 @@ class Game {
         );
     }
 
-    static newRun(): void {
+    static showCharSelect(): void {
+        UI.fillScreen(
+            UI.renderCharacterSelect(Game.newRun, ...characters.getAll())
+        );
+        console.log(characters.getAll());
+    }
+
+    static newRun(character: Player): void {
 
     }
     

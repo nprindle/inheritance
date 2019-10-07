@@ -154,17 +154,21 @@ class UI {
   static renderTitleScreen(options: [string, Function][]): HTMLElement {
     const div: HTMLElement = UI.makeDiv('titlescreen');
     div.appendChild(UI.renderMainTitle());
+    div.appendChild(UI.renderOptions(options));
+    return div;
+  }
+
+  static renderOptions(options: [string, Function][]): HTMLElement {
     const buttons: HTMLElement = UI.makeDiv('buttons');
     for (let i = 0; i < options.length; i++) {
       buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
     }
-    div.appendChild(buttons);
-    return div;
+    return buttons;
   }
 
   static renderCreditsEntry(entry: CreditsEntry): HTMLElement {
     const div: HTMLElement = UI.makeDiv('entry');
-    div.appendChild(UI.makeHeader(entry.name, 'name'));
+    div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
     div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
     return div;
   }
@@ -178,6 +182,14 @@ class UI {
     if (endfunc) {
       div.appendChild(UI.makeButton('Return to Title', endfunc));
     }
+    return div;
+  }
+
+  static renderCharacterSelect(callback: Function, ...chars: Player[]): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('charselect');
+    div.appendChild(UI.makeHeader('Choose Your Character'));
+    const tuples: [string, Function][] = chars.map(char => <[string, Function]> [char.name, () => callback(char)]);
+    div.appendChild(UI.renderOptions(tuples));
     return div;
   }
 

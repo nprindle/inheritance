@@ -164,16 +164,19 @@ var UI = (function () {
     UI.renderTitleScreen = function (options) {
         var div = UI.makeDiv('titlescreen');
         div.appendChild(UI.renderMainTitle());
+        div.appendChild(UI.renderOptions(options));
+        return div;
+    };
+    UI.renderOptions = function (options) {
         var buttons = UI.makeDiv('buttons');
         for (var i = 0; i < options.length; i++) {
             buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
         }
-        div.appendChild(buttons);
-        return div;
+        return buttons;
     };
     UI.renderCreditsEntry = function (entry) {
         var div = UI.makeDiv('entry');
-        div.appendChild(UI.makeHeader(entry.name, 'name'));
+        div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
         div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
         return div;
     };
@@ -186,6 +189,17 @@ var UI = (function () {
         if (endfunc) {
             div.appendChild(UI.makeButton('Return to Title', endfunc));
         }
+        return div;
+    };
+    UI.renderCharacterSelect = function (callback) {
+        var chars = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            chars[_i - 1] = arguments[_i];
+        }
+        var div = UI.makeDiv('charselect');
+        div.appendChild(UI.makeHeader('Choose Your Character'));
+        var tuples = chars.map(function (char) { return [char.name, function () { return callback(char); }]; });
+        div.appendChild(UI.renderOptions(tuples));
         return div;
     };
     UI.setRedrawFunction = function (f) {
@@ -743,31 +757,66 @@ var Modifier = (function () {
     };
     return Modifier;
 }());
+var ItemPoolEntry = (function () {
+    function ItemPoolEntry(key, value) {
+        var tags = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            tags[_i - 2] = arguments[_i];
+        }
+        this.key = key;
+        this.value = value;
+        this.tags = tags;
+    }
+    ItemPoolEntry.prototype.get = function () {
+        if (this.value.clone) {
+            return this.value.clone();
+        }
+        else {
+            return this.value;
+        }
+    };
+    ItemPoolEntry.prototype.hasTags = function () {
+        var tags = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            tags[_i] = arguments[_i];
+        }
+        return this.tags.filter(function (x) { return tags.indexOf(x) !== -1; }).length > 0;
+    };
+    return ItemPoolEntry;
+}());
 var ItemPool = (function () {
     function ItemPool() {
         this.items = {};
         this.keys = [];
     }
     ItemPool.prototype.add = function (key, item) {
-        this.items[key] = item;
+        var tags = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            tags[_i - 2] = arguments[_i];
+        }
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item].concat(tags)))();
         this.keys.push(key);
     };
     ItemPool.prototype.get = function (key) {
-        if (this.items[key].clone) {
-            return this.items[key].clone();
+        if (!this.items[key]) {
+            return null;
         }
-        else {
-            return this.items[key];
-        }
+        return this.items[key].get();
     };
     ItemPool.prototype.getRandom = function () {
         var key = this.keys[Math.floor(Math.random() * this.keys.length)];
         return this.get(key);
     };
+    ItemPool.prototype.getAll = function () {
+        var _this = this;
+        return this.keys.map(function (x) { return _this.get(x); });
+    };
     return ItemPool;
 }());
 var tools = new ItemPool();
 var modifiers = new ItemPool();
+var characters = new ItemPool();
+characters.add('kid', new Player('The Kid', 10, 10));
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([1, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
@@ -791,13 +840,17 @@ var Game = (function () {
     }
     Game.showTitle = function () {
         UI.fillScreen(UI.renderTitleScreen([
-            ['New Game', function () { }],
+            ['New Game', function () { return Game.showCharSelect(); }],
             ['Settings', function () { }],
             ['Files', function () { }],
             ['Credits', function () { return Game.showCredits(); }],
         ]));
     };
-    Game.newRun = function () {
+    Game.showCharSelect = function () {
+        UI.fillScreen(UI.renderCharacterSelect.apply(UI, [Game.newRun].concat(characters.getAll())));
+        console.log(characters.getAll());
+    };
+    Game.newRun = function (character) {
     };
     Game.showCredits = function () {
         UI.fillScreen(UI.renderCredits([
