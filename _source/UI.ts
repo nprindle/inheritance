@@ -185,11 +185,11 @@ class UI {
     return div;
   }
 
-  static renderCharacterSelect(callback: Function, ...chars: Player[]): HTMLElement {
+  static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
     const div: HTMLElement = UI.makeDiv('charselect');
     div.appendChild(UI.makeHeader('Choose Your Character'));
     const tuples: [string, Function][] = chars.map(char => <[string, Function]> [char.name, () => callback(char)]);
-    div.appendChild(UI.renderOptions(tuples));
+    div.appendChild(UI.renderOptions(tuples.concat([['Back to Title', exit]])));
     return div;
   }
 

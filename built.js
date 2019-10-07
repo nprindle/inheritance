@@ -191,15 +191,15 @@ var UI = (function () {
         }
         return div;
     };
-    UI.renderCharacterSelect = function (callback) {
+    UI.renderCharacterSelect = function (callback, exit) {
         var chars = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            chars[_i - 1] = arguments[_i];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            chars[_i - 2] = arguments[_i];
         }
         var div = UI.makeDiv('charselect');
         div.appendChild(UI.makeHeader('Choose Your Character'));
         var tuples = chars.map(function (char) { return [char.name, function () { return callback(char); }]; });
-        div.appendChild(UI.renderOptions(tuples));
+        div.appendChild(UI.renderOptions(tuples.concat([['Back to Title', exit]])));
         return div;
     };
     UI.setRedrawFunction = function (f) {
@@ -581,8 +581,15 @@ var HealingEffect = (function (_super) {
 var Random = (function () {
     function Random() {
     }
+    Random.bool = function (chance) {
+        if (chance === void 0) { chance = 0.5; }
+        return Math.random() < chance;
+    };
+    Random.intBetween = function (min, max) {
+        return (Math.random() * (max - min) + min) << 0;
+    };
     Random.fromArray = function (arr) {
-        return arr[Math.floor(Math.random() * arr.length)];
+        return arr[Random.intBetween(0, arr.length)];
     };
     return Random;
 }());
@@ -847,7 +854,7 @@ var Game = (function () {
         ]));
     };
     Game.showCharSelect = function () {
-        UI.fillScreen(UI.renderCharacterSelect.apply(UI, [Game.newRun].concat(characters.getAll())));
+        UI.fillScreen(UI.renderCharacterSelect.apply(UI, [Game.newRun, Game.showTitle].concat(characters.getAll())));
         console.log(characters.getAll());
     };
     Game.newRun = function (character) {

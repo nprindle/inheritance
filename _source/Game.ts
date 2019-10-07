@@ -13,7 +13,7 @@ class Game {
 
     static showCharSelect(): void {
         UI.fillScreen(
-            UI.renderCharacterSelect(Game.newRun, ...characters.getAll())
+            UI.renderCharacterSelect(Game.newRun, Game.showTitle, ...characters.getAll())
         );
         console.log(characters.getAll());
     }
