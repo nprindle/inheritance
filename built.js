@@ -11,13 +11,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 function appendText(text, node) {
     if (node === void 0) { node = document.body; }
     var textnode = document.createTextNode(text);
@@ -47,6 +40,18 @@ var UI = (function () {
         }
         return p;
     };
+    UI.makeHeader = function (str, c, id, level) {
+        if (level === void 0) { level = 1; }
+        var h = document.createElement("h" + level);
+        h.innerText = str;
+        if (c) {
+            h.classList.add(c);
+        }
+        if (id) {
+            h.id = id;
+        }
+        return h;
+    };
     UI.makeButton = function (str, func, disabled, c, id) {
         if (disabled === void 0) { disabled = false; }
         var b = document.createElement('button');
@@ -59,12 +64,21 @@ var UI = (function () {
         if (id) {
             b.id = id;
         }
-        b.addEventListener('click', function (ev) {
+        b.onclick = function (ev) {
+            ev.preventDefault;
             func.call(this, ev);
-        });
+        };
         return b;
     };
-    UI.renderCombatant = function (c, target, isTurn) {
+    UI.fakeClick = function (elem) {
+        elem.classList.remove('fakeclick');
+        elem.classList.add('fakeclick');
+        window.setTimeout(function () {
+            elem.onclick(new MouseEvent('click'));
+            elem.classList.remove('fakeclick');
+        }, 500);
+    };
+    UI.renderCombatant = function (c, target, isTurn, buttonArr) {
         var which;
         if (c instanceof Player) {
             which = 'player';
@@ -79,7 +93,7 @@ var UI = (function () {
         var toolDiv = document.createElement('div');
         toolDiv.classList.add('tools');
         for (var i = 0; i < c.tools.length; i++) {
-            var currentDiv = UI.renderCombatTool(c.tools[i], c, i, target, isTurn);
+            var currentDiv = UI.renderCombatTool(c.tools[i], c, i, target, isTurn, buttonArr);
             currentDiv.classList.add("tool_" + i);
             toolDiv.appendChild(currentDiv);
         }
@@ -96,21 +110,28 @@ var UI = (function () {
         }
         return div;
     };
-    UI.renderCombatTool = function (t, c, i, target, isTurn) {
+    UI.renderCombatTool = function (t, c, i, target, isTurn, buttonArr) {
         var div = UI.renderTool(t);
         if (t.usesPerTurn < Infinity) {
             div.appendChild(UI.makeTextParagraph("(" + t.usesLeft + " use(s) left this turn)"));
         }
         if (p && i !== undefined) {
-            div.appendChild(UI.makeButton('Use', function (e) {
+            var b = UI.makeButton('Use', function (e) {
                 c.useTool(i, target);
                 UI.redraw();
-            }, !c.canAfford(t.cost) || !isTurn || t.usesLeft <= 0, 'use'));
+            }, !t.usableBy(c) || !isTurn, 'use');
+            div.appendChild(b);
+            if (buttonArr !== undefined) {
+                buttonArr.push(b);
+            }
         }
         return div;
     };
     UI.renderOfferTool = function (t, m) {
         var div = UI.renderTool(t);
+        if (t.usesPerTurn < Infinity) {
+            div.appendChild(UI.makeTextParagraph("usable " + t.usesPerTurn + " time(s) per turn"));
+        }
         div.appendChild(UI.makeButton("Apply " + m.name, function (e) {
             m.apply(t);
             moveOn();
@@ -121,7 +142,7 @@ var UI = (function () {
         if (refusable === void 0) { refusable = true; }
         var div = UI.makeDiv('modifier');
         div.appendChild(UI.makeTextParagraph(m.name, 'name'));
-        div.appendChild(UI.makeTextParagraph(m.desc, 'desc'));
+        div.appendChild(UI.makeTextParagraph(m.describe(), 'desc'));
         for (var i = 0; i < p.tools.length; i++) {
             div.appendChild(UI.renderOfferTool(p.tools[i], m));
         }
@@ -135,6 +156,33 @@ var UI = (function () {
                 moveOn();
             }, true));
         }
+        return div;
+    };
+    UI.renderMainTitle = function () {
+        return UI.makeHeader('The Prototype Inheritance', 'titletext');
+    };
+    UI.renderTitleScreen = function (options) {
+        var div = UI.makeDiv('titlescreen');
+        div.appendChild(UI.renderMainTitle());
+        var buttons = UI.makeDiv('buttons');
+        for (var i = 0; i < options.length; i++) {
+            buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
+        }
+        div.appendChild(buttons);
+        return div;
+    };
+    UI.renderCreditsEntry = function (entry) {
+        var div = UI.makeDiv('entry');
+        div.appendChild(UI.makeHeader(entry.name, 'name'));
+        div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+        return div;
+    };
+    UI.renderCredits = function (credits) {
+        var div = UI.makeDiv('credits');
+        div.appendChild(UI.renderMainTitle());
+        credits.map(function (x) { return UI.renderCreditsEntry(x); }).forEach(function (val) {
+            div.appendChild(val);
+        });
         return div;
     };
     UI.setRedrawFunction = function (f) {
@@ -166,6 +214,9 @@ var NothingEffect = (function (_super) {
     NothingEffect.prototype.toString = function () {
         return 'do nothing';
     };
+    NothingEffect.prototype.clone = function () {
+        return new NothingEffect();
+    };
     return NothingEffect;
 }(AbstractEffect));
 var CombinationEffect = (function (_super) {
@@ -191,6 +242,9 @@ var CombinationEffect = (function (_super) {
         }
         return acc.join(' ');
     };
+    CombinationEffect.prototype.clone = function () {
+        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
+    };
     return CombinationEffect;
 }(AbstractEffect));
 var RepeatingEffect = (function (_super) {
@@ -209,12 +263,15 @@ var RepeatingEffect = (function (_super) {
     RepeatingEffect.prototype.toString = function () {
         return this.next.toString() + " " + this.times + " times";
     };
+    RepeatingEffect.prototype.clone = function () {
+        return new RepeatingEffect(this.next.clone(), this.times);
+    };
     return RepeatingEffect;
 }(AbstractEffect));
 var CostTypes;
 (function (CostTypes) {
-    CostTypes["Health"] = "Health";
-    CostTypes["Energy"] = "Energy";
+    CostTypes[CostTypes["Health"] = 0] = "Health";
+    CostTypes[CostTypes["Energy"] = 1] = "Energy";
 })(CostTypes || (CostTypes = {}));
 var Cost = (function () {
     function Cost() {
@@ -228,6 +285,9 @@ var Cost = (function () {
             this.addTuple(costs[i]);
         }
     }
+    Cost.prototype.magnitude = function () {
+        return this.energyCost + this.healthCost;
+    };
     Cost.prototype.addTuple = function (cost) {
         switch (cost[1]) {
             case CostTypes.Health:
@@ -248,6 +308,16 @@ var Cost = (function () {
         }
         return acc.join(', ');
     };
+    Cost.prototype.addString = function () {
+        var acc = [];
+        if (this.energyCost > 0) {
+            acc.push("+" + this.energyCost + " Energy Cost");
+        }
+        if (this.healthCost > 0) {
+            acc.push("+" + this.healthCost + " Health Cost");
+        }
+        return acc.join(', ');
+    };
     Cost.prototype.scale = function (i) {
         this.healthCost *= i;
         this.energyCost *= i;
@@ -256,6 +326,11 @@ var Cost = (function () {
         this.healthCost += c.healthCost;
         this.energyCost += c.energyCost;
     };
+    Cost.prototype.clone = function () {
+        var c = new Cost();
+        c.addCost(this);
+        return c;
+    };
     return Cost;
 }());
 var Strings = (function () {
@@ -263,6 +338,9 @@ var Strings = (function () {
     }
     Strings.capitalize = function (str) {
         return str.charAt(0).toUpperCase() + str.substring(1);
+    };
+    Strings.conjoin = function (strs) {
+        return strs.map(function (x) { return Strings.capitalize(x) + "."; }).join(' ');
     };
     return Strings;
 }());
@@ -316,8 +394,11 @@ var Tool = (function () {
         enumerable: true,
         configurable: true
     });
+    Tool.prototype.usableBy = function (user) {
+        return user.canAfford(this.cost) && this.usesLeft > 0;
+    };
     Tool.prototype.use = function (user, target) {
-        if (!user.canAfford(this.cost) || this.usesLeft <= 0) {
+        if (!this.usableBy(user)) {
             return;
         }
         user.pay(this.cost);
@@ -337,6 +418,14 @@ var Tool = (function () {
             acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
         }
         return acc.join(' ');
+    };
+    Tool.prototype.clone = function () {
+        var effectsClones = this.effects.map(function (x) { return x.clone(); });
+        var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
+        t.usesPerTurn = this.usesPerTurn;
+        t.multiplier = this.multiplier;
+        t.modifiers = this.modifiers;
+        return t;
     };
     return Tool;
 }());
@@ -389,6 +478,15 @@ var Combatant = (function () {
         this.energy -= cost.energyCost;
     };
     ;
+    Combatant.prototype.validMoves = function () {
+        var result = [];
+        for (var i = 0; i < this.tools.length; i++) {
+            if (this.tools[i].usableBy(this)) {
+                result.push(i);
+            }
+        }
+        return result;
+    };
     Combatant.prototype.useTool = function (index, target) {
         if (index < 0 || index > this.tools.length) {
             return;
@@ -412,8 +510,11 @@ var Player = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
+    Player.prototype.clone = function () {
+        return new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+    };
     return Player;
 }(Combatant));
 var DamageEffect = (function (_super) {
@@ -428,6 +529,9 @@ var DamageEffect = (function (_super) {
     };
     DamageEffect.prototype.toString = function () {
         return "do " + this.damage + " damage";
+    };
+    DamageEffect.prototype.clone = function () {
+        return new DamageEffect(this.damage);
     };
     return DamageEffect;
 }(AbstractEffect));
@@ -444,8 +548,19 @@ var HealingEffect = (function (_super) {
     HealingEffect.prototype.toString = function () {
         return "recover " + this.amount + " health";
     };
+    HealingEffect.prototype.clone = function () {
+        return new HealingEffect(this.amount);
+    };
     return HealingEffect;
 }(AbstractEffect));
+var Random = (function () {
+    function Random() {
+    }
+    Random.fromArray = function (arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    };
+    return Random;
+}());
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
     function Enemy(name, health, energy) {
@@ -453,8 +568,22 @@ var Enemy = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
+    Enemy.prototype.clone = function () {
+        var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+        copy.utilityFunction = this.utilityFunction;
+        return copy;
+    };
+    Enemy.prototype.utilityFunction = function (simulatedBot, simulatedHuman) {
+        if (simulatedBot.health == 0) {
+            return Number.MIN_VALUE;
+        }
+        if (simulatedHuman.health == 0) {
+            return Number.MAX_VALUE;
+        }
+        return simulatedBot.health - simulatedHuman.health;
+    };
     return Enemy;
 }(Combatant));
 var Fight = (function () {
@@ -464,6 +593,7 @@ var Fight = (function () {
         this.enemy = e;
         e.refresh();
         this.playersTurn = true;
+        this.enemyButtons = [];
         var closure = this;
         UI.setRedrawFunction(function () { closure.redraw(); });
         this.player.setDeathFunc(function () {
@@ -479,11 +609,31 @@ var Fight = (function () {
         this.player.refresh();
         this.enemy.refresh();
         console.log('turn ended :)');
+        this.enemyButtons = [];
         UI.redraw();
+        if (!this.playersTurn) {
+            var enemyMoveSequence = AI.bestMoveSequence(this.enemy, this.player, 2000);
+            this.makeNextEnemyMove(enemyMoveSequence);
+        }
+    };
+    Fight.prototype.makeNextEnemyMove = function (moveSequence) {
+        if (moveSequence.length <= 0) {
+            UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
+            return;
+        }
+        else {
+            var move = moveSequence.shift();
+            console.log("Move: " + move);
+            UI.fakeClick(this.enemyButtons[move]);
+            var closure_1 = this;
+            window.setTimeout(function () {
+                closure_1.makeNextEnemyMove(moveSequence);
+            }, 750);
+        }
     };
     Fight.prototype.endTurnButton = function () {
         var closure = this;
-        return UI.makeButton('End Turn', function () { closure.endTurn(); }, false, 'endturn');
+        return UI.makeButton('End Turn', function () { closure.endTurn(); }, !this.playersTurn, 'endturn');
     };
     Fight.prototype.draw = function () {
         this.div = UI.makeDiv('arena');
@@ -493,8 +643,10 @@ var Fight = (function () {
     Fight.prototype.redraw = function () {
         this.div.innerHTML = '';
         this.div.appendChild(UI.renderCombatant(this.player, this.enemy, this.playersTurn));
-        this.div.appendChild(UI.renderCombatant(this.enemy, this.player, !this.playersTurn));
-        this.div.appendChild(this.endTurnButton());
+        this.div.appendChild(UI.renderCombatant(this.enemy, this.player, false, this.enemyButtons));
+        var etb = this.endTurnButton();
+        this.div.appendChild(etb);
+        this.enemyButtons.push(etb);
     };
     Fight.prototype.end = function () {
         document.body.removeChild(this.div);
@@ -504,29 +656,30 @@ var Fight = (function () {
 }());
 var ModifierTypes;
 (function (ModifierTypes) {
-    ModifierTypes["CostMult"] = "Cost Mult";
-    ModifierTypes["MultAdd"] = "Mult Add";
-    ModifierTypes["AddEnergyCost"] = "Energy Cost Add";
-    ModifierTypes["Effect"] = "Effect";
+    ModifierTypes[ModifierTypes["CostMult"] = 0] = "CostMult";
+    ModifierTypes[ModifierTypes["MultAdd"] = 1] = "MultAdd";
+    ModifierTypes[ModifierTypes["AddEnergyCost"] = 2] = "AddEnergyCost";
+    ModifierTypes[ModifierTypes["Effect"] = 3] = "Effect";
+    ModifierTypes[ModifierTypes["UsesPerTurn"] = 4] = "UsesPerTurn";
 })(ModifierTypes || (ModifierTypes = {}));
 var Modifier = (function () {
-    function Modifier(name, desc) {
+    function Modifier(name) {
         var args = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            args[_i - 2] = arguments[_i];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
         }
         this.name = name;
-        this.desc = desc;
         this.effects = [];
         this.costMultiplier = 1;
         this.multiplierAdd = 0;
+        this.usesPerTurn = Infinity;
         this.costAdd = new Cost();
         for (var i = 0; i < args.length; i++) {
             var curr = args[i];
             if (curr instanceof AbstractEffect) {
                 this.effects.push(curr);
             }
-            else if (curr instanceof Array && typeof curr[0] === 'string' && typeof curr[1] === 'number') {
+            else if (curr instanceof Array && typeof curr[0] === 'number' && typeof curr[1] === 'number') {
                 this.addTuple(curr);
             }
         }
@@ -542,6 +695,9 @@ var Modifier = (function () {
             case ModifierTypes.AddEnergyCost:
                 this.costAdd.addTuple([t[1], CostTypes.Energy]);
                 break;
+            case ModifierTypes.UsesPerTurn:
+                this.usesPerTurn = t[1];
+                break;
         }
     };
     Modifier.prototype.apply = function (t) {
@@ -549,18 +705,41 @@ var Modifier = (function () {
         t.cost.scale(this.costMultiplier);
         t.cost.addCost(this.costAdd);
         t.multiplier += this.multiplierAdd;
+        t.usesPerTurn = Math.min(this.usesPerTurn, t.usesPerTurn);
         for (var i = 0; i < this.effects.length; i++) {
-            t.effects.push(this.effects[i]);
+            t.effects.push(this.effects[i].clone());
         }
+    };
+    Modifier.prototype.describe = function () {
+        var acc = [];
+        if (this.costMultiplier !== 1) {
+            acc.push("cost x" + this.costMultiplier);
+        }
+        if (this.multiplierAdd > 0) {
+            acc.push("multiplier +" + this.multiplierAdd);
+        }
+        if (this.costAdd.magnitude() > 0) {
+            acc.push(this.costAdd.addString());
+        }
+        if (this.usesPerTurn < Infinity) {
+            acc.push("limited to " + this.usesPerTurn + " use(s) per turn");
+        }
+        if (this.effects.length > 0) {
+            var effectStrings = this.effects.map(function (x) { return x.toString(); });
+            acc.push("Add effect(s): " + effectStrings.map(function (x) { return Strings.capitalize(x); }).join(' '));
+        }
+        return Strings.conjoin(acc);
     };
     return Modifier;
 }());
 var ItemPool = (function () {
     function ItemPool() {
         this.items = {};
+        this.keys = [];
     }
     ItemPool.prototype.add = function (key, item) {
         this.items[key] = item;
+        this.keys.push(key);
     };
     ItemPool.prototype.get = function (key) {
         if (this.items[key].clone) {
@@ -570,13 +749,32 @@ var ItemPool = (function () {
             return this.items[key];
         }
     };
+    ItemPool.prototype.getRandom = function () {
+        var key = this.keys[Math.floor(Math.random() * this.keys.length)];
+        return this.get(key);
+    };
     return ItemPool;
 }());
 var tools = new ItemPool();
+var modifiers = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([1, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
+modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
+modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
+modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
+var CreditsEntry = (function () {
+    function CreditsEntry(name) {
+        var roles = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            roles[_i - 1] = arguments[_i];
+        }
+        this.name = name;
+        this.roles = roles;
+    }
+    return CreditsEntry;
+}());
 var p = new Player('The Kid', 10, 10);
 var numEvents = 0;
 p.tools = [
@@ -584,11 +782,8 @@ p.tools = [
     tools.get('bandages'),
     tools.get('singleton')
 ];
-var modifiers = [
-    new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
-    new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1))
-];
 function setUpFight(i) {
+    document.body.innerHTML = '';
     var e = new Enemy('Goldfish', 10 + i * 5, 10);
     e.tools = [
         new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
@@ -599,7 +794,8 @@ function setUpFight(i) {
 function offerModifier() {
     var div = UI.makeDiv('offer');
     div.appendChild(UI.makeTextParagraph('You wanna modifier?'));
-    div.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
+    var offer = modifiers.getRandom();
+    div.appendChild(UI.renderModifier(offer, p));
     document.body.appendChild(div);
 }
 function moveOn() {
@@ -614,9 +810,71 @@ function moveOn() {
             break;
     }
 }
+function showCredits() {
+    document.body.innerHTML = '';
+    document.body.appendChild(UI.renderCredits([
+        new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+        new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+        new CreditsEntry('Grace Rarer', 'Programming'),
+        new CreditsEntry('Mitchell Philipp', 'Programming'),
+        new CreditsEntry('Seong Ryoo', 'Art'),
+    ]));
+}
 window.onload = function () {
-    setUpFight(0);
+    document.body.appendChild(UI.renderTitleScreen([
+        ['New Game', function () { setUpFight(0); }],
+        ['Credits', function () { showCredits(); }]
+    ]));
 };
 if (window.innerHeight === 0) {
     window.console.log('tools', tools);
+    window.console.log('modifiers', modifiers);
 }
+var AI = (function () {
+    function AI(aiCombatant, humanCombatant) {
+        this.botCopy = aiCombatant.clone();
+        this.humanCopy = humanCombatant.clone();
+        this.bestSequence = [];
+        this.bestSequenceScore = this.botCopy.utilityFunction(this.botCopy, this.humanCopy);
+    }
+    AI.prototype.search = function (iterations) {
+        var startTime = new Date();
+        for (var i = 0; i < iterations; i++) {
+            var movesList = [];
+            var dummyBot = this.botCopy.clone();
+            var dummyHuman = this.humanCopy.clone();
+            dummyBot.refresh();
+            dummyHuman.refresh();
+            while (true) {
+                var possibleMoves = dummyBot.validMoves();
+                if (dummyBot.health == 0) {
+                    break;
+                }
+                if (possibleMoves.length == 0) {
+                    break;
+                }
+                possibleMoves.push(-1);
+                var chosenMove = Random.fromArray(possibleMoves);
+                if (chosenMove == -1) {
+                    break;
+                }
+                dummyBot.useTool(chosenMove, dummyHuman);
+                movesList.push(chosenMove);
+            }
+            var consequence = dummyBot.utilityFunction(dummyBot, dummyHuman);
+            if (consequence > this.bestSequenceScore) {
+                this.bestSequenceScore = consequence;
+                this.bestSequence = movesList;
+            }
+        }
+        var finishTime = new Date();
+        var duration = finishTime.getTime() - startTime.getTime();
+        console.log("Sim time (milliseconds): " + duration);
+    };
+    AI.bestMoveSequence = function (aiCombatant, humanCombatant, simIterations) {
+        var sim = new AI(aiCombatant, humanCombatant);
+        sim.search(simIterations);
+        return sim.bestSequence;
+    };
+    return AI;
+}());

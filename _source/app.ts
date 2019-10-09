@@ -6,6 +6,8 @@
 /// <reference path="Modifier.ts" />
 /// <reference path="ItemPool.ts" />
 /// <reference path="tools.ts" />
+/// <reference path="modifiers.ts" />
+/// <reference path="CreditsEntry.ts" />
 /// <reference path="map/Floor.ts" />
 
 const p: Player = new Player('The Kid', 10, 10);
@@ -18,12 +20,8 @@ p.tools = [
   tools.get('singleton')
 ];
 
-const modifiers: Modifier[] = [
-  new Modifier('Jittering', '+1 Multiplier. x2 Cost.', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]),
-  new Modifier('Spiky', 'Weapon does 1 damage, too. +1 Energy Cost', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1))
-];
-
 function setUpFight(i: number): void {
+  document.body.innerHTML = '';
   const e: Enemy = new Enemy('Goldfish', 10 + i * 5, 10);
   e.tools = [
     new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
@@ -36,7 +34,8 @@ function setUpFight(i: number): void {
 function offerModifier(): void {
   const div = UI.makeDiv('offer');
   div.appendChild(UI.makeTextParagraph('You wanna modifier?'));
-  div.appendChild(UI.renderModifier(modifiers[Math.floor(Math.random() * modifiers.length)], p));
+  const offer = modifiers.getRandom();
+  div.appendChild(UI.renderModifier(offer, p));
   document.body.appendChild(div);
 }
 
@@ -53,13 +52,29 @@ function moveOn(): void {
   }
 }
 
+function showCredits(): void {
+  document.body.innerHTML = '';
+  document.body.appendChild(
+    UI.renderCredits([
+      new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+      new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+      new CreditsEntry('Grace Rarer', 'Programming'),
+      new CreditsEntry('Mitchell Philipp', 'Programming'),
+      new CreditsEntry('Seong Ryoo', 'Art'),
+    ])
+  );
+}
+
 window.onload = function() {
-  //setUpFight(0);
-  var newFloor = new Floor(5, 5, 10, 15);
-  UI.setRedrawFunction(function() {newFloor.redraw()});
-  UI.redraw();
+  document.body.appendChild(
+    UI.renderTitleScreen([
+      ['New Game', function() {setUpFight(0)}],
+      ['Credits', function() {showCredits()}]
+    ])
+  );
 }
 
 if (window.innerHeight === 0) {
   window.console.log('tools', tools);
+  window.console.log('modifiers', modifiers);
 }

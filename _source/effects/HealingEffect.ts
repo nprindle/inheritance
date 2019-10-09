@@ -16,4 +16,8 @@ class HealingEffect extends AbstractEffect {
     return `recover ${this.amount} health`;
   }
 
+  clone(): HealingEffect {
+    return new HealingEffect(this.amount);
+  }
+
 }

@@ -19,6 +19,8 @@ abstract class Combatant {
     this.deathFunc = function() {};
   };
 
+  abstract clone(): Combatant;
+
   status(): string {
     return `${this.name}: ${this.health} / ${this.maxHealth}`;
   };
@@ -53,6 +55,16 @@ abstract class Combatant {
     this.wound(cost.healthCost);
     this.energy -= cost.energyCost;
   };
+
+  validMoves(): number[] {
+    let result: number[] = [];
+    for (let i = 0; i < this.tools.length; i++) {
+      if (this.tools[i].usableBy(this)) {
+        result.push(i);
+      }
+    }
+    return result;
+  }
 
   useTool(index: number, target: Combatant): void {
     if (index < 0 || index > this.tools.length) {

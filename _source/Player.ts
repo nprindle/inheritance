@@ -6,4 +6,8 @@ class Player extends Combatant {
     super(name, health, energy, ...tools);
   }
 
+  clone(): Player {
+    return new Player(this.name, this.health, this.energy, ...this.tools.map(x => x.clone()));
+  }
+
 }

@@ -9,6 +9,7 @@ window = {
 };
 require('./built.js');
 const fs = require('fs');
+
 const toolLines = ['# Tools\n'];
 for (let k in processor.tools.items) {
   tool = processor.tools.items[k];
@@ -20,3 +21,11 @@ for (let k in processor.tools.items) {
   }
 }
 fs.writeFileSync('_tools.md', toolLines.join('\n'));
+
+const modLines = ['# Modifiers\n'];
+for (let k in processor.modifiers.items) {
+  modifier = processor.modifiers.items[k];
+  modLines.push(`## ${modifier.name}\n`);
+  modLines.push(`${modifier.describe().split('\n').join('\n\n')}\n`);
+}
+fs.writeFileSync('_modifiers.md', modLines.join('\n'));

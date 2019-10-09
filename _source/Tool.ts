@@ -55,8 +55,12 @@ class Tool {
     return `${this.modifiers.join(' ')} ${this._name}${multString}`;
   }
 
+  usableBy(user: Combatant): boolean {
+    return user.canAfford(this.cost) && this.usesLeft > 0;
+  }
+
   use(user: Combatant, target: Combatant): void {
-    if (!user.canAfford(this.cost) || this.usesLeft <= 0) {
+    if (!this.usableBy(user)) {
       return;
     }
     user.pay(this.cost);
@@ -78,6 +82,15 @@ class Tool {
       acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
     }
     return acc.join(' ');
+  }
+
+  clone(): Tool {
+    let effectsClones = this.effects.map(x => x.clone());
+    let t = new Tool(this.name, this.cost.clone(), ...effectsClones);
+    t.usesPerTurn = this.usesPerTurn;
+    t.multiplier = this.multiplier;
+    t.modifiers = this.modifiers;
+    return t;
   }
 
 }
