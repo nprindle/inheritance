@@ -127,7 +127,7 @@ var UI = (function () {
         if (t.usesPerTurn < Infinity) {
             div.appendChild(UI.makeTextParagraph("(" + t.usesLeft + " use(s) left this turn)"));
         }
-        if (p && i !== undefined) {
+        if (c && i !== undefined) {
             var b = UI.makeButton('Use', function (e) {
                 c.useTool(i, target);
                 UI.redraw();
@@ -146,7 +146,6 @@ var UI = (function () {
         }
         div.appendChild(UI.makeButton("Apply " + m.name, function (e) {
             m.apply(t);
-            moveOn();
         }, false, 'apply'));
         return div;
     };
@@ -160,13 +159,10 @@ var UI = (function () {
         }
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function () {
-                moveOn();
             }));
         }
         else {
-            div.appendChild(UI.makeButton("Can't Refuse!", function () {
-                moveOn();
-            }, true));
+            div.appendChild(UI.makeButton("Can't Refuse!", function () { }, true));
         }
         return div;
     };
@@ -905,6 +901,7 @@ var Game = (function () {
             new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
             new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
             new CreditsEntry('Grace Rarer', 'Programming'),
+            new CreditsEntry('Prindle', 'Programming'),
             new CreditsEntry('Mitchell Philipp', 'Programming'),
             new CreditsEntry('Seong Ryoo', 'Art'),
         ], function () { return Game.showTitle(); }));
@@ -916,52 +913,6 @@ var Game = (function () {
     };
     return Game;
 }());
-var p = new Player('The Kid', 10, 10);
-var numEvents = 0;
-p.tools = [
-    tools.get('wrench'),
-    tools.get('bandages'),
-    tools.get('singleton')
-];
-function setUpFight(i) {
-    document.body.innerHTML = '';
-    var e = new Enemy('Goldfish', 10 + i * 5, 10);
-    e.tools = [
-        new Tool('Splish Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()),
-        new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(1 + i))
-    ];
-    var f = new Fight(p, e);
-}
-function offerModifier() {
-    var div = UI.makeDiv('offer');
-    div.appendChild(UI.makeTextParagraph('You wanna modifier?'));
-    var offer = modifiers.getRandom();
-    div.appendChild(UI.renderModifier(offer, p));
-    document.body.appendChild(div);
-}
-function moveOn() {
-    numEvents++;
-    document.body.innerHTML = '';
-    switch (numEvents % 2) {
-        case 0:
-            setUpFight(Math.floor(numEvents / 2));
-            break;
-        case 1:
-            offerModifier();
-            break;
-    }
-}
-function showCredits() {
-    document.body.innerHTML = '';
-    document.body.appendChild(UI.renderCredits([
-        new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
-        new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
-        new CreditsEntry('Grace Rarer', 'Programming'),
-        new CreditsEntry('Mitchell Philipp', 'Programming'),
-        new CreditsEntry('Prindle', 'Programming'),
-        new CreditsEntry('Seong Ryoo', 'Art'),
-    ]));
-}
 window.onload = function () {
     Game.showTitle();
 };

@@ -103,7 +103,7 @@ class UI {
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
     }
-    if (p && i !== undefined) {
+    if (c && i !== undefined) {
       let b = UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
@@ -123,7 +123,6 @@ class UI {
     }
     div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
       m.apply(t);
-      moveOn();
     }, false, 'apply'));
     return div;
   }
@@ -137,12 +136,9 @@ class UI {
     }
     if (refusable) {
       div.appendChild(UI.makeButton('No Thank You', function() {
-        moveOn();
       }));
     } else {
-      div.appendChild(UI.makeButton("Can't Refuse!", function() {
-        moveOn();
-      }, true));
+      div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
     }
     return div;
   }
