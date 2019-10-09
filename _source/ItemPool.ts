@@ -27,7 +27,7 @@ class ItemPoolEntry<T extends { clone: () => T }, E> {
 
 class ItemPool<T extends { clone: () => T }, E> {
 
-  items: Object;
+  items: { [key: string]: ItemPoolEntry<T, E> };
   keys: string[];
 
   constructor() {
@@ -40,14 +40,14 @@ class ItemPool<T extends { clone: () => T }, E> {
     this.keys.push(key);
   }
 
-  get(key: string): T {
-    if (!this.items[key]) {
+  get(key: string): T | null {
+    if (this.items[key] === undefined) {
       return null;
     }
     return this.items[key].get();
   }
 
-  getRandom(): T {
+  getRandom(): T | null {
     let key = Random.fromArray(this.keys);
     return this.get(key);
   }
@@ -57,8 +57,8 @@ class ItemPool<T extends { clone: () => T }, E> {
   // sets match, clean items matching the first tag set out of the seen array
   // and recalculate.
   selectUnseenTags(seen: string[], tags: E[] = [], ...fallbacks: E[][]): string[] {
-    const unseen = (k) => seen.indexOf(k) < 0;
-    let unseenMatching = [];
+    const unseen = (k: string) => seen.indexOf(k) < 0;
+    let unseenMatching: string[] = [];
     let tagsMatch = this.keys.filter((k) => this.items[k].hasTags(...tags));
     for (let ts of [tags, ...fallbacks]) {
       const matching = this.keys.filter((k) => unseen(k) && this.items[k].hasTags(...ts));
@@ -79,10 +79,12 @@ class ItemPool<T extends { clone: () => T }, E> {
   }
 
   selectAllUnseen(seen: string[], tags: E[] = [], ...fallbacks: E[][]): T[] {
-    return this.selectUnseenTags(seen, tags, ...fallbacks).map(k => this.get(k));
+    let unseen = this.selectUnseenTags(seen, tags, ...fallbacks);
+    // Note: a cast is much faster than a map((x) => x!) here
+    return unseen.map(k => this.get(k)).filter((x) => x !== null) as T[];
   }
 
-  selectRandomUnseen(seen: string[], tags: E[] = [], ...fallbacks: E[][]): T {
+  selectRandomUnseen(seen: string[], tags: E[] = [], ...fallbacks: E[][]): T | null {
     const unseen = this.selectUnseenTags(seen, tags, ...fallbacks);
     const key = Random.fromArray(unseen);
     seen.push(key);
@@ -90,7 +92,8 @@ class ItemPool<T extends { clone: () => T }, E> {
   }
 
   getAll(): T[] {
-    return this.keys.map((x) => this.get(x));
+    // Note: a cast is much faster than a mapped assertion here
+    return this.keys.map((x) => this.get(x)).filter((x) => x !== null) as T[];
   }
 
 }
