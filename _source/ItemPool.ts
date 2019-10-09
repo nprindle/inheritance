@@ -50,8 +50,34 @@ class ItemPool<T extends { clone: () => T }, E> {
     return this.get(key);
   }
 
+  // Select all items with the given tags that haven't been seen. If none of the
+  // items has the given tags, fall back to the next tag set. If none of the tag
+  // sets match, clean items matching the first tag set out of the seen array
+  // and recalculate.
+  selectUnseen(seen: string[], tags: E[], ...fallbacks: E[][]): T[] {
+    const unseen = (k) => seen.indexOf(k) < 0;
+    let unseenMatching = [];
+    let tagsMatch = this.keys.filter((k) => this.items[k].hasTags(tags));
+    for (let ts of [tags, ...fallbacks]) {
+      const matching = this.keys.filter((k) => unseen(k) && this.items[k].hasTags(ts));
+      if (matching.length > 0) {
+        unseenMatching = matching;
+        break;
+      }
+    }
+    // Clean when no unseen matches were found. If anything matched from the
+    // first tag set when not considering whether it was seen, it will match
+    // after cleaning. Otherwise, if none of the tags matched, they won't match
+    // after cleaning, either.
+    if (unseenMatching.length == 0) {
+      filterInPlace(seen, (k) => this.items[k].hasTags(tags));
+      return tagsMatch.map((k) => this.items[k].get());
+    }
+    return unseenMatching.map((k) => this.items[k].get());
+  }
+
   getAll(): T[] {
-    return this.keys.map(x => this.get(x));
+    return this.keys.map((x) => this.get(x));
   }
 
 }
