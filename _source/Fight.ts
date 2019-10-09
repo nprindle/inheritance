@@ -9,24 +9,27 @@ class Fight {
   playersTurn: boolean;
   div: HTMLElement;
   enemyButtons: HTMLElement[];
+  endCallback: Function;
 
   constructor(p: Player, e: Enemy) {
     this.player = p;
     p.refresh();
     this.enemy = e;
     e.refresh();
+    this.endCallback = () => {};
     this.playersTurn = true;
     this.enemyButtons = [];
     //i know this is gross.
     let closure = this;
     UI.setRedrawFunction(function() {closure.redraw()});
-    this.player.setDeathFunc(function() {
-      closure.end();
-    });
     this.enemy.setDeathFunc(function() {
       closure.end();
     });
     this.draw();
+  }
+
+  setEndCallback(f: Function) {
+    this.endCallback = f;
   }
 
   endTurn(): void {
@@ -64,7 +67,7 @@ class Fight {
 
   draw(): void {
     this.div = UI.makeDiv('arena');
-    document.body.appendChild(this.div);
+    UI.fillScreen(this.div);
     this.redraw();
   }
 
@@ -79,7 +82,7 @@ class Fight {
 
   end(): void {
     document.body.removeChild(this.div);
-    moveOn();
+    this.endCallback();
   }
 
 }

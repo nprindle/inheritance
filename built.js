@@ -624,18 +624,19 @@ var Fight = (function () {
         p.refresh();
         this.enemy = e;
         e.refresh();
+        this.endCallback = function () { };
         this.playersTurn = true;
         this.enemyButtons = [];
         var closure = this;
         UI.setRedrawFunction(function () { closure.redraw(); });
-        this.player.setDeathFunc(function () {
-            closure.end();
-        });
         this.enemy.setDeathFunc(function () {
             closure.end();
         });
         this.draw();
     }
+    Fight.prototype.setEndCallback = function (f) {
+        this.endCallback = f;
+    };
     Fight.prototype.endTurn = function () {
         this.playersTurn = !this.playersTurn;
         this.player.refresh();
@@ -669,7 +670,7 @@ var Fight = (function () {
     };
     Fight.prototype.draw = function () {
         this.div = UI.makeDiv('arena');
-        document.body.appendChild(this.div);
+        UI.fillScreen(this.div);
         this.redraw();
     };
     Fight.prototype.redraw = function () {
@@ -682,7 +683,7 @@ var Fight = (function () {
     };
     Fight.prototype.end = function () {
         document.body.removeChild(this.div);
-        moveOn();
+        this.endCallback();
     };
     return Fight;
 }());
@@ -858,6 +859,8 @@ var Game = (function () {
         console.log(characters.getAll());
     };
     Game.newRun = function (character) {
+        Game.currentRun = new Run(character);
+        Game.currentRun.start();
     };
     Game.showCredits = function () {
         UI.fillScreen(UI.renderCredits([
@@ -867,6 +870,11 @@ var Game = (function () {
             new CreditsEntry('Mitchell Philipp', 'Programming'),
             new CreditsEntry('Seong Ryoo', 'Art'),
         ], function () { return Game.showTitle(); }));
+    };
+    Game.showGameOver = function (run) {
+        UI.fillScreen(UI.makeHeader('Game Over'), UI.renderOptions([
+            ['Back to Title Screen', function () { return Game.showTitle(); }]
+        ]));
     };
     return Game;
 }());
@@ -969,4 +977,20 @@ var AI = (function () {
         return sim.bestSequence;
     };
     return AI;
+}());
+var Run = (function () {
+    function Run(player) {
+        var _this = this;
+        this.player = player;
+        this.player.setDeathFunc(function () { return Game.showGameOver(_this); });
+    }
+    Run.prototype.start = function () {
+        this.startFight();
+    };
+    Run.prototype.startFight = function () {
+        var _this = this;
+        var f = new Fight(this.player, new Enemy('Goldfish', 10, 10, new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(10))));
+        f.setEndCallback(function () { return _this.startFight(); });
+    };
+    return Run;
 }());

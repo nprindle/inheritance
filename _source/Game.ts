@@ -1,4 +1,6 @@
 class Game {
+    
+    static currentRun: Run;
 
     static showTitle(): void {
         UI.fillScreen(
@@ -19,7 +21,8 @@ class Game {
     }
 
     static newRun(character: Player): void {
-
+        Game.currentRun = new Run(character);
+        Game.currentRun.start();
     }
     
     static showCredits(): void {
@@ -31,6 +34,15 @@ class Game {
                 new CreditsEntry('Mitchell Philipp', 'Programming'),
                 new CreditsEntry('Seong Ryoo', 'Art'),
             ], () => Game.showTitle())
+        );
+    }
+
+    static showGameOver(run: Run): void {
+        UI.fillScreen(
+            UI.makeHeader('Game Over'),
+            UI.renderOptions([
+                ['Back to Title Screen', () => Game.showTitle()]
+            ]),
         );
     }
 
