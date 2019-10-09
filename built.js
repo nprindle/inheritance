@@ -11,13 +11,6 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
-};
 function appendText(text, node) {
     if (node === void 0) { node = document.body; }
     var textnode = document.createTextNode(text);
@@ -287,7 +280,7 @@ var CombinationEffect = (function (_super) {
         return acc.join(' ');
     };
     CombinationEffect.prototype.clone = function () {
-        return new (CombinationEffect.bind.apply(CombinationEffect, __spreadArrays([void 0], this.effects.map(function (x) { return x.clone(); }))))();
+        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
     };
     return CombinationEffect;
 }(AbstractEffect));
@@ -465,7 +458,7 @@ var Tool = (function () {
     };
     Tool.prototype.clone = function () {
         var effectsClones = this.effects.map(function (x) { return x.clone(); });
-        var t = new (Tool.bind.apply(Tool, __spreadArrays([void 0, this.name, this.cost.clone()], effectsClones)))();
+        var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
         t.usesPerTurn = this.usesPerTurn;
         t.multiplier = this.multiplier;
         t.modifiers = this.modifiers;
@@ -554,10 +547,10 @@ var Player = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
     Player.prototype.clone = function () {
-        return new (Player.bind.apply(Player, __spreadArrays([void 0, this.name, this.health, this.energy], this.tools.map(function (x) { return x.clone(); }))))();
+        return new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
     };
     return Player;
 }(Combatant));
@@ -619,10 +612,10 @@ var Enemy = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
     Enemy.prototype.clone = function () {
-        var copy = new (Enemy.bind.apply(Enemy, __spreadArrays([void 0, this.name, this.health, this.energy], this.tools.map(function (x) { return x.clone(); }))))();
+        var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
         copy.utilityFunction = this.utilityFunction;
         return copy;
     };
@@ -644,6 +637,7 @@ var Fight = (function () {
         p.refresh();
         this.enemy = e;
         e.refresh();
+        this.endCallback = function () { };
         this.playersTurn = true;
         this.enemyButtons = [];
         UI.setRedrawFunction(function () { _this.redraw(); });
@@ -651,6 +645,9 @@ var Fight = (function () {
         this.enemy.setDeathFunc(function () { _this.end(); });
         this.draw();
     }
+    Fight.prototype.setEndCallback = function (f) {
+        this.endCallback = f;
+    };
     Fight.prototype.endTurn = function () {
         this.playersTurn = !this.playersTurn;
         this.player.refresh();
@@ -684,7 +681,7 @@ var Fight = (function () {
     };
     Fight.prototype.draw = function () {
         this.div = UI.makeDiv('arena');
-        document.body.appendChild(this.div);
+        UI.fillScreen(this.div);
         this.redraw();
     };
     Fight.prototype.redraw = function () {
@@ -697,7 +694,7 @@ var Fight = (function () {
     };
     Fight.prototype.end = function () {
         document.body.removeChild(this.div);
-        moveOn();
+        this.endCallback();
     };
     return Fight;
 }());
@@ -814,7 +811,7 @@ var ItemPool = (function () {
         for (var _i = 2; _i < arguments.length; _i++) {
             tags[_i - 2] = arguments[_i];
         }
-        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, __spreadArrays([void 0, key, item], tags)))();
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item].concat(tags)))();
         this.keys.push(key);
     };
     ItemPool.prototype.get = function (key) {
@@ -844,7 +841,7 @@ var ItemPool = (function () {
             }
         };
         var this_1 = this;
-        for (var _a = 0, _b = __spreadArrays([tags], fallbacks); _a < _b.length; _a++) {
+        for (var _a = 0, _b = [tags].concat(fallbacks); _a < _b.length; _a++) {
             var ts = _b[_a];
             var state_1 = _loop_1(ts);
             if (state_1 === "break")
@@ -896,10 +893,12 @@ var Game = (function () {
         ]));
     };
     Game.showCharSelect = function () {
-        UI.fillScreen(UI.renderCharacterSelect.apply(UI, __spreadArrays([Game.newRun, Game.showTitle], characters.getAll())));
+        UI.fillScreen(UI.renderCharacterSelect.apply(UI, [Game.newRun, Game.showTitle].concat(characters.getAll())));
         console.log(characters.getAll());
     };
     Game.newRun = function (character) {
+        Game.currentRun = new Run(character);
+        Game.currentRun.start();
     };
     Game.showCredits = function () {
         UI.fillScreen(UI.renderCredits([
@@ -907,9 +906,13 @@ var Game = (function () {
             new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
             new CreditsEntry('Grace Rarer', 'Programming'),
             new CreditsEntry('Mitchell Philipp', 'Programming'),
-            new CreditsEntry('Nicole Prindle', 'Programming'),
             new CreditsEntry('Seong Ryoo', 'Art'),
         ], function () { return Game.showTitle(); }));
+    };
+    Game.showGameOver = function (run) {
+        UI.fillScreen(UI.makeHeader('Game Over'), UI.renderOptions([
+            ['Back to Title Screen', function () { return Game.showTitle(); }]
+        ]));
     };
     return Game;
 }());
@@ -955,7 +958,7 @@ function showCredits() {
         new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
         new CreditsEntry('Grace Rarer', 'Programming'),
         new CreditsEntry('Mitchell Philipp', 'Programming'),
-        new CreditsEntry('Nicole Prindle', 'Programming'),
+        new CreditsEntry('Prindle', 'Programming'),
         new CreditsEntry('Seong Ryoo', 'Art'),
     ]));
 }
@@ -1013,4 +1016,20 @@ var AI = (function () {
         return sim.bestSequence;
     };
     return AI;
+}());
+var Run = (function () {
+    function Run(player) {
+        var _this = this;
+        this.player = player;
+        this.player.setDeathFunc(function () { return Game.showGameOver(_this); });
+    }
+    Run.prototype.start = function () {
+        this.startFight();
+    };
+    Run.prototype.startFight = function () {
+        var _this = this;
+        var f = new Fight(this.player, new Enemy('Goldfish', 10, 10, new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(10))));
+        f.setEndCallback(function () { return _this.startFight(); });
+    };
+    return Run;
 }());
