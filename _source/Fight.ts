@@ -20,7 +20,7 @@ class Fight {
     this.playersTurn = true;
     this.enemyButtons = [];
     UI.setRedrawFunction(() => { this.redraw(); });
-    this.player.setDeathFunc(() => { this.end(); });
+    // this.player.setDeathFunc(() => { this.end(); });
     this.enemy.setDeathFunc(() => { this.end(); });
     this.draw();
   }
@@ -33,7 +33,6 @@ class Fight {
     this.playersTurn = !this.playersTurn;
     this.player.refresh();
     this.enemy.refresh();
-    console.log('turn ended :)');
     this.enemyButtons = [];
     UI.redraw();
     if (!this.playersTurn) {
