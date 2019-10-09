@@ -1,37 +1,37 @@
 class Game {
 
-    static showTitle(): void {
-        UI.fillScreen(
-            UI.renderTitleScreen([
-                ['New Game', () => Game.showCharSelect()],
-                ['Settings', () => {}], //TODO: settings
-                ['Files', () => {}], //TODO: files (what should we call these?)
-                ['Credits', () => Game.showCredits()],
-            ])
-        );
-    }
+  static showTitle(): void {
+    UI.fillScreen(
+      UI.renderTitleScreen([
+        ['New Game', () => Game.showCharSelect()],
+          ['Settings', () => {}], //TODO: settings
+          ['Files', () => {}], //TODO: files (what should we call these?)
+          ['Credits', () => Game.showCredits()],
+      ])
+    );
+  }
 
-    static showCharSelect(): void {
-        UI.fillScreen(
-            UI.renderCharacterSelect(Game.newRun, Game.showTitle, ...characters.getAll())
-        );
-        console.log(characters.getAll());
-    }
+  static showCharSelect(): void {
+    UI.fillScreen(
+      UI.renderCharacterSelect(Game.newRun, Game.showTitle, ...characters.getAll())
+    );
+    console.log(characters.getAll());
+  }
 
-    static newRun(character: Player): void {
+  static newRun(character: Player): void {
 
-    }
-    
-    static showCredits(): void {
-        UI.fillScreen(
-            UI.renderCredits([
-                new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
-                new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
-                new CreditsEntry('Grace Rarer', 'Programming'),
-                new CreditsEntry('Mitchell Philipp', 'Programming'),
-                new CreditsEntry('Seong Ryoo', 'Art'),
-            ], () => Game.showTitle())
-        );
-    }
+  }
+
+  static showCredits(): void {
+    UI.fillScreen(
+      UI.renderCredits([
+        new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
+        new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
+        new CreditsEntry('Grace Rarer', 'Programming'),
+        new CreditsEntry('Mitchell Philipp', 'Programming'),
+        new CreditsEntry('Seong Ryoo', 'Art'),
+      ], () => Game.showTitle())
+    );
+  }
 
 }
