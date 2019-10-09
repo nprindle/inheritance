@@ -25,6 +25,18 @@ class UI {
     return p;
   }
 
+  static makeHeader(str: string, c?: string, id?: string, level: number = 1): HTMLElement {
+    const h: HTMLElement = document.createElement(`h${level}`);
+    h.innerText = str;
+    if (c) {
+      h.classList.add(c);
+    }
+    if (id) {
+      h.id = id;
+    }
+    return h;
+  }
+
   static makeButton(str: string, func: Function, disabled: boolean = false, c?: string, id?: string): HTMLButtonElement {
     const b: HTMLButtonElement = document.createElement('button');
     b.type = 'button';
@@ -91,7 +103,7 @@ class UI {
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
     }
-    if (p && i !== undefined) {
+    if (c && i !== undefined) {
       let b = UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
@@ -111,7 +123,6 @@ class UI {
     }
     div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
       m.apply(t);
-      moveOn();
     }, false, 'apply'));
     return div;
   }
@@ -125,13 +136,56 @@ class UI {
     }
     if (refusable) {
       div.appendChild(UI.makeButton('No Thank You', function() {
-        moveOn();
       }));
     } else {
-      div.appendChild(UI.makeButton("Can't Refuse!", function() {
-        moveOn();
-      }, true));
+      div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
     }
+    return div;
+  }
+
+  static renderMainTitle(): HTMLElement {
+    return UI.makeHeader('The Prototype Inheritance', 'titletext');
+  }
+
+  static renderTitleScreen(options: [string, Function][]): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('titlescreen');
+    div.appendChild(UI.renderMainTitle());
+    div.appendChild(UI.renderOptions(options));
+    return div;
+  }
+
+  static renderOptions(options: [string, Function][]): HTMLElement {
+    const buttons: HTMLElement = UI.makeDiv('buttons');
+    for (let i = 0; i < options.length; i++) {
+      buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
+    }
+    return buttons;
+  }
+
+  static renderCreditsEntry(entry: CreditsEntry): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('entry');
+    div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
+    div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+    return div;
+  }
+
+  static renderCredits(credits: CreditsEntry[], endfunc?: Function): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('credits');
+    div.appendChild(UI.renderMainTitle());
+    credits.map(x => UI.renderCreditsEntry(x)).forEach(val => {
+      div.appendChild(val);
+    });
+    if (endfunc) {
+      div.appendChild(UI.makeButton('Return to Title', endfunc));
+    }
+    return div;
+  }
+
+  static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('charselect');
+    div.appendChild(UI.makeHeader('Choose Your Character'));
+    const tuples: [string, Function][] = chars.map(char => <[string, Function]> [char.name, () => callback(char)]);
+    div.appendChild(UI.renderOptions(tuples.concat([['Back to Title', exit]])));
     return div;
   }
 
@@ -143,6 +197,11 @@ class UI {
     if (UI.redrawFunction) {
       UI.redrawFunction();
     }
+  }
+
+  static fillScreen(...elems: HTMLElement[]): void {
+    document.body.innerHTML = '';
+    elems.forEach(elem => document.body.appendChild(elem));
   }
 
 }
