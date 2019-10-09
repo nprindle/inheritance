@@ -22,6 +22,7 @@ class Fight {
     UI.setRedrawFunction(() => { this.redraw(); });
     // this.player.setDeathFunc(() => { this.end(); });
     this.enemy.setDeathFunc(() => { this.end(); });
+    this.div = document.createElement('div');
     this.draw();
   }
 
@@ -47,11 +48,13 @@ class Fight {
       return;
     } else {
       let move = moveSequence.shift();
-      console.log("Move: " + move);
-      UI.fakeClick(this.enemyButtons[move]);
-      window.setTimeout(() => {
-        this.makeNextEnemyMove(moveSequence);
-      }, 750);
+      if (move) {
+        console.log("Move: " + move);
+        UI.fakeClick(this.enemyButtons[move]);
+        window.setTimeout(() => {
+          this.makeNextEnemyMove(moveSequence);
+        }, 750);
+      }
     }
   }
 

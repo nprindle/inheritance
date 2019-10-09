@@ -31,12 +31,15 @@ class Run {
     }
 
     offerModifier(): void {
-        let m = modifiers.selectRandomUnseen(this.seenModifiers);
+        // TODO: don't do an unsafe assertion here
+        let m = modifiers.selectRandomUnseen(this.seenModifiers)!;
         UI.fillScreen(UI.renderModifier(m, this.player, () => this.nextEvent()));
     }
 
     startFight(): void {
-        let f = new Fight(this.player, enemies.selectRandomUnseen(this.seenEnemies));
+        // TODO: don't do an unsafe assertion here
+        let enemy = enemies.selectRandomUnseen(this.seenEnemies)!;
+        let f = new Fight(this.player, enemy);
         f.setEndCallback(() => this.nextEvent());
     }
 

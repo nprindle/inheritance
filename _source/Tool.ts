@@ -37,6 +37,7 @@ class Tool {
     this.modifiers = [];
     this.multiplier = 1;
     this.usesPerTurn = Infinity;
+    this.usesLeft = this.usesPerTurn;
     for (let i = 0; i < effects.length; i++) {
       let curr = effects[i];
       if (curr instanceof AbstractEffect) {

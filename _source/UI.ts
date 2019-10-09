@@ -60,7 +60,7 @@ class UI {
     elem.classList.remove('fakeclick');
     elem.classList.add('fakeclick');
     window.setTimeout(function() {
-      elem.onclick(new MouseEvent('click'));
+      elem.onclick!(new MouseEvent('click'));
       elem.classList.remove('fakeclick');
     }, 500);
   }
@@ -103,7 +103,7 @@ class UI {
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
     }
-    if (c && i !== undefined) {
+    if (c && i !== undefined && target !== undefined) {
       let b = UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
