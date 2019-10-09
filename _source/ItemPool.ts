@@ -54,7 +54,7 @@ class ItemPool<T extends { clone: () => T }, E> {
   // items has the given tags, fall back to the next tag set. If none of the tag
   // sets match, clean items matching the first tag set out of the seen array
   // and recalculate.
-  selectUnseen(seen: string[], tags: E[], ...fallbacks: E[][]): T[] {
+  selectUnseenTags(seen: string[], tags: E[], ...fallbacks: E[][]): string[] {
     const unseen = (k) => seen.indexOf(k) < 0;
     let unseenMatching = [];
     let tagsMatch = this.keys.filter((k) => this.items[k].hasTags(tags));
@@ -71,9 +71,19 @@ class ItemPool<T extends { clone: () => T }, E> {
     // after cleaning, either.
     if (unseenMatching.length == 0) {
       filterInPlace(seen, (k) => this.items[k].hasTags(tags));
-      return tagsMatch.map((k) => this.items[k].get());
+      return tagsMatch;
     }
-    return unseenMatching.map((k) => this.items[k].get());
+    return unseenMatching;
+  }
+
+  selectAllUnseen(seen: string[], tags: E[], ...fallbacks: E[][]): T[] {
+    return this.selectUnseenTags(seen, tags, ...fallbacks).map(k => this.get(k));
+  }
+
+  selectRandomUnseen(seen: string[], tags: E[], ...fallbacks: E[][]): T {
+    const key = Random.fromArray(this.selectUnseenTags(seen, tags, ...fallbacks));
+    seen.push(key);
+    return this.get(key);
   }
 
   getAll(): T[] {
@@ -85,5 +95,3 @@ class ItemPool<T extends { clone: () => T }, E> {
 const tools = new ItemPool<Tool, string>();
 const modifiers = new ItemPool<Modifier, string>();
 const characters = new ItemPool<Player, string>();
-
-characters.add('kid', new Player('The Kid', 10, 10));
