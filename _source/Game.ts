@@ -29,6 +29,7 @@ class Game {
         new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
         new CreditsEntry('Grace Rarer', 'Programming'),
         new CreditsEntry('Mitchell Philipp', 'Programming'),
+        new CreditsEntry('Prindle', 'Programming'),
         new CreditsEntry('Seong Ryoo', 'Art'),
       ], () => Game.showTitle())
     );
