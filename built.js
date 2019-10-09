@@ -139,26 +139,28 @@ var UI = (function () {
         }
         return div;
     };
-    UI.renderOfferTool = function (t, m) {
+    UI.renderOfferTool = function (t, m, callback) {
         var div = UI.renderTool(t);
         if (t.usesPerTurn < Infinity) {
             div.appendChild(UI.makeTextParagraph("usable " + t.usesPerTurn + " time(s) per turn"));
         }
         div.appendChild(UI.makeButton("Apply " + m.name, function (e) {
             m.apply(t);
+            callback();
         }, false, 'apply'));
         return div;
     };
-    UI.renderModifier = function (m, p, refusable) {
+    UI.renderModifier = function (m, p, exitCallback, refusable) {
         if (refusable === void 0) { refusable = true; }
         var div = UI.makeDiv('modifier');
         div.appendChild(UI.makeTextParagraph(m.name, 'name'));
         div.appendChild(UI.makeTextParagraph(m.describe(), 'desc'));
         for (var i = 0; i < p.tools.length; i++) {
-            div.appendChild(UI.renderOfferTool(p.tools[i], m));
+            div.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
         }
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function () {
+                exitCallback();
             }));
         }
         else {
@@ -637,7 +639,6 @@ var Fight = (function () {
         this.playersTurn = true;
         this.enemyButtons = [];
         UI.setRedrawFunction(function () { _this.redraw(); });
-        this.player.setDeathFunc(function () { _this.end(); });
         this.enemy.setDeathFunc(function () { _this.end(); });
         this.draw();
     }
@@ -648,7 +649,6 @@ var Fight = (function () {
         this.playersTurn = !this.playersTurn;
         this.player.refresh();
         this.enemy.refresh();
-        console.log('turn ended :)');
         this.enemyButtons = [];
         UI.redraw();
         if (!this.playersTurn) {
@@ -829,7 +829,6 @@ var ItemPool = (function () {
         }
         var unseen = function (k) { return seen.indexOf(k) < 0; };
         var unseenMatching = [];
-        console.log(tags, this.keys);
         var tagsMatch = this.keys.filter(function (k) {
             var _a;
             return (_a = _this.items[k]).hasTags.apply(_a, tags);
@@ -1008,16 +1007,31 @@ var Run = (function () {
         var _this = this;
         this.player = player;
         this.player.setDeathFunc(function () { return Game.showGameOver(_this); });
+        this.numEvents = 0;
         this.seenEnemies = [];
         this.seenModifiers = [];
     }
     Run.prototype.start = function () {
-        this.startFight();
+        this.nextEvent();
+    };
+    Run.prototype.nextEvent = function () {
+        this.numEvents++;
+        switch (this.numEvents % 2) {
+            case 0:
+                return this.offerModifier();
+            case 1:
+                return this.startFight();
+        }
+    };
+    Run.prototype.offerModifier = function () {
+        var _this = this;
+        var m = modifiers.selectRandomUnseen(this.seenModifiers);
+        UI.fillScreen(UI.renderModifier(m, this.player, function () { return _this.nextEvent(); }));
     };
     Run.prototype.startFight = function () {
         var _this = this;
         var f = new Fight(this.player, enemies.selectRandomUnseen(this.seenEnemies));
-        f.setEndCallback(function () { return _this.startFight(); });
+        f.setEndCallback(function () { return _this.nextEvent(); });
     };
     return Run;
 }());

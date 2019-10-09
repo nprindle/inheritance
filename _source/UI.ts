@@ -116,26 +116,28 @@ class UI {
     return div;
   }
 
-  static renderOfferTool(t: Tool, m: Modifier) {
+  static renderOfferTool(t: Tool, m: Modifier, callback: Function) {
     const div: HTMLElement = UI.renderTool(t);
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`usable ${t.usesPerTurn} time(s) per turn`));
     }
     div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
       m.apply(t);
+      callback();
     }, false, 'apply'));
     return div;
   }
 
-  static renderModifier(m: Modifier, p: Player, refusable: boolean = true) {
+  static renderModifier(m: Modifier, p: Player, exitCallback: Function, refusable: boolean = true) {
     const div: HTMLElement = UI.makeDiv('modifier');
     div.appendChild(UI.makeTextParagraph(m.name, 'name'));
     div.appendChild(UI.makeTextParagraph(m.describe(), 'desc'));
     for (let i = 0; i < p.tools.length; i++) {
-      div.appendChild(UI.renderOfferTool(p.tools[i], m));
+      div.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
     }
     if (refusable) {
       div.appendChild(UI.makeButton('No Thank You', function() {
+        exitCallback();
       }));
     } else {
       div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
