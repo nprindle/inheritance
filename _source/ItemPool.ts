@@ -1,33 +1,29 @@
 /// <reference path="Tool.ts" />
 /// <reference path="Modifier.ts" />
 
-class ItemPoolEntry<T> {
+class ItemPoolEntry<T extends { clone: () => T }, E> {
 
   key: string;
-  value: any; //TODO: use better typing here
-  tags: string[];
+  value: T;
+  tags: E[];
 
-  constructor(key: string, value: T, ...tags: string[]) {
+  constructor(key: string, value: T, ...tags: E[]) {
     this.key = key;
     this.value = value;
     this.tags = tags;
   }
 
   get(): T { //get(): T images. good for stock photo
-    if (this.value.clone) {
-      return this.value.clone();
-    } else {
-      return this.value;
-    }
+    return this.value.clone();
   }
 
-  hasTags(...tags: string[]) { //returns true if it has any of the tags
-    return this.tags.filter(x => tags.indexOf(x) !== -1).length > 0;
+  hasTags(...tags: E[]) { //returns true if it has any of the tags
+    return this.tags.some(x => tags.indexOf(x) !== -1);
   }
 
 }
 
-class ItemPool<T> {
+class ItemPool<T extends { clone: () => T }, E> {
 
   items: Object;
   keys: string[];
@@ -37,8 +33,8 @@ class ItemPool<T> {
     this.keys = [];
   }
 
-  add(key: string, item: T, ...tags: string[]): void {
-    this.items[key] = new ItemPoolEntry<T>(key, item, ...tags);
+  add(key: string, item: T, ...tags: E[]): void {
+    this.items[key] = new ItemPoolEntry<T, E>(key, item, ...tags);
     this.keys.push(key);
   }
 
@@ -50,18 +46,44 @@ class ItemPool<T> {
   }
 
   getRandom(): T {
-    let key = this.keys[Math.floor(Math.random() * this.keys.length)];
+    let key = Random.fromArray(this.keys);
     return this.get(key);
   }
 
+  // Select all items with the given tags that haven't been seen. If none of the
+  // items has the given tags, fall back to the next tag set. If none of the tag
+  // sets match, clean items matching the first tag set out of the seen array
+  // and recalculate.
+  selectUnseen(seen: string[], tags: E[], ...fallbacks: E[][]): T[] {
+    const unseen = (k) => seen.indexOf(k) < 0;
+    let unseenMatching = [];
+    let tagsMatch = this.keys.filter((k) => this.items[k].hasTags(tags));
+    for (let ts of [tags, ...fallbacks]) {
+      const matching = this.keys.filter((k) => unseen(k) && this.items[k].hasTags(ts));
+      if (matching.length > 0) {
+        unseenMatching = matching;
+        break;
+      }
+    }
+    // Clean when no unseen matches were found. If anything matched from the
+    // first tag set when not considering whether it was seen, it will match
+    // after cleaning. Otherwise, if none of the tags matched, they won't match
+    // after cleaning, either.
+    if (unseenMatching.length == 0) {
+      filterInPlace(seen, (k) => this.items[k].hasTags(tags));
+      return tagsMatch.map((k) => this.items[k].get());
+    }
+    return unseenMatching.map((k) => this.items[k].get());
+  }
+
   getAll(): T[] {
-    return this.keys.map(x => this.get(x));
+    return this.keys.map((x) => this.get(x));
   }
 
 }
 
-const tools = new ItemPool<Tool>();
-const modifiers = new ItemPool<Modifier>();
-const characters = new ItemPool<Player>();
+const tools = new ItemPool<Tool, string>();
+const modifiers = new ItemPool<Modifier, string>();
+const characters = new ItemPool<Player, string>();
 
 characters.add('kid', new Player('The Kid', 10, 10));

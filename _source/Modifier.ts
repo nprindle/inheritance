@@ -85,4 +85,8 @@ class Modifier {
     return Strings.conjoin(acc);
   }
 
+  clone(): Modifier {
+    return this;
+  }
+
 }

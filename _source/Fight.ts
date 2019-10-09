@@ -19,12 +19,9 @@ class Fight {
     this.endCallback = () => {};
     this.playersTurn = true;
     this.enemyButtons = [];
-    //i know this is gross.
-    let closure = this;
-    UI.setRedrawFunction(function() {closure.redraw()});
-    this.enemy.setDeathFunc(function() {
-      closure.end();
-    });
+    UI.setRedrawFunction(() => { this.redraw(); });
+    this.player.setDeathFunc(() => { this.end(); });
+    this.enemy.setDeathFunc(() => { this.end(); });
     this.draw();
   }
 
@@ -53,16 +50,14 @@ class Fight {
       let move = moveSequence.shift();
       console.log("Move: " + move);
       UI.fakeClick(this.enemyButtons[move]);
-      let closure = this;
-      window.setTimeout(function() {
-        closure.makeNextEnemyMove(moveSequence);
+      window.setTimeout(() => {
+        this.makeNextEnemyMove(moveSequence);
       }, 750);
     }
   }
 
   endTurnButton(): HTMLElement {
-    let closure = this;
-    return UI.makeButton('End Turn', function() {closure.endTurn()}, !this.playersTurn, 'endturn');
+    return UI.makeButton('End Turn', () => { this.endTurn(); }, !this.playersTurn, 'endturn');
   }
 
   draw(): void {
