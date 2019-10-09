@@ -4,10 +4,14 @@
 class Run {
 
     player: Player;
+    seenEnemies: string[];
+    seenModifiers: string[];
 
     constructor(player: Player) {
         this.player = player;
         this.player.setDeathFunc(() => Game.showGameOver(this));
+        this.seenEnemies = [];
+        this.seenModifiers = [];
     }
 
     start(): void {
@@ -15,7 +19,7 @@ class Run {
     }
 
     startFight(): void {
-        let f = new Fight(this.player, new Enemy('Goldfish', 10, 10, new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(10))));
+        let f = new Fight(this.player, enemies.selectRandomUnseen(this.seenEnemies));
         f.setEndCallback(() => this.startFight());
     }
 

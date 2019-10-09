@@ -8,6 +8,7 @@
 /// <reference path="tools.ts" />
 /// <reference path="modifiers.ts" />
 /// <reference path="characters.ts" />
+/// <reference path="enemies.ts" />
 /// <reference path="CreditsEntry.ts" />
 /// <reference path="Game.ts" />
 

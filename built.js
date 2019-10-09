@@ -793,7 +793,7 @@ var ItemPoolEntry = (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             tags[_i] = arguments[_i];
         }
-        return this.tags.some(function (x) { return tags.indexOf(x) !== -1; });
+        return tags.length === 0 || this.tags.some(function (x) { return tags.indexOf(x) !== -1; });
     };
     return ItemPoolEntry;
 }());
@@ -820,17 +820,25 @@ var ItemPool = (function () {
         var key = Random.fromArray(this.keys);
         return this.get(key);
     };
-    ItemPool.prototype.selectUnseen = function (seen, tags) {
+    ItemPool.prototype.selectUnseenTags = function (seen, tags) {
         var _this = this;
+        if (tags === void 0) { tags = []; }
         var fallbacks = [];
         for (var _i = 2; _i < arguments.length; _i++) {
             fallbacks[_i - 2] = arguments[_i];
         }
         var unseen = function (k) { return seen.indexOf(k) < 0; };
         var unseenMatching = [];
-        var tagsMatch = this.keys.filter(function (k) { return _this.items[k].hasTags(tags); });
+        console.log(tags, this.keys);
+        var tagsMatch = this.keys.filter(function (k) {
+            var _a;
+            return (_a = _this.items[k]).hasTags.apply(_a, tags);
+        });
         var _loop_1 = function (ts) {
-            var matching = this_1.keys.filter(function (k) { return unseen(k) && _this.items[k].hasTags(ts); });
+            var matching = this_1.keys.filter(function (k) {
+                var _a;
+                return unseen(k) && (_a = _this.items[k]).hasTags.apply(_a, ts);
+            });
             if (matching.length > 0) {
                 unseenMatching = matching;
                 return "break";
@@ -844,10 +852,33 @@ var ItemPool = (function () {
                 break;
         }
         if (unseenMatching.length == 0) {
-            filterInPlace(seen, function (k) { return _this.items[k].hasTags(tags); });
-            return tagsMatch.map(function (k) { return _this.items[k].get(); });
+            filterInPlace(seen, function (k) {
+                var _a;
+                return (_a = _this.items[k]).hasTags.apply(_a, tags);
+            });
+            return tagsMatch;
         }
-        return unseenMatching.map(function (k) { return _this.items[k].get(); });
+        return unseenMatching;
+    };
+    ItemPool.prototype.selectAllUnseen = function (seen, tags) {
+        var _this = this;
+        if (tags === void 0) { tags = []; }
+        var fallbacks = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            fallbacks[_i - 2] = arguments[_i];
+        }
+        return this.selectUnseenTags.apply(this, [seen, tags].concat(fallbacks)).map(function (k) { return _this.get(k); });
+    };
+    ItemPool.prototype.selectRandomUnseen = function (seen, tags) {
+        if (tags === void 0) { tags = []; }
+        var fallbacks = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            fallbacks[_i - 2] = arguments[_i];
+        }
+        var unseen = this.selectUnseenTags.apply(this, [seen, tags].concat(fallbacks));
+        var key = Random.fromArray(unseen);
+        seen.push(key);
+        return this.get(key);
     };
     ItemPool.prototype.getAll = function () {
         var _this = this;
@@ -858,14 +889,18 @@ var ItemPool = (function () {
 var tools = new ItemPool();
 var modifiers = new ItemPool();
 var characters = new ItemPool();
-characters.add('kid', new Player('The Kid', 10, 10));
+var enemies = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
-tools.add('sixshooter', new Tool('Six Shooter', new Cost([1, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
+tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
+tools.add('splash', new Tool('Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
+characters.add('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')));
+enemies.add('goldfish', new Enemy('Goldfish', 10, 5, tools.get('splash')));
+enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
 var CreditsEntry = (function () {
     function CreditsEntry(name) {
         var roles = [];
@@ -973,13 +1008,15 @@ var Run = (function () {
         var _this = this;
         this.player = player;
         this.player.setDeathFunc(function () { return Game.showGameOver(_this); });
+        this.seenEnemies = [];
+        this.seenModifiers = [];
     }
     Run.prototype.start = function () {
         this.startFight();
     };
     Run.prototype.startFight = function () {
         var _this = this;
-        var f = new Fight(this.player, new Enemy('Goldfish', 10, 10, new Tool('Violent Splash', new Cost([1, CostTypes.Energy]), new DamageEffect(10))));
+        var f = new Fight(this.player, enemies.selectRandomUnseen(this.seenEnemies));
         f.setEndCallback(function () { return _this.startFight(); });
     };
     return Run;
