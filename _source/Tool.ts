@@ -1,4 +1,4 @@
-/// <reference path="AbstractEffect" />
+/// <reference path="AbstractEffect.ts" />
 /// <reference path="Cost.ts" />
 /// <reference path="Strings.ts" />
 
@@ -25,7 +25,7 @@ class Tool {
   _name: string;
   effects: AbstractEffect[];
   cost: Cost;
-  modifiers: string[];
+  modifiers: [string, number][];
   multiplier: number;
   usesPerTurn: number;
   usesLeft: number;
@@ -53,7 +53,7 @@ class Tool {
     if (this.modifiers.length === 0) {
       return `${this._name}${multString}`;
     }
-    return `${this.modifiers.join(' ')} ${this._name}${multString}`;
+    return `${this.modifiers.map(Strings.powerTuple).join(' ')} ${this._name}${multString}`;
   }
 
   usableBy(user: Combatant): boolean {
@@ -83,6 +83,16 @@ class Tool {
       acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
     }
     return acc.join(' ');
+  }
+
+  addModifierString(str: string): void {
+    for (let i = 0; i < this.modifiers.length; i++) {
+      if (this.modifiers[i][0] === str) {
+        this.modifiers[i][1]++;
+        return;
+      }
+    }
+    this.modifiers.push([str, 1]);
   }
 
   clone(): Tool {

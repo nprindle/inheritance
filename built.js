@@ -393,6 +393,17 @@ var Strings = (function () {
     Strings.conjoin = function (strs) {
         return strs.map(function (x) { return Strings.capitalize(x) + "."; }).join(' ');
     };
+    Strings.powerTuple = function (tuple) {
+        if (tuple[1] <= 1) {
+            return tuple[0];
+        }
+        return "" + tuple[0] + Strings.power(tuple[1]);
+    };
+    Strings.power = function (n) {
+        var digits = ("" + n).split('').map(function (x) { return parseInt(x); });
+        return digits.map(function (x) { return Strings.superscripts[x]; }).join('');
+    };
+    Strings.superscripts = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
     return Strings;
 }());
 var ToolMod = (function () {
@@ -441,7 +452,7 @@ var Tool = (function () {
             if (this.modifiers.length === 0) {
                 return "" + this._name + multString;
             }
-            return this.modifiers.join(' ') + " " + this._name + multString;
+            return this.modifiers.map(Strings.powerTuple).join(' ') + " " + this._name + multString;
         },
         enumerable: true,
         configurable: true
@@ -470,6 +481,15 @@ var Tool = (function () {
             acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
         }
         return acc.join(' ');
+    };
+    Tool.prototype.addModifierString = function (str) {
+        for (var i = 0; i < this.modifiers.length; i++) {
+            if (this.modifiers[i][0] === str) {
+                this.modifiers[i][1]++;
+                return;
+            }
+        }
+        this.modifiers.push([str, 1]);
     };
     Tool.prototype.clone = function () {
         var effectsClones = this.effects.map(function (x) { return x.clone(); });
@@ -762,7 +782,7 @@ var Modifier = (function () {
         }
     };
     Modifier.prototype.apply = function (t) {
-        t.modifiers.push(this.name);
+        t.addModifierString(this.name);
         t.cost.scale(this.costMultiplier);
         t.cost.addCost(this.costAdd);
         t.multiplier += this.multiplierAdd;
