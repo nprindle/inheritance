@@ -3,5 +3,5 @@
 /// <reference path="../Enemy.ts" />
 
 enemies.add('goldfish',
-    new Enemy('Goldfish', 10, 5, tools.get('splash')!)
+    new Enemy('Goldfish', 10, 10, tools.get('splash')!, tools.get('wrench')!)
 );

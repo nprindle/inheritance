@@ -676,13 +676,14 @@ var Fight = (function () {
     };
     Fight.prototype.makeNextEnemyMove = function (moveSequence) {
         var _this = this;
+        console.log(moveSequence);
         if (moveSequence.length <= 0) {
             UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
             return;
         }
         else {
             var move = moveSequence.shift();
-            if (move) {
+            if (move !== undefined) {
                 console.log("Move: " + move);
                 UI.fakeClick(this.enemyButtons[move]);
                 window.setTimeout(function () {
@@ -919,7 +920,7 @@ modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2]
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
 characters.add('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')));
-enemies.add('goldfish', new Enemy('Goldfish', 10, 5, tools.get('splash')));
+enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
 enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
 var CreditsEntry = (function () {
     function CreditsEntry(name) {

@@ -43,12 +43,13 @@ class Fight {
   }
 
   makeNextEnemyMove(moveSequence: number[]): void {
+    console.log(moveSequence);
     if(moveSequence.length <= 0) {
       UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
       return;
     } else {
       let move = moveSequence.shift();
-      if (move) {
+      if (move !== undefined) {
         console.log("Move: " + move);
         UI.fakeClick(this.enemyButtons[move]);
         window.setTimeout(() => {
