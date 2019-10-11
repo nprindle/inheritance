@@ -496,7 +496,11 @@ var Tool = (function () {
         var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
         t.usesPerTurn = this.usesPerTurn;
         t.multiplier = this.multiplier;
-        t.modifiers = this.modifiers;
+        var modifiers = [];
+        for (var i = 0; i < this.modifiers.length; i++) {
+            modifiers[i] = [this.modifiers[i][0], this.modifiers[i][1]];
+        }
+        t.modifiers = modifiers;
         return t;
     };
     return Tool;

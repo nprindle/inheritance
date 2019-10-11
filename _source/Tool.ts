@@ -100,7 +100,11 @@ class Tool {
     let t = new Tool(this.name, this.cost.clone(), ...effectsClones);
     t.usesPerTurn = this.usesPerTurn;
     t.multiplier = this.multiplier;
-    t.modifiers = this.modifiers;
+    let modifiers: [string, number][] = [];
+    for (let i = 0; i < this.modifiers.length; i++) {
+      modifiers[i] = [this.modifiers[i][0], this.modifiers[i][1]];
+    }
+    t.modifiers = modifiers;
     return t;
   }
 
