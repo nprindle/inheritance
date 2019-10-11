@@ -130,6 +130,11 @@ button.endturn:active {
   text-align: center;
 }
 
+.logo {
+  background: url(assets/titletexture3.png) repeat;
+  animation: bgscroll infinite linear 12s;
+}
+
 @keyframes bgscroll {
   from {
     background-position: 0px 0px;

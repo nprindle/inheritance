@@ -55,6 +55,18 @@ class UI {
     return b;
   }
 
+  static makeImg(src: string, c?: string, id?: string): HTMLElement {
+    const img: HTMLImageElement = document.createElement('img');
+    img.src = src;
+    if (c) {
+      img.classList.add(c);
+    }
+    if (id) {
+      img.id = id;
+    }
+    return img;
+  }
+
   static fakeClick(elem: HTMLElement): void {
     //TODO: structure this more reasonably
     elem.classList.remove('fakeclick');
@@ -146,7 +158,8 @@ class UI {
   }
 
   static renderMainTitle(): HTMLElement {
-    return UI.makeHeader('The Prototype Inheritance', 'titletext');
+    //return UI.makeHeader('The Prototype Inheritance', 'titletext');
+    return UI.makeImg('assets/temp_logo.png', 'logo');
   }
 
   static renderTitleScreen(options: [string, Function][]): HTMLElement {
