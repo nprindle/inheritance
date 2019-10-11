@@ -197,8 +197,13 @@ var UI = (function () {
     };
     UI.renderCreditsEntry = function (entry) {
         var div = UI.makeDiv('entry');
-        div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
-        div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+        if (entry.roles.length > 0) {
+            div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
+            div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+        }
+        else {
+            div.appendChild(UI.makeTextParagraph(entry.name, 'sololine'));
+        }
         return div;
     };
     UI.renderCredits = function (credits, endfunc) {
@@ -954,6 +959,7 @@ var Game = (function () {
             new CreditsEntry('Prindle', 'Programming'),
             new CreditsEntry('Mitchell Philipp', 'Programming'),
             new CreditsEntry('Seong Ryoo', 'Art'),
+            new CreditsEntry('Logo is based on the font "This Boring Party" by Tom7.')
         ], function () { return Game.showTitle(); }));
     };
     Game.showGameOver = function (run) {

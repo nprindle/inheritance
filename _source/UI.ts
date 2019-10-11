@@ -179,8 +179,12 @@ class UI {
 
   static renderCreditsEntry(entry: CreditsEntry): HTMLElement {
     const div: HTMLElement = UI.makeDiv('entry');
-    div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
-    div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+    if (entry.roles.length > 0) {
+      div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
+      div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+    } else {
+      div.appendChild(UI.makeTextParagraph(entry.name, 'sololine'));
+    }
     return div;
   }
 

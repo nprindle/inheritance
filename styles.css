@@ -133,6 +133,8 @@ button.endturn:active {
 .logo {
   background: url(assets/titletexture3.png) repeat;
   animation: bgscroll infinite linear 12s;
+  display: block;
+  margin: 25px;
 }
 
 @keyframes bgscroll {
@@ -160,4 +162,8 @@ button.endturn:active {
 
 .entry p {
   font-size: 18px;
+}
+
+.entry .sololine {
+  text-align: center;
 }
