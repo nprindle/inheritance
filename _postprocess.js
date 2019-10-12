@@ -15,7 +15,7 @@ function concatenator(acc, x) {
 }
 
 function generateLines(header, pool, func) {
-  const items = Object.values(pool.items).map(x => x.get());
+  const items = pool.getAll();
   const lines = items.map(x => func(x));
   //lines is an array of arrays, so...
   return [`# ${header}`].concat(lines.reduce(concatenator));

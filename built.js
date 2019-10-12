@@ -853,14 +853,15 @@ var Modifier = (function () {
     return Modifier;
 }());
 var ItemPoolEntry = (function () {
-    function ItemPoolEntry(key, value) {
+    function ItemPoolEntry(key, value, num) {
         var tags = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            tags[_i - 2] = arguments[_i];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            tags[_i - 3] = arguments[_i];
         }
         this.key = key;
         this.value = value;
         this.tags = tags;
+        this.sortingNumber = num;
     }
     ItemPoolEntry.prototype.get = function () {
         return this.value.clone();
@@ -875,16 +876,26 @@ var ItemPoolEntry = (function () {
     return ItemPoolEntry;
 }());
 var ItemPool = (function () {
-    function ItemPool() {
+    function ItemPool(sorted) {
+        if (sorted === void 0) { sorted = false; }
         this.items = {};
         this.keys = [];
+        this.sorted = sorted;
     }
     ItemPool.prototype.add = function (key, item) {
         var tags = [];
         for (var _i = 2; _i < arguments.length; _i++) {
             tags[_i - 2] = arguments[_i];
         }
-        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item].concat(tags)))();
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item, 0].concat(tags)))();
+        this.keys.push(key);
+    };
+    ItemPool.prototype.addSorted = function (key, item, position) {
+        var tags = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            tags[_i - 3] = arguments[_i];
+        }
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item, position].concat(tags)))();
         this.keys.push(key);
     };
     ItemPool.prototype.get = function (key) {
@@ -959,13 +970,18 @@ var ItemPool = (function () {
     };
     ItemPool.prototype.getAll = function () {
         var _this = this;
+        if (this.sorted) {
+            return this.keys.map(function (x) { return _this.items[x]; })
+                .sort(function (a, b) { return a.sortingNumber - b.sortingNumber; })
+                .map(function (x) { return x.get(); }).filter(function (x) { return x !== null; });
+        }
         return this.keys.map(function (x) { return _this.get(x); }).filter(function (x) { return x !== null; });
     };
     return ItemPool;
 }());
 var tools = new ItemPool();
 var modifiers = new ItemPool();
-var characters = new ItemPool();
+var characters = new ItemPool(true);
 var enemies = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
@@ -977,8 +993,8 @@ modifiers.add('hearty', new Modifier('Hearty', new CounterEffect(new HealingEffe
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
-characters.add('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')));
-characters.add('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')));
+characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')), 1);
+characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')), 0);
 enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
 enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
 var CreditsEntry = (function () {

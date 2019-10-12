@@ -1,5 +1,19 @@
 # Characters
 
+## The Granddaughter
+
+Health: 15
+
+Energy: 10
+
+Tools:
+
+* **Wrench**
+
+* Cost: 1 Energy
+
+* Do 1 damage.
+
 ## The Clone
 
 Health: 10
@@ -15,17 +29,3 @@ Tools:
 * In 3 uses, do 10 damage.
 
 * Usable 1 time(s) per turn
-
-## The Granddaughter
-
-Health: 15
-
-Energy: 10
-
-Tools:
-
-* **Wrench**
-
-* Cost: 1 Energy
-
-* Do 1 damage.

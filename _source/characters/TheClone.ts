@@ -2,4 +2,4 @@
 /// <reference path="../ItemPool.ts" />
 /// <reference path="../tools.ts" />
 
-characters.add('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')!));
+characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')!), 1);
