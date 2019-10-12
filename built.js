@@ -1035,6 +1035,8 @@ window.onload = function () {
 if (window.innerHeight === 0) {
     window.console.log('tools', tools);
     window.console.log('modifiers', modifiers);
+    window.console.log('enemies', enemies);
+    window.console.log('characters', characters);
 }
 var AI = (function () {
     function AI(aiCombatant, humanCombatant) {
