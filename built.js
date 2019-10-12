@@ -337,7 +337,7 @@ var CounterEffect = (function (_super) {
     };
     CounterEffect.prototype.toString = function () {
         if (this.currentCounter === 1) {
-            return this.next.toString();
+            return "next use, " + this.next.toString();
         }
         else {
             return "in " + this.currentCounter + " uses, " + this.next.toString();
@@ -970,6 +970,7 @@ tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]),
 tools.add('splash', new Tool('Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()));
 tools.add('windupraygun', new Tool('Wind-Up Ray Gun', new Cost([1, CostTypes.Energy]), new CounterEffect(new DamageEffect(10), 3), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
+modifiers.add('hearty', new Modifier('Hearty', new CounterEffect(new HealingEffect(1), 5)));
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));

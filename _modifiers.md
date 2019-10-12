@@ -1,5 +1,9 @@
 # Modifiers
 
+## Hearty
+
+Add effect(s): In 5 uses, recover 1 health.
+
 ## Jittering
 
 Cost x2. Multiplier +1.
