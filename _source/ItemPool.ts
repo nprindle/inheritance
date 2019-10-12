@@ -8,11 +8,13 @@ class ItemPoolEntry<T extends { clone: () => T }, E> {
   key: string;
   value: T;
   tags: E[];
+  sortingNumber: number;
 
-  constructor(key: string, value: T, ...tags: E[]) {
+  constructor(key: string, value: T, num: number, ...tags: E[]) {
     this.key = key;
     this.value = value;
     this.tags = tags;
+    this.sortingNumber = num;
   }
 
   get(): T { //get(): T images. good for stock photo
@@ -29,14 +31,21 @@ class ItemPool<T extends { clone: () => T }, E> {
 
   items: { [key: string]: ItemPoolEntry<T, E> };
   keys: string[];
+  sorted: boolean;
 
-  constructor() {
+  constructor(sorted: boolean = false) {
     this.items = {};
     this.keys = [];
+    this.sorted = sorted;
   }
 
   add(key: string, item: T, ...tags: E[]): void {
-    this.items[key] = new ItemPoolEntry<T, E>(key, item, ...tags);
+    this.items[key] = new ItemPoolEntry<T, E>(key, item, 0, ...tags);
+    this.keys.push(key);
+  }
+
+  addSorted(key: string, item: T, position: number, ...tags: E[]): void {
+    this.items[key] = new ItemPoolEntry<T, E>(key, item, position, ...tags);
     this.keys.push(key);
   }
 
@@ -93,6 +102,11 @@ class ItemPool<T extends { clone: () => T }, E> {
 
   getAll(): T[] {
     // Note: a cast is much faster than a mapped assertion here
+    if (this.sorted) {
+      return this.keys.map((x) => this.items[x])
+        .sort((a, b) => a.sortingNumber - b.sortingNumber)
+        .map(x => x.get()).filter((x) => x !== null) as T[];
+    }
     return this.keys.map((x) => this.get(x)).filter((x) => x !== null) as T[];
   }
 
@@ -100,5 +114,5 @@ class ItemPool<T extends { clone: () => T }, E> {
 
 const tools = new ItemPool<Tool, string>();
 const modifiers = new ItemPool<Modifier, string>();
-const characters = new ItemPool<Player, string>();
+const characters = new ItemPool<Player, string>(true);
 const enemies = new ItemPool<Enemy, string>();

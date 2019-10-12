@@ -319,6 +319,35 @@ var RepeatingEffect = (function (_super) {
     };
     return RepeatingEffect;
 }(AbstractEffect));
+var CounterEffect = (function (_super) {
+    __extends(CounterEffect, _super);
+    function CounterEffect(next, count) {
+        var _this = _super.call(this) || this;
+        _this.next = next;
+        _this.maxCounter = count;
+        _this.currentCounter = count;
+        return _this;
+    }
+    CounterEffect.prototype.effect = function (user, foe) {
+        this.currentCounter--;
+        if (this.currentCounter <= 0) {
+            this.next.activate(user, foe);
+            this.currentCounter = this.maxCounter;
+        }
+    };
+    CounterEffect.prototype.toString = function () {
+        if (this.currentCounter === 1) {
+            return "next use, " + this.next.toString();
+        }
+        else {
+            return "in " + this.currentCounter + " uses, " + this.next.toString();
+        }
+    };
+    CounterEffect.prototype.clone = function () {
+        return new CounterEffect(this.next.clone(), this.maxCounter);
+    };
+    return CounterEffect;
+}(AbstractEffect));
 var CostTypes;
 (function (CostTypes) {
     CostTypes[CostTypes["Health"] = 0] = "Health";
@@ -357,6 +386,9 @@ var Cost = (function () {
         if (this.healthCost > 0) {
             acc.push(this.healthCost + " Health");
         }
+        if (acc.length === 0) {
+            return 'Free';
+        }
         return acc.join(', ');
     };
     Cost.prototype.addString = function () {
@@ -393,6 +425,17 @@ var Strings = (function () {
     Strings.conjoin = function (strs) {
         return strs.map(function (x) { return Strings.capitalize(x) + "."; }).join(' ');
     };
+    Strings.powerTuple = function (tuple) {
+        if (tuple[1] <= 1) {
+            return tuple[0];
+        }
+        return "" + tuple[0] + Strings.power(tuple[1]);
+    };
+    Strings.power = function (n) {
+        var digits = ("" + n).split('').map(function (x) { return parseInt(x); });
+        return digits.map(function (x) { return Strings.superscripts[x]; }).join('');
+    };
+    Strings.superscripts = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
     return Strings;
 }());
 var ToolMod = (function () {
@@ -441,7 +484,7 @@ var Tool = (function () {
             if (this.modifiers.length === 0) {
                 return "" + this._name + multString;
             }
-            return this.modifiers.join(' ') + " " + this._name + multString;
+            return this.modifiers.map(Strings.powerTuple).join(' ') + " " + this._name + multString;
         },
         enumerable: true,
         configurable: true
@@ -471,12 +514,25 @@ var Tool = (function () {
         }
         return acc.join(' ');
     };
+    Tool.prototype.addModifierString = function (str) {
+        for (var i = 0; i < this.modifiers.length; i++) {
+            if (this.modifiers[i][0] === str) {
+                this.modifiers[i][1]++;
+                return;
+            }
+        }
+        this.modifiers.push([str, 1]);
+    };
     Tool.prototype.clone = function () {
         var effectsClones = this.effects.map(function (x) { return x.clone(); });
         var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
         t.usesPerTurn = this.usesPerTurn;
         t.multiplier = this.multiplier;
-        t.modifiers = this.modifiers;
+        var modifiers = [];
+        for (var i = 0; i < this.modifiers.length; i++) {
+            modifiers[i] = [this.modifiers[i][0], this.modifiers[i][1]];
+        }
+        t.modifiers = modifiers;
         return t;
     };
     return Tool;
@@ -762,7 +818,7 @@ var Modifier = (function () {
         }
     };
     Modifier.prototype.apply = function (t) {
-        t.modifiers.push(this.name);
+        t.addModifierString(this.name);
         t.cost.scale(this.costMultiplier);
         t.cost.addCost(this.costAdd);
         t.multiplier += this.multiplierAdd;
@@ -797,14 +853,15 @@ var Modifier = (function () {
     return Modifier;
 }());
 var ItemPoolEntry = (function () {
-    function ItemPoolEntry(key, value) {
+    function ItemPoolEntry(key, value, num) {
         var tags = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            tags[_i - 2] = arguments[_i];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            tags[_i - 3] = arguments[_i];
         }
         this.key = key;
         this.value = value;
         this.tags = tags;
+        this.sortingNumber = num;
     }
     ItemPoolEntry.prototype.get = function () {
         return this.value.clone();
@@ -819,16 +876,26 @@ var ItemPoolEntry = (function () {
     return ItemPoolEntry;
 }());
 var ItemPool = (function () {
-    function ItemPool() {
+    function ItemPool(sorted) {
+        if (sorted === void 0) { sorted = false; }
         this.items = {};
         this.keys = [];
+        this.sorted = sorted;
     }
     ItemPool.prototype.add = function (key, item) {
         var tags = [];
         for (var _i = 2; _i < arguments.length; _i++) {
             tags[_i - 2] = arguments[_i];
         }
-        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item].concat(tags)))();
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item, 0].concat(tags)))();
+        this.keys.push(key);
+    };
+    ItemPool.prototype.addSorted = function (key, item, position) {
+        var tags = [];
+        for (var _i = 3; _i < arguments.length; _i++) {
+            tags[_i - 3] = arguments[_i];
+        }
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item, position].concat(tags)))();
         this.keys.push(key);
     };
     ItemPool.prototype.get = function (key) {
@@ -903,23 +970,31 @@ var ItemPool = (function () {
     };
     ItemPool.prototype.getAll = function () {
         var _this = this;
+        if (this.sorted) {
+            return this.keys.map(function (x) { return _this.items[x]; })
+                .sort(function (a, b) { return a.sortingNumber - b.sortingNumber; })
+                .map(function (x) { return x.get(); }).filter(function (x) { return x !== null; });
+        }
         return this.keys.map(function (x) { return _this.get(x); }).filter(function (x) { return x !== null; });
     };
     return ItemPool;
 }());
 var tools = new ItemPool();
 var modifiers = new ItemPool();
-var characters = new ItemPool();
+var characters = new ItemPool(true);
 var enemies = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('splash', new Tool('Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()));
+tools.add('windupraygun', new Tool('Wind-Up Ray Gun', new Cost([1, CostTypes.Energy]), new CounterEffect(new DamageEffect(10), 3), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
+modifiers.add('hearty', new Modifier('Hearty', new CounterEffect(new HealingEffect(1), 5)));
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
-characters.add('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')));
+characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')), 1);
+characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')), 0);
 enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
 enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
 var CreditsEntry = (function () {
@@ -976,6 +1051,8 @@ window.onload = function () {
 if (window.innerHeight === 0) {
     window.console.log('tools', tools);
     window.console.log('modifiers', modifiers);
+    window.console.log('enemies', enemies);
+    window.console.log('characters', characters);
 }
 var AI = (function () {
     function AI(aiCombatant, humanCombatant) {

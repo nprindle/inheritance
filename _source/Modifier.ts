@@ -54,7 +54,7 @@ class Modifier {
   }
 
   apply(t: Tool): void {
-    t.modifiers.push(this.name);
+    t.addModifierString(this.name);
     t.cost.scale(this.costMultiplier);
     t.cost.addCost(this.costAdd);
     t.multiplier += this.multiplierAdd;

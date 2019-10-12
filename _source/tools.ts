@@ -2,4 +2,5 @@
 /// <reference path="tools/Singleton.ts" />
 /// <reference path="tools/SixShooter.ts" />
 /// <reference path="tools/Splash.ts" />
+/// <reference path="tools/WindUpRaygun.ts" />
 /// <reference path="tools/Wrench.ts" />
