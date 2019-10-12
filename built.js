@@ -319,6 +319,35 @@ var RepeatingEffect = (function (_super) {
     };
     return RepeatingEffect;
 }(AbstractEffect));
+var CounterEffect = (function (_super) {
+    __extends(CounterEffect, _super);
+    function CounterEffect(next, count) {
+        var _this = _super.call(this) || this;
+        _this.next = next;
+        _this.maxCounter = count;
+        _this.currentCounter = count;
+        return _this;
+    }
+    CounterEffect.prototype.effect = function (user, foe) {
+        this.currentCounter--;
+        if (this.currentCounter <= 0) {
+            this.next.activate(user, foe);
+            this.currentCounter = this.maxCounter;
+        }
+    };
+    CounterEffect.prototype.toString = function () {
+        if (this.currentCounter === 1) {
+            return this.next.toString();
+        }
+        else {
+            return "in " + this.currentCounter + " uses, " + this.next.toString();
+        }
+    };
+    CounterEffect.prototype.clone = function () {
+        return new CounterEffect(this.next.clone(), this.maxCounter);
+    };
+    return CounterEffect;
+}(AbstractEffect));
 var CostTypes;
 (function (CostTypes) {
     CostTypes[CostTypes["Health"] = 0] = "Health";
@@ -939,10 +968,12 @@ tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new 
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('splash', new Tool('Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()));
+tools.add('windupraygun', new Tool('Wind-Up Ray Gun', new Cost([1, CostTypes.Energy]), new CounterEffect(new DamageEffect(10), 3), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
+characters.add('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')));
 characters.add('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')));
 enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
 enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));

@@ -28,6 +28,14 @@ Cost: 1 Energy
 
 Do nothing.
 
+## Wind-Up Ray Gun
+
+Cost: 1 Energy
+
+In 3 uses, do 10 damage.
+
+Usable 1 time(s) per turn.
+
 ## Wrench
 
 Cost: 1 Energy
