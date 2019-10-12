@@ -386,6 +386,9 @@ var Cost = (function () {
         if (this.healthCost > 0) {
             acc.push(this.healthCost + " Health");
         }
+        if (acc.length === 0) {
+            return 'Free';
+        }
         return acc.join(', ');
     };
     Cost.prototype.addString = function () {
