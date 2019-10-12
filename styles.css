@@ -121,17 +121,8 @@ button.endturn:active {
   margin: 5px;
 }
 
-.titletext {
-  background: url(assets/titletexture3.png) repeat;
-  background-clip: text;
-  color: transparent;
-  font-size: 96px;
-  animation: bgscroll infinite linear 8s;
-  text-align: center;
-}
-
 .logo {
-  background: url(assets/titletexture3.png) repeat;
+  background: url(assets/titletexturebright.png) repeat;
   animation: bgscroll infinite linear 12s;
   display: block;
   margin: 25px;
