@@ -66,12 +66,15 @@ function showCredits(): void {
 }
 
 window.onload = function() {
-  document.body.appendChild(
-    UI.renderTitleScreen([
-      ['New Game', function() {setUpFight(0)}],
-      ['Credits', function() {showCredits()}]
-    ])
-  );
+  // document.body.appendChild(
+  //   UI.renderTitleScreen([
+  //     ['New Game', function() {setUpFight(0)}],
+  //     ['Credits', function() {showCredits()}]
+  //   ])
+  // );
+  var newFloor = new Floor(5, 5, 10, 15);
+  UI.setRedrawFunction(function() {newFloor.redraw()});
+  UI.redraw();
 }
 
 if (window.innerHeight === 0) {

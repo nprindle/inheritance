@@ -170,14 +170,26 @@ button.endturn:active {
   width: 100%;
 }
 
-.room.entrance {
+.room {
+  background-color: black;
+}
+
+.room.visited.entrance {
   background-color: green;
 }
 
-.room.exit {
+.room.visited.exit {
   background-color: yellow;
 }
 
-.room.none, .room.unvisited {
+.room.visited.empty {
+  background-color: #FFF;
+}
+
+.room.unvisited.visible {
+  background-color: #666;
+}
+
+.room.none {
   background-color: black;
 }

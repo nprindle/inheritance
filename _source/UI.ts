@@ -152,6 +152,47 @@ class UI {
     return div;
   }
 
+  static renderFloor(floor : Floor) {
+    const div : HTMLElement = UI.makeDiv("map");
+    div.innerHTML = '';
+    for (var i = 0; i < floor.height; i++) {
+      const row : HTMLElement = UI.makeDiv("map-row");
+      for (var j = 0; j < floor.width; j++) {
+        var currentRoom = floor.rooms[i][j]
+        var visible = false;
+        if (currentRoom) {
+          row.appendChild(UI.renderRoom(currentRoom));
+        } else {
+          row.appendChild(UI.makeDiv("room", ["none"]));
+        }
+      }
+    div.appendChild(row);
+    }
+    return div;
+  }
+
+  static renderRoom(room : Room, visible? : boolean) {
+    const div : HTMLElement = UI.makeDiv("room");
+    div.classList.add(room.type);
+    var visible = false;
+    for (var i = 0; i < room.exits.length; i++) {
+      if (room.exits[i].hasPlayer) {
+        visible = true;
+        break;
+      }
+    }
+    if (visible) {
+      div.classList.add("visible");
+      div.appendChild(UI.makeButton("Go!", function(e: MouseEvent) {
+        room.enter();
+      }));
+    }
+    if (room.visited) div.classList.add("visited"); 
+    else div.classList.add("unvisited");
+    div.appendChild(document.createTextNode(room.distanceFromEntrance.toString())); 
+    return div;
+  }
+
   static renderMainTitle(): HTMLElement {
     return UI.makeHeader('The Prototype Inheritance', 'titletext');
   }

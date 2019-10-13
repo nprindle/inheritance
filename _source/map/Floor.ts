@@ -22,7 +22,8 @@ class Floor {
             this.rooms[i] = new Array<Room>(this.width);
         }
 
-        var entranceRoom = new Room(RoomType.Entrance);
+        var entranceRoom = new Room(this, RoomType.Entrance);
+        entranceRoom.hasPlayer = true;
         entranceRoom.visited = true;
         this.rooms[Math.floor(Math.random() * this.height)][Math.floor(Math.random() * this.width)] = entranceRoom;
         for (var i = 0; i < this.roomCount - 1 ; i++) {
@@ -51,13 +52,12 @@ class Floor {
                     if (newRoomIndex[0] > -1 && newRoomIndex[0] < this.height && newRoomIndex[1] > -1 && newRoomIndex[1] < this.width && this.rooms[newRoomIndex[0]][newRoomIndex[1]] == undefined) break;
                 }
             }
-            var newRoom = new Room(RoomType.Empty, this.rooms[roomIndex[0]][roomIndex[1]]);
+            var newRoom = new Room(this, RoomType.Empty, this.rooms[roomIndex[0]][roomIndex[1]]);
             this.rooms[newRoomIndex[0]][newRoomIndex[1]] = newRoom;
             this.rooms[roomIndex[0]][roomIndex[1]].exits.push(newRoom);
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
         }
         var minExitDistance = Math.ceil(maxRoomDistance * 3.0 / 4);
-        console.log(minExitDistance);
         var potentialExits = [];
         for (var i = 0; i < this.height; i++) {
             for (var j = 0; j < this.width; j++) {
@@ -66,10 +66,8 @@ class Floor {
                 }
             }
         }
-        console.log(potentialExits);
         var exitRoom = potentialExits[Math.floor(Math.random() * potentialExits.length)];
         exitRoom.type = RoomType.Exit;
-        this.draw();
     }
 
     draw(): void {
@@ -79,18 +77,8 @@ class Floor {
     }
     
     redraw(): void {
-        this.div.innerHTML = '';
-        for (var i = 0; i < this.height; i++) {
-            const row : HTMLElement = UI.makeDiv("map-row");
-            for (var j = 0; j < this.width; j++) {
-                if (this.rooms[i][j]) {
-                    row.appendChild(this.rooms[i][j].renderRoom());
-                } else {
-                    row.appendChild(UI.makeDiv("room", ["none"]));
-                }
-            }
-            this.div.appendChild(row);
-        }
+        document.body.innerHTML = '';
+        document.body.appendChild(UI.renderFloor(this));
     }
     
     end(): void {
