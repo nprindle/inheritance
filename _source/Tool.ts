@@ -1,4 +1,4 @@
-/// <reference path="AbstractEffect" />
+/// <reference path="AbstractEffect.ts" />
 /// <reference path="Cost.ts" />
 /// <reference path="Strings.ts" />
 
@@ -25,7 +25,7 @@ class Tool {
   _name: string;
   effects: AbstractEffect[];
   cost: Cost;
-  modifiers: string[];
+  modifiers: [string, number][];
   multiplier: number;
   usesPerTurn: number;
   usesLeft: number;
@@ -37,6 +37,7 @@ class Tool {
     this.modifiers = [];
     this.multiplier = 1;
     this.usesPerTurn = Infinity;
+    this.usesLeft = this.usesPerTurn;
     for (let i = 0; i < effects.length; i++) {
       let curr = effects[i];
       if (curr instanceof AbstractEffect) {
@@ -52,7 +53,7 @@ class Tool {
     if (this.modifiers.length === 0) {
       return `${this._name}${multString}`;
     }
-    return `${this.modifiers.join(' ')} ${this._name}${multString}`;
+    return `${this.modifiers.map(Strings.powerTuple).join(' ')} ${this._name}${multString}`;
   }
 
   usableBy(user: Combatant): boolean {
@@ -84,12 +85,26 @@ class Tool {
     return acc.join(' ');
   }
 
+  addModifierString(str: string): void {
+    for (let i = 0; i < this.modifiers.length; i++) {
+      if (this.modifiers[i][0] === str) {
+        this.modifiers[i][1]++;
+        return;
+      }
+    }
+    this.modifiers.push([str, 1]);
+  }
+
   clone(): Tool {
     let effectsClones = this.effects.map(x => x.clone());
     let t = new Tool(this.name, this.cost.clone(), ...effectsClones);
     t.usesPerTurn = this.usesPerTurn;
     t.multiplier = this.multiplier;
-    t.modifiers = this.modifiers;
+    let modifiers: [string, number][] = [];
+    for (let i = 0; i < this.modifiers.length; i++) {
+      modifiers[i] = [this.modifiers[i][0], this.modifiers[i][1]];
+    }
+    t.modifiers = modifiers;
     return t;
   }
 

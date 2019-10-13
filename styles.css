@@ -96,7 +96,7 @@ button.endturn:active {
 
 /*TODO: how do we distribute the buttons sensibly*/
 
-.titlescreen {
+.titlescreen, .credits, .charselect {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -105,7 +105,7 @@ button.endturn:active {
   margin: 0;
 }
 
-.titlescreen > .buttons {
+.titlescreen > .buttons, .charselect > .buttons {
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -113,7 +113,7 @@ button.endturn:active {
   flex-wrap: wrap;
 }
 
-.titlescreen button {
+.titlescreen button, .credits button, .charselect button {
   font-size: 24px;
   padding: 5px;
   border-width: 2px;
@@ -121,13 +121,11 @@ button.endturn:active {
   margin: 5px;
 }
 
-.titletext {
-  background: url(assets/titletexture3.png) repeat;
-  background-clip: text;
-  color: transparent;
-  font-size: 96px;
-  animation: bgscroll infinite linear 8s;
-  text-align: center;
+.logo {
+  background: url(assets/titletexturebright.png) repeat;
+  animation: bgscroll infinite linear 12s;
+  display: block;
+  margin: 25px;
 }
 
 @keyframes bgscroll {
@@ -140,13 +138,24 @@ button.endturn:active {
   }
 }
 
-.credits {
+.entry {
+  text-align: center;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  align-self: center;
+  width: 750px;
 }
 
-.entry {
+.entry * {
+  margin: 20px 50px;
+}
+
+.entry p {
+  font-size: 18px;
+}
+
+.entry .sololine {
   text-align: center;
 }
 

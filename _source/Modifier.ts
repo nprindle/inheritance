@@ -54,7 +54,7 @@ class Modifier {
   }
 
   apply(t: Tool): void {
-    t.modifiers.push(this.name);
+    t.addModifierString(this.name);
     t.cost.scale(this.costMultiplier);
     t.cost.addCost(this.costAdd);
     t.multiplier += this.multiplierAdd;
@@ -83,6 +83,10 @@ class Modifier {
       acc.push(`Add effect(s): ${effectStrings.map(x => Strings.capitalize(x)).join(' ')}`);
     }
     return Strings.conjoin(acc);
+  }
+
+  clone(): Modifier {
+    return this;
   }
 
 }

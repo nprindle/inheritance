@@ -44,7 +44,7 @@ class AI {
 
             let consequence = dummyBot.utilityFunction(dummyBot, dummyHuman);
             //console.log("Sequence " + movesList + "has utility score of " + consequence);
-            if (consequence > this.bestSequenceScore) {
+            if (consequence >= this.bestSequenceScore) {
                 this.bestSequenceScore = consequence;
                 this.bestSequence = movesList;
             }

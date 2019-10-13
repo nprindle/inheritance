@@ -9,31 +9,31 @@ class Fight {
   playersTurn: boolean;
   div: HTMLElement;
   enemyButtons: HTMLElement[];
+  endCallback: Function;
 
   constructor(p: Player, e: Enemy) {
     this.player = p;
     p.refresh();
     this.enemy = e;
     e.refresh();
+    this.endCallback = () => {};
     this.playersTurn = true;
     this.enemyButtons = [];
-    //i know this is gross.
-    let closure = this;
-    UI.setRedrawFunction(function() {closure.redraw()});
-    this.player.setDeathFunc(function() {
-      closure.end();
-    });
-    this.enemy.setDeathFunc(function() {
-      closure.end();
-    });
+    UI.setRedrawFunction(() => { this.redraw(); });
+    // this.player.setDeathFunc(() => { this.end(); });
+    this.enemy.setDeathFunc(() => { this.end(); });
+    this.div = document.createElement('div');
     this.draw();
+  }
+
+  setEndCallback(f: Function) {
+    this.endCallback = f;
   }
 
   endTurn(): void {
     this.playersTurn = !this.playersTurn;
     this.player.refresh();
     this.enemy.refresh();
-    console.log('turn ended :)');
     this.enemyButtons = [];
     UI.redraw();
     if (!this.playersTurn) {
@@ -43,28 +43,29 @@ class Fight {
   }
 
   makeNextEnemyMove(moveSequence: number[]): void {
+    console.log(moveSequence);
     if(moveSequence.length <= 0) {
       UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
       return;
     } else {
       let move = moveSequence.shift();
-      console.log("Move: " + move);
-      UI.fakeClick(this.enemyButtons[move]);
-      let closure = this;
-      window.setTimeout(function() {
-        closure.makeNextEnemyMove(moveSequence);
-      }, 750);
+      if (move !== undefined) {
+        console.log("Move: " + move);
+        UI.fakeClick(this.enemyButtons[move]);
+        window.setTimeout(() => {
+          this.makeNextEnemyMove(moveSequence);
+        }, 750);
+      }
     }
   }
 
   endTurnButton(): HTMLElement {
-    let closure = this;
-    return UI.makeButton('End Turn', function() {closure.endTurn()}, !this.playersTurn, 'endturn');
+    return UI.makeButton('End Turn', () => { this.endTurn(); }, !this.playersTurn, 'endturn');
   }
 
   draw(): void {
     this.div = UI.makeDiv('arena');
-    document.body.appendChild(this.div);
+    UI.fillScreen(this.div);
     this.redraw();
   }
 
@@ -79,7 +80,7 @@ class Fight {
 
   end(): void {
     document.body.removeChild(this.div);
-    moveOn();
+    this.endCallback();
   }
 
 }

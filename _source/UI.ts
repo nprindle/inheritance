@@ -60,12 +60,24 @@ class UI {
     return b;
   }
 
+  static makeImg(src: string, c?: string, id?: string): HTMLElement {
+    const img: HTMLImageElement = document.createElement('img');
+    img.src = src;
+    if (c) {
+      img.classList.add(c);
+    }
+    if (id) {
+      img.id = id;
+    }
+    return img;
+  }
+
   static fakeClick(elem: HTMLElement): void {
     //TODO: structure this more reasonably
     elem.classList.remove('fakeclick');
     elem.classList.add('fakeclick');
     window.setTimeout(function() {
-      elem.onclick(new MouseEvent('click'));
+      elem.onclick!(new MouseEvent('click'));
       elem.classList.remove('fakeclick');
     }, 500);
   }
@@ -108,7 +120,7 @@ class UI {
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`(${t.usesLeft} use(s) left this turn)`));
     }
-    if (p && i !== undefined) {
+    if (c && i !== undefined && target !== undefined) {
       let b = UI.makeButton('Use', function(e: MouseEvent) {
         c.useTool(i, target);
         UI.redraw();
@@ -121,33 +133,31 @@ class UI {
     return div;
   }
 
-  static renderOfferTool(t: Tool, m: Modifier) {
+  static renderOfferTool(t: Tool, m: Modifier, callback: Function) {
     const div: HTMLElement = UI.renderTool(t);
     if (t.usesPerTurn < Infinity) {
       div.appendChild(UI.makeTextParagraph(`usable ${t.usesPerTurn} time(s) per turn`));
     }
     div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
       m.apply(t);
-      moveOn();
+      callback();
     }, false, 'apply'));
     return div;
   }
 
-  static renderModifier(m: Modifier, p: Player, refusable: boolean = true) {
+  static renderModifier(m: Modifier, p: Player, exitCallback: Function, refusable: boolean = true) {
     const div: HTMLElement = UI.makeDiv('modifier');
     div.appendChild(UI.makeTextParagraph(m.name, 'name'));
     div.appendChild(UI.makeTextParagraph(m.describe(), 'desc'));
     for (let i = 0; i < p.tools.length; i++) {
-      div.appendChild(UI.renderOfferTool(p.tools[i], m));
+      div.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
     }
     if (refusable) {
       div.appendChild(UI.makeButton('No Thank You', function() {
-        moveOn();
+        exitCallback();
       }));
     } else {
-      div.appendChild(UI.makeButton("Can't Refuse!", function() {
-        moveOn();
-      }, true));
+      div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
     }
     return div;
   }
@@ -194,33 +204,53 @@ class UI {
   }
 
   static renderMainTitle(): HTMLElement {
-    return UI.makeHeader('The Prototype Inheritance', 'titletext');
+    //return UI.makeHeader('The Prototype Inheritance', 'titletext');
+    return UI.makeImg('assets/temp_logo.png', 'logo');
   }
 
   static renderTitleScreen(options: [string, Function][]): HTMLElement {
     const div: HTMLElement = UI.makeDiv('titlescreen');
     div.appendChild(UI.renderMainTitle());
+    div.appendChild(UI.renderOptions(options));
+    return div;
+  }
+
+  static renderOptions(options: [string, Function][]): HTMLElement {
     const buttons: HTMLElement = UI.makeDiv('buttons');
     for (let i = 0; i < options.length; i++) {
       buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
     }
-    div.appendChild(buttons);
-    return div;
+    return buttons;
   }
 
   static renderCreditsEntry(entry: CreditsEntry): HTMLElement {
     const div: HTMLElement = UI.makeDiv('entry');
-    div.appendChild(UI.makeHeader(entry.name, 'name'));
-    div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+    if (entry.roles.length > 0) {
+      div.appendChild(UI.makeHeader(entry.name, 'name', undefined, 2));
+      div.appendChild(UI.makeTextParagraph(entry.roles.join(', '), 'roles'));
+    } else {
+      div.appendChild(UI.makeTextParagraph(entry.name, 'sololine'));
+    }
     return div;
   }
 
-  static renderCredits(credits: CreditsEntry[]): HTMLElement {
+  static renderCredits(credits: CreditsEntry[], endfunc?: Function): HTMLElement {
     const div: HTMLElement = UI.makeDiv('credits');
     div.appendChild(UI.renderMainTitle());
     credits.map(x => UI.renderCreditsEntry(x)).forEach(val => {
       div.appendChild(val);
     });
+    if (endfunc) {
+      div.appendChild(UI.makeButton('Return to Title', endfunc));
+    }
+    return div;
+  }
+
+  static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
+    const div: HTMLElement = UI.makeDiv('charselect');
+    div.appendChild(UI.makeHeader('Choose Your Character'));
+    const tuples: [string, Function][] = chars.map(char => <[string, Function]> [char.name, () => callback(char)]);
+    div.appendChild(UI.renderOptions(tuples.concat([['Back to Title', exit]])));
     return div;
   }
 
@@ -232,6 +262,11 @@ class UI {
     if (UI.redrawFunction) {
       UI.redrawFunction();
     }
+  }
+
+  static fillScreen(...elems: HTMLElement[]): void {
+    document.body.innerHTML = '';
+    elems.forEach(elem => document.body.appendChild(elem));
   }
 
 }
