@@ -83,6 +83,5 @@ class Floor {
     
     end(): void {
         document.body.removeChild(this.div);
-        moveOn();
     }
 }

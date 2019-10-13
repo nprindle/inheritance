@@ -1,3 +1,5 @@
+/// <reference path="map/Floor.ts" />
+
 class UI {
 
   static redrawFunction: Function;

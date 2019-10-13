@@ -1,4 +1,5 @@
 /// <reference path="RoomType.ts" />
+/// <reference path="Floor.ts" />
 
 class Room {
     containerFloor: Floor;
