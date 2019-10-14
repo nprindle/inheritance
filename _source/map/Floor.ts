@@ -2,6 +2,7 @@
 /// <reference path="RoomType.ts" />
 /// <reference path="../UI.ts" />
 /// <reference path="../floors.ts" />
+/// <reference path="../Random.ts" />
 
 class Floor {
     width: number;
@@ -20,27 +21,10 @@ class Floor {
         this.width = floorSettings.width;
         this.height = floorSettings.height;
 
-        this.roomCount = Math.floor(Math.random() * (1 + floorSettings.maxRooms - floorSettings.minRooms)) + floorSettings.minRooms;
+        this.roomCount = Random.intBetween(floorSettings.minRooms, floorSettings.minRooms + 1);
         
-        var roomWeights = floorSettings.roomWeights;
-        var roomWeightTotal = 0;        
-        
-        for (var i = 0; i < roomWeights.length; i++) {
-            roomWeightTotal += roomWeights[i].weight;
-        }
-        for (var i = 0; i < roomWeights.length; i++) {
-            roomWeights[i].weight /= roomWeightTotal;
-        }
-
-        var floorEnemies = floorSettings.enemies;
-        var enemyWeightTotal = 0;
-
-        for (var i = 0; i < floorEnemies.length; i++) {
-            enemyWeightTotal += floorEnemies[i].weight;
-        }
-        for (var i = 0; i < floorEnemies.length; i++) {
-            floorEnemies[i].weight /= enemyWeightTotal;
-        }
+        var roomWeights = floorSettings.roomWeights.map(obj => <[string, number]> [obj.name, obj.weight]);  
+        var floorEnemies = floorSettings.enemies.map(obj => <[string, number]> [obj.name, obj.weight]);
 
         this.rooms = new Array<Array<Room>>(this.height);
         for (var i = 0; i < this.rooms.length; i++) {
@@ -50,7 +34,7 @@ class Floor {
         var entranceRoom = new Room(this, RoomType.Entrance);
         entranceRoom.hasPlayer = true;
         entranceRoom.visited = true;
-        this.rooms[Math.floor(Math.random() * this.height)][Math.floor(Math.random() * this.width)] = entranceRoom;
+        this.rooms[Random.intLessThan(this.height)][Math.floor(Math.random() * this.width)] = entranceRoom;
         for (var i = 0; i < this.roomCount - 1 ; i++) {
             var roomIndex;
             var newRoomIndex;
@@ -78,27 +62,13 @@ class Floor {
                     if (newRoomIndex[0] > -1 && newRoomIndex[0] < this.height && newRoomIndex[1] > -1 && newRoomIndex[1] < this.width && this.rooms[newRoomIndex[0]][newRoomIndex[1]] == undefined) break;
                 }
             }
-            var roomType;
-            var roomRand = Math.random();
-            for (var j = 0; j < roomWeights.length; j++) {
-                roomRand -= roomWeights[j].weight;
-                if (roomRand < 0) {
-                    roomType = roomWeights[j].name;
-                    console.log(roomType);
-                    break;
-                }
-            }
+            var roomType = Random.weightedRandom(roomWeights);
             var newRoom;
             if (roomType == RoomType.Enemy) {
-                var enemyRand = Math.random();
-                for (var j = 0; j < floorEnemies.length; j++) {
-                    enemyRand -= floorEnemies[j].weight;
-                    if (enemyRand < 0) {
-                        newRoom = new Room(this, roomType, this.rooms[roomIndex[0]][roomIndex[1]], 0, false, enemies.get(floorEnemies[j].name));
-                        break;
-                    }
-                }
-            } else newRoom = new Room(this, roomType, this.rooms[roomIndex[0]][roomIndex[1]]);
+                newRoom = new Room(this, roomType, this.rooms[roomIndex[0]][roomIndex[1]], 0, false, enemies.get(Random.weightedRandom(floorEnemies)));
+            } else {
+                newRoom = new Room(this, <RoomType> roomType, this.rooms[roomIndex[0]][roomIndex[1]]);
+            }
             this.rooms[newRoomIndex[0]][newRoomIndex[1]] = newRoom;
             this.rooms[roomIndex[0]][roomIndex[1]].exits.push(newRoom);
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
