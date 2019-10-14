@@ -165,6 +165,7 @@ class UI {
   }
 
   static renderFloor(floor : Floor) {
+    console.log(floor);
     const div : HTMLElement = UI.makeDiv("map");
     div.innerHTML = '';
     for (var i = 0; i < floor.height; i++) {
@@ -185,7 +186,7 @@ class UI {
 
   static renderRoom(room : Room, visible? : boolean) {
     const div : HTMLElement = UI.makeDiv("room");
-    div.classList.add(room.type);
+    div.classList.add(room.type + "-room");
     var visible = false;
     for (var i = 0; i < room.exits.length; i++) {
       if (room.exits[i].hasPlayer) {

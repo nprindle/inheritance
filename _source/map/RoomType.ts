@@ -1,5 +1,7 @@
 enum RoomType {
     Empty = "empty",
     Entrance = "entrance",
-    Exit = "exit"
+    Exit = "exit",
+    Enemy = "enemy",
+    Tool = "tool"
 }

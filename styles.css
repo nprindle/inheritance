@@ -177,22 +177,27 @@ button.endturn:active {
   flex-grow: 1;
   padding: 0px;
   width: 100%;
-}
-
-.room {
   background-color: black;
 }
 
-.room.visited.entrance {
+.room.visited.entrance-room {
   background-color: green;
 }
 
-.room.visited.exit {
+.room.visited.exit-room {
   background-color: yellow;
 }
 
-.room.visited.empty {
+.room.visited.empty-room {
   background-color: #FFF;
+}
+
+.room.visited.enemy-room {
+  background-color: red;
+}
+
+.room.visited.tool-room {
+  background-color: royalblue;
 }
 
 .room.unvisited.visible {
