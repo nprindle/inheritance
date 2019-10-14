@@ -74,6 +74,10 @@ class UI {
     return img;
   }
 
+  static makeRoomIcon(str: string): HTMLElement {
+    return UI.makeImg(`assets/temp_${str}.png`, 'room-icon');
+  }
+
   static fakeClick(elem: HTMLElement): void {
     //TODO: structure this more reasonably
     elem.classList.remove('fakeclick');
@@ -196,6 +200,9 @@ class UI {
     }
     if (visible) {
       div.classList.add("visible");
+      if (room.type !== RoomType.Empty) {
+        div.appendChild(UI.makeRoomIcon(room.type));
+      }
       div.appendChild(UI.makeButton("Go!", function(e: MouseEvent) {
         room.enter();
       }));

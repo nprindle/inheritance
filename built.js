@@ -298,6 +298,9 @@ var UI = (function () {
         }
         return img;
     };
+    UI.makeRoomIcon = function (str) {
+        return UI.makeImg("assets/temp_" + str + ".png", 'room-icon');
+    };
     UI.fakeClick = function (elem) {
         elem.classList.remove('fakeclick');
         elem.classList.add('fakeclick');
@@ -416,6 +419,9 @@ var UI = (function () {
         }
         if (visible) {
             div.classList.add("visible");
+            if (room.type !== RoomType.Empty) {
+                div.appendChild(UI.makeRoomIcon(room.type));
+            }
             div.appendChild(UI.makeButton("Go!", function (e) {
                 room.enter();
             }));
