@@ -1273,7 +1273,8 @@ var Game = (function () {
             new CreditsEntry('Prindle', 'Programming'),
             new CreditsEntry('Mitchell Philipp', 'Programming'),
             new CreditsEntry('Seong Ryoo', 'Art'),
-            new CreditsEntry('Logo is based on the font "This Boring Party" by Tom7.')
+            new CreditsEntry('Logo is based on the font "This Boring Party" by Tom7.'),
+            new CreditsEntry('Map icons use various Tombats fonts by Tom7.')
         ], function () { return Game.showTitle(); }));
     };
     Game.showGameOver = function (run) {
