@@ -1,5 +1,6 @@
 /// <reference path="Room.ts" />
 /// <reference path="RoomType.ts" />
+/// <reference path="../Arrays.ts" />
 /// <reference path="../UI.ts" />
 /// <reference path="../floors.ts" />
 /// <reference path="../Random.ts" />
@@ -34,15 +35,15 @@ class Floor {
         var entranceRoom = new Room(this, RoomType.Entrance);
         entranceRoom.hasPlayer = true;
         entranceRoom.visited = true;
-        this.rooms[Random.intLessThan(this.height)][Math.floor(Math.random() * this.width)] = entranceRoom;
+        this.rooms[Random.intLessThan(this.height)][Random.intLessThan(this.width)] = entranceRoom;
         for (var i = 0; i < this.roomCount - 1 ; i++) {
             var roomIndex;
             var newRoomIndex;
             var maxRoomDistance = 0;
             while (true) {
-                roomIndex = [Math.floor(Math.random() * this.height), Math.floor(Math.random() * this.width)];
+                roomIndex = Random.intCoord(this.height, this.width);
                 if (this.rooms[roomIndex[0]][roomIndex[1]] != undefined) {
-                    var branchDirection = Math.floor(Math.random() * 4);
+                    var branchDirection = Random.intLessThan(4);
                     var newRoomOffset;
                     switch(branchDirection) {
                         case 0:
@@ -74,15 +75,8 @@ class Floor {
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
         }
         var minExitDistance = Math.ceil(maxRoomDistance * 3.0 / 4);
-        var potentialExits = [];
-        for (var i = 0; i < this.height; i++) {
-            for (var j = 0; j < this.width; j++) {
-                if (this.rooms[i][j] && this.rooms[i][j].distanceFromEntrance >= minExitDistance) {
-                    potentialExits.push(this.rooms[i][j]);
-                }
-            }
-        }
-        var exitRoom = potentialExits[Math.floor(Math.random() * potentialExits.length)];
+        var potentialExits = Arrays.flatten(this.rooms).filter(x => x.distanceFromEntrance >= minExitDistance);
+        var exitRoom = Random.fromArray(potentialExits);
         exitRoom.type = RoomType.Exit;
         console.log(this);
     }

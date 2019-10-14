@@ -28,13 +28,218 @@ function filterInPlace(arr, pred) {
     }
     arr.length = j;
 }
+var RoomType;
+(function (RoomType) {
+    RoomType["Empty"] = "empty";
+    RoomType["Entrance"] = "entrance";
+    RoomType["Exit"] = "exit";
+    RoomType["Enemy"] = "enemy";
+    RoomType["Tool"] = "tool";
+})(RoomType || (RoomType = {}));
+var Room = (function () {
+    function Room(containerFloor, type, entrance, distanceFromEntrance, hasPlayer, containedEnemy, containedTool) {
+        this.containerFloor = containerFloor;
+        this.type = type;
+        this.exits = entrance ? [entrance] : [];
+        if (entrance) {
+            this.distanceFromEntrance = entrance.distanceFromEntrance + 1;
+        }
+        else {
+            this.distanceFromEntrance = distanceFromEntrance || 0;
+        }
+        this.hasPlayer = hasPlayer || false;
+        this.visited = false;
+        if (containedEnemy)
+            this.containedEnemy = containedEnemy;
+        if (containedTool)
+            this.containedTool = containedTool;
+        this.blockedSides = [];
+    }
+    Room.prototype.continueFloor = function () {
+        UI.fillScreen(UI.renderFloor(this.containerFloor));
+    };
+    Room.prototype.enter = function () {
+        for (var i = 0; i < this.exits.length; i++) {
+            this.exits[i].hasPlayer = false;
+        }
+        this.visited = true;
+        this.hasPlayer = true;
+        switch (this.type) {
+            case RoomType.Enemy:
+                if (this.containedEnemy.health != 0) {
+                    var f = new Fight(this.containerFloor.currentRun.player, this.containedEnemy, this);
+                    break;
+                }
+            case RoomType.Empty:
+            case RoomType.Entrance:
+            case RoomType.Exit:
+            case RoomType.Tool:
+                this.containerFloor.redraw();
+                break;
+        }
+    };
+    return Room;
+}());
+var Arrays = (function () {
+    function Arrays() {
+    }
+    Arrays.flatten = function (arr) {
+        return arr.reduce(function (acc, x) {
+            if (acc === void 0) { acc = []; }
+            return acc.concat(x);
+        });
+    };
+    return Arrays;
+}());
+var floors = [
+    {
+        "height": 5,
+        "width": 5,
+        "minRooms": 15,
+        "maxRooms": 20,
+        "roomWeights": [
+            { "name": "empty", "weight": 2 },
+            { "name": "enemy", "weight": 10 },
+            { "name": "tool", "weight": 1 }
+        ],
+        "enemies": [
+            { "name": "goldfish", "weight": 1 },
+            { "name": "goldfishwithagun", "weight": 1 }
+        ],
+        "tools": [
+            { "name": "singleton", "weight": 1 },
+            { "name": "sixshooter", "weight": 1 }
+        ]
+    }
+];
+var Random = (function () {
+    function Random() {
+    }
+    Random.bool = function (chance) {
+        if (chance === void 0) { chance = 0.5; }
+        return Math.random() < chance;
+    };
+    Random.between = function (min, max) {
+        return Math.random() * (max - min) + min;
+    };
+    Random.intBetween = function (min, max) {
+        return Random.between(min, max) << 0;
+    };
+    Random.lessThan = function (max) {
+        return Random.between(0, max);
+    };
+    Random.intLessThan = function (max) {
+        return Random.intBetween(0, max);
+    };
+    Random.intCoord = function (width, height) {
+        return [Random.intLessThan(width), Random.intLessThan(height)];
+    };
+    Random.fromArray = function (arr) {
+        return arr[Random.intBetween(0, arr.length)];
+    };
+    Random.weightedRandom = function (arr) {
+        var totalWeight = arr.map(function (x) { return x[1]; }).reduce(function (acc, x) { return acc + x; });
+        var weight = Random.between(0, totalWeight);
+        var totalIndex = 0;
+        for (var i = 0; i < arr.length; i++) {
+            totalIndex += arr[i][1];
+            if (totalIndex >= weight) {
+                return arr[i][0];
+            }
+        }
+        return arr[0][0];
+    };
+    return Random;
+}());
+var Floor = (function () {
+    function Floor(level, currentRun) {
+        this.currentRun = currentRun;
+        var floorSettings = floors[0];
+        this.width = floorSettings.width;
+        this.height = floorSettings.height;
+        this.roomCount = Random.intBetween(floorSettings.minRooms, floorSettings.minRooms + 1);
+        var roomWeights = floorSettings.roomWeights.map(function (obj) { return [obj.name, obj.weight]; });
+        var floorEnemies = floorSettings.enemies.map(function (obj) { return [obj.name, obj.weight]; });
+        this.rooms = new Array(this.height);
+        for (var i = 0; i < this.rooms.length; i++) {
+            this.rooms[i] = new Array(this.width);
+        }
+        var entranceRoom = new Room(this, RoomType.Entrance);
+        entranceRoom.hasPlayer = true;
+        entranceRoom.visited = true;
+        this.rooms[Random.intLessThan(this.height)][Random.intLessThan(this.width)] = entranceRoom;
+        for (var i = 0; i < this.roomCount - 1; i++) {
+            var roomIndex;
+            var newRoomIndex;
+            var maxRoomDistance = 0;
+            while (true) {
+                roomIndex = Random.intCoord(this.height, this.width);
+                if (this.rooms[roomIndex[0]][roomIndex[1]] != undefined) {
+                    var branchDirection = Random.intLessThan(4);
+                    var newRoomOffset;
+                    switch (branchDirection) {
+                        case 0:
+                            newRoomOffset = [1, 0];
+                            break;
+                        case 1:
+                            newRoomOffset = [0, 1];
+                            break;
+                        case 2:
+                            newRoomOffset = [-1, 0];
+                            break;
+                        case 3:
+                            newRoomOffset = [0, -1];
+                            break;
+                    }
+                    newRoomIndex = [roomIndex[0] + newRoomOffset[0], roomIndex[1] + newRoomOffset[1]];
+                    if (newRoomIndex[0] > -1 && newRoomIndex[0] < this.height && newRoomIndex[1] > -1 && newRoomIndex[1] < this.width && this.rooms[newRoomIndex[0]][newRoomIndex[1]] == undefined)
+                        break;
+                }
+            }
+            var roomType = Random.weightedRandom(roomWeights);
+            var newRoom;
+            if (roomType == RoomType.Enemy) {
+                newRoom = new Room(this, roomType, this.rooms[roomIndex[0]][roomIndex[1]], 0, false, enemies.get(Random.weightedRandom(floorEnemies)));
+            }
+            else {
+                newRoom = new Room(this, roomType, this.rooms[roomIndex[0]][roomIndex[1]]);
+            }
+            this.rooms[newRoomIndex[0]][newRoomIndex[1]] = newRoom;
+            this.rooms[roomIndex[0]][roomIndex[1]].exits.push(newRoom);
+            maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
+        }
+        var minExitDistance = Math.ceil(maxRoomDistance * 3.0 / 4);
+        var potentialExits = Arrays.flatten(this.rooms).filter(function (x) { return x.distanceFromEntrance >= minExitDistance; });
+        var exitRoom = Random.fromArray(potentialExits);
+        exitRoom.type = RoomType.Exit;
+        console.log(this);
+    }
+    Floor.prototype.draw = function () {
+        this.div = UI.makeDiv('map');
+        document.body.appendChild(this.div);
+        this.redraw();
+    };
+    Floor.prototype.redraw = function () {
+        document.body.innerHTML = '';
+        document.body.appendChild(UI.renderFloor(this));
+    };
+    Floor.prototype.end = function () {
+        document.body.removeChild(this.div);
+    };
+    return Floor;
+}());
 var UI = (function () {
     function UI() {
     }
-    UI.makeDiv = function (c, id) {
+    UI.makeDiv = function (c, cList, id) {
         var div = document.createElement('div');
         if (c) {
             div.classList.add(c);
+        }
+        if (cList) {
+            for (var i = 0; i < cList.length; i++) {
+                div.classList.add(cList[i]);
+            }
         }
         if (id) {
             div.id = id;
@@ -177,6 +382,49 @@ var UI = (function () {
         else {
             div.appendChild(UI.makeButton("Can't Refuse!", function () { }, true));
         }
+        return div;
+    };
+    UI.renderFloor = function (floor) {
+        console.log(floor);
+        var div = UI.makeDiv("map");
+        div.innerHTML = '';
+        for (var i = 0; i < floor.height; i++) {
+            var row = UI.makeDiv("map-row");
+            for (var j = 0; j < floor.width; j++) {
+                var currentRoom = floor.rooms[i][j];
+                var visible = false;
+                if (currentRoom) {
+                    row.appendChild(UI.renderRoom(currentRoom));
+                }
+                else {
+                    row.appendChild(UI.makeDiv("room", ["none"]));
+                }
+            }
+            div.appendChild(row);
+        }
+        return div;
+    };
+    UI.renderRoom = function (room, visible) {
+        var div = UI.makeDiv("room");
+        div.classList.add(room.type + "-room");
+        var visible = false;
+        for (var i = 0; i < room.exits.length; i++) {
+            if (room.exits[i].hasPlayer) {
+                visible = true;
+                break;
+            }
+        }
+        if (visible) {
+            div.classList.add("visible");
+            div.appendChild(UI.makeButton("Go!", function (e) {
+                room.enter();
+            }));
+        }
+        if (room.visited)
+            div.classList.add("visited");
+        else
+            div.classList.add("unvisited");
+        div.appendChild(document.createTextNode(room.distanceFromEntrance.toString()));
         return div;
     };
     UI.renderMainTitle = function () {
@@ -661,21 +909,6 @@ var HealingEffect = (function (_super) {
     };
     return HealingEffect;
 }(AbstractEffect));
-var Random = (function () {
-    function Random() {
-    }
-    Random.bool = function (chance) {
-        if (chance === void 0) { chance = 0.5; }
-        return Math.random() < chance;
-    };
-    Random.intBetween = function (min, max) {
-        return (Math.random() * (max - min) + min) << 0;
-    };
-    Random.fromArray = function (arr) {
-        return arr[Random.intBetween(0, arr.length)];
-    };
-    return Random;
-}());
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
     function Enemy(name, health, energy) {
@@ -702,12 +935,14 @@ var Enemy = (function (_super) {
     return Enemy;
 }(Combatant));
 var Fight = (function () {
-    function Fight(p, e) {
+    function Fight(p, e, inRoom) {
         var _this = this;
         this.player = p;
         p.refresh();
         this.enemy = e;
         e.refresh();
+        if (inRoom)
+            this.inRoom = inRoom;
         this.endCallback = function () { };
         this.playersTurn = true;
         this.enemyButtons = [];
@@ -767,7 +1002,10 @@ var Fight = (function () {
     };
     Fight.prototype.end = function () {
         document.body.removeChild(this.div);
-        this.endCallback();
+        if (this.inRoom)
+            this.inRoom.continueFloor();
+        else
+            this.endCallback();
     };
     return Fight;
 }());
@@ -1116,12 +1354,7 @@ var Run = (function () {
     };
     Run.prototype.nextEvent = function () {
         this.numEvents++;
-        switch (this.numEvents % 2) {
-            case 0:
-                return this.offerModifier();
-            case 1:
-                return this.startFight();
-        }
+        UI.fillScreen(UI.renderFloor(new Floor(0, this)));
     };
     Run.prototype.offerModifier = function () {
         var _this = this;

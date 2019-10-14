@@ -4,12 +4,24 @@ class Random {
     return Math.random() < chance;
   }
 
+  public static between(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
+
   public static intBetween(min: number, max: number): number {
     return Random.between(min, max) << 0;
   }
 
-  public static between(min: number, max: number): number {
-    return Math.random() * (max - min) + min;
+  public static lessThan(max: number): number {
+    return Random.between(0, max);
+  }
+
+  public static intLessThan(max: number): number {
+    return Random.intBetween(0, max);
+  }
+
+  public static intCoord(width: number, height: number): [number, number] {
+    return [Random.intLessThan(width), Random.intLessThan(height)];
   }
 
   public static fromArray<T>(arr: T[]): T {
