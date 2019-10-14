@@ -22,12 +22,13 @@ class Run {
 
     nextEvent(): void {
         this.numEvents++;
-        switch (this.numEvents % 2) {
-            case 0:
-                return this.offerModifier();
-            case 1:
-                return this.startFight();
-        }
+        UI.fillScreen(UI.renderFloor(new Floor(0, this)));
+        // switch (this.numEvents % 2) {
+        //     case 0:
+        //         return this.offerModifier();
+        //     case 1:
+        //         return this.startFight();
+        // }
     }
 
     offerModifier(): void {

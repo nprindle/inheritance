@@ -158,3 +158,52 @@ button.endturn:active {
 .entry .sololine {
   text-align: center;
 }
+
+.map {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 90vmin;
+  width: 90vmin;
+}
+
+.map-row {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.room {
+  flex-grow: 1;
+  padding: 0px;
+  width: 100%;
+  background-color: black;
+}
+
+.room.visited.entrance-room {
+  background-color: green;
+}
+
+.room.visited.exit-room {
+  background-color: yellow;
+}
+
+.room.visited.empty-room {
+  background-color: #FFF;
+}
+
+.room.visited.enemy-room {
+  background-color: red;
+}
+
+.room.visited.tool-room {
+  background-color: royalblue;
+}
+
+.room.unvisited.visible {
+  background-color: #666;
+}
+
+.room.none {
+  background-color: black;
+}

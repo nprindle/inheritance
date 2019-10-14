@@ -10,12 +10,14 @@ class Fight {
   div: HTMLElement;
   enemyButtons: HTMLElement[];
   endCallback: Function;
+  inRoom: Room
 
-  constructor(p: Player, e: Enemy) {
+  constructor(p: Player, e: Enemy, inRoom?: Room) {
     this.player = p;
     p.refresh();
     this.enemy = e;
     e.refresh();
+    if (inRoom) this.inRoom = inRoom;
     this.endCallback = () => {};
     this.playersTurn = true;
     this.enemyButtons = [];
@@ -80,7 +82,8 @@ class Fight {
 
   end(): void {
     document.body.removeChild(this.div);
-    this.endCallback();
+    if (this.inRoom) this.inRoom.continueFloor();
+    else this.endCallback();
   }
 
 }
