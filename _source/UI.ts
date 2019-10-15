@@ -197,16 +197,18 @@ class UI {
         visible = true;
       }
     }
-    if (visible) {
+    if (visible || room.visited) {
       div.classList.add("visible");
       if (room.hasPlayer) {
         div.appendChild(UI.makeRoomIcon('player'));
       } else if (room.type !== RoomType.Empty) {
         div.appendChild(UI.makeRoomIcon(room.type));
       }
-      div.appendChild(UI.makeButton("Go!", function(e: MouseEvent) {
-        room.enter();
-      }));
+      if (!room.hasPlayer && visible) {
+        div.onclick = function(e: MouseEvent) {
+          room.enter();
+        };
+      }
     }
     if (room.visited) div.classList.add("visited"); 
     else div.classList.add("unvisited");
