@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="216.97147"
-     inkscape:cy="298.79654"
+     inkscape:cx="228.02251"
+     inkscape:cy="723.06061"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -44,7 +44,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -118,5 +118,31 @@
          y="164.03363"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50.02973938px;font-family:Tombats;-inkscape-font-specification:'Tombats, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:1.25074351"
          id="tspan821-8">p</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:52.45241165px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.31131029"
+       x="37.013889"
+       y="94.043739"
+       id="text834"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
+         sodipodi:role="line"
+         x="37.013889"
+         y="94.043739"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:52.45241165px;font-family:'Tombats Four';-inkscape-font-specification:'Tombats Four, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:1.31131029"
+         id="tspan836">D</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:48.20340347px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.20508492"
+       x="29.150085"
+       y="151.32091"
+       id="text842-2"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
+         sodipodi:role="line"
+         x="29.150085"
+         y="151.32091"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48.20340347px;font-family:'Tombats 6';-inkscape-font-specification:'Tombats 6, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:1.20508492"
+         id="tspan844-5">j</tspan></text>
   </g>
 </svg>

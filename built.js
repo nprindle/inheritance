@@ -410,16 +410,18 @@ var UI = (function () {
     UI.renderRoom = function (room, visible) {
         var div = UI.makeDiv("room");
         div.classList.add(room.type + "-room");
-        var visible = false;
-        for (var i = 0; i < room.exits.length; i++) {
+        var visible = room.hasPlayer;
+        for (var i = 0; i < room.exits.length && !visible; i++) {
             if (room.exits[i].hasPlayer) {
                 visible = true;
-                break;
             }
         }
         if (visible) {
             div.classList.add("visible");
-            if (room.type !== RoomType.Empty) {
+            if (room.hasPlayer) {
+                div.appendChild(UI.makeRoomIcon('player'));
+            }
+            else if (room.type !== RoomType.Empty) {
                 div.appendChild(UI.makeRoomIcon(room.type));
             }
             div.appendChild(UI.makeButton("Go!", function (e) {
