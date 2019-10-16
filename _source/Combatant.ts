@@ -33,6 +33,14 @@ abstract class Combatant {
     }
   };
 
+  directDamage(damage: number): void {
+    this.health -= damage;
+    if (this.health <= 0) {
+      this.health = 0;
+      this.die();
+    }
+  }
+
   heal(amount: number): void {
     this.health += amount;
     if (this.health > this.maxHealth) {
