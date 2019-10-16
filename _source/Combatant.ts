@@ -1,4 +1,5 @@
 /// <reference path="Tool.ts" />
+/// <reference path="AbstractStatus.ts" />
 
 abstract class Combatant {
   name: string;
@@ -7,6 +8,7 @@ abstract class Combatant {
   energy: number;
   maxEnergy: number;
   tools: Tool[];
+  statuses: AbstractStatus[];
   deathFunc: Function;
 
   constructor(name: string, health: number, energy: number, ...tools: Tool[]) {
@@ -17,6 +19,7 @@ abstract class Combatant {
     this.maxEnergy = energy;
     this.tools = tools;
     this.deathFunc = function() {};
+    this.statuses = [];
   };
 
   abstract clone(): Combatant;
@@ -33,6 +36,7 @@ abstract class Combatant {
     }
   };
 
+  //This bypasses status folding.
   directDamage(damage: number): void {
     this.health -= damage;
     if (this.health <= 0) {
