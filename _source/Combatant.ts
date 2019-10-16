@@ -29,11 +29,7 @@ abstract class Combatant {
   };
 
   wound(damage: number): void {
-    this.health -= damage;
-    if (this.health <= 0) {
-      this.health = 0;
-      this.die();
-    }
+    this.directDamage(this.statusFold(StatusFolds.DAMAGE_TAKEN, damage));
   };
 
   //This bypasses status folding.
@@ -46,11 +42,16 @@ abstract class Combatant {
   }
 
   heal(amount: number): void {
+    this.directHeal(this.statusFold(StatusFolds.AMOUNT_HEALED, amount));
+  }
+
+  //This bypasses status folding.
+  directHeal(amount: number): void {
     this.health += amount;
     if (this.health > this.maxHealth) {
       this.health = this.maxHealth;
     }
-  };
+  }
 
   refresh(): void {
     this.energy = this.maxEnergy;
@@ -64,7 +65,7 @@ abstract class Combatant {
   };
 
   pay(cost: Cost): void {
-    this.wound(cost.healthCost);
+    this.directDamage(cost.healthCost);
     this.energy -= cost.energyCost;
   };
 
@@ -84,6 +85,7 @@ abstract class Combatant {
     }
     const tool: Tool = this.tools[index];
     tool.use(this, target);
+    this.statusCallback(StatusCallbacks.USE_TOOL, target);
   };
 
   die(): void {
@@ -92,6 +94,29 @@ abstract class Combatant {
 
   setDeathFunc(f: Function): void {
     this.deathFunc = f;
+  }
+  
+  addStatus(status: AbstractStatus) {
+    for (let i = 0; i < this.statuses.length; i++) {
+      let done = this.statuses[i].add(status);
+      if (done) {
+        return;
+      }
+    }
+    this.statuses.push(status);
+  }
+
+  private statusCallback(callback: StatusCallbacks, other: Combatant): void {
+    const callbacks: Function[] = this.statuses.map(x => <Function> x[callback]);
+    callbacks.forEach(x => x(this, other));
+    this.statuses = this.statuses.filter(status => status.amount !== 0);
+  }
+
+  private statusFold(fold: StatusFolds, value: number): number {
+    const foldingCallbacks: Function[] = this.statuses.map(x => <Function> x[fold]);
+    const result: number = foldingCallbacks.reduce((acc, x) => x(acc), value);
+    this.statuses = this.statuses.filter(status => status.amount !== 0);
+    return result;
   }
 
 }

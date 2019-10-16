@@ -1,5 +1,18 @@
 /// <reference path="Combatant.ts" />
 
+enum StatusCallbacks {
+    START_TURN = 'startTurn',
+    END_TURN = 'endTurn',
+    USE_TOOL = 'useTool',
+    TAKE_DAMAGE = 'takeDamage'
+}
+
+enum StatusFolds {
+    DAMAGE_TAKEN = 'damageTakenFold',
+    DAMAGE_DEALT = 'damageDealtFold',
+    AMOUNT_HEALED = 'amountHealedFold'
+}
+
 abstract class AbstractStatus {
 
     static readonly sorting: number = 0;

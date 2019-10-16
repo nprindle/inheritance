@@ -795,6 +795,43 @@ var Tool = (function () {
     };
     return Tool;
 }());
+var StatusCallbacks;
+(function (StatusCallbacks) {
+    StatusCallbacks["START_TURN"] = "startTurn";
+    StatusCallbacks["END_TURN"] = "endTurn";
+    StatusCallbacks["USE_TOOL"] = "useTool";
+    StatusCallbacks["TAKE_DAMAGE"] = "takeDamage";
+})(StatusCallbacks || (StatusCallbacks = {}));
+var StatusFolds;
+(function (StatusFolds) {
+    StatusFolds["DAMAGE_TAKEN"] = "damageTakenFold";
+    StatusFolds["DAMAGE_DEALT"] = "damageDealtFold";
+    StatusFolds["AMOUNT_HEALED"] = "amountHealedFold";
+})(StatusFolds || (StatusFolds = {}));
+var AbstractStatus = (function () {
+    function AbstractStatus(amount) {
+        this.amount = amount;
+    }
+    AbstractStatus.prototype.startTurn = function (affected, other) {
+    };
+    AbstractStatus.prototype.endTurn = function (affected, other) {
+    };
+    AbstractStatus.prototype.useTool = function (affected, other) {
+    };
+    AbstractStatus.prototype.takeDamage = function (affected, other) {
+    };
+    AbstractStatus.prototype.damageTakenFold = function (acc) {
+        return acc;
+    };
+    AbstractStatus.prototype.damageDealtFold = function (acc) {
+        return acc;
+    };
+    AbstractStatus.prototype.amountHealedFold = function (acc) {
+        return acc;
+    };
+    AbstractStatus.sorting = 0;
+    return AbstractStatus;
+}());
 var Combatant = (function () {
     function Combatant(name, health, energy) {
         var tools = [];
@@ -808,6 +845,7 @@ var Combatant = (function () {
         this.maxEnergy = energy;
         this.tools = tools;
         this.deathFunc = function () { };
+        this.statuses = [];
     }
     ;
     Combatant.prototype.status = function () {
@@ -815,20 +853,25 @@ var Combatant = (function () {
     };
     ;
     Combatant.prototype.wound = function (damage) {
+        this.directDamage(this.statusFold(StatusFolds.DAMAGE_TAKEN, damage));
+    };
+    ;
+    Combatant.prototype.directDamage = function (damage) {
         this.health -= damage;
         if (this.health <= 0) {
             this.health = 0;
             this.die();
         }
     };
-    ;
     Combatant.prototype.heal = function (amount) {
+        this.directHeal(this.statusFold(StatusFolds.AMOUNT_HEALED, amount));
+    };
+    Combatant.prototype.directHeal = function (amount) {
         this.health += amount;
         if (this.health > this.maxHealth) {
             this.health = this.maxHealth;
         }
     };
-    ;
     Combatant.prototype.refresh = function () {
         this.energy = this.maxEnergy;
         for (var i = 0; i < this.tools.length; i++) {
@@ -840,7 +883,7 @@ var Combatant = (function () {
     };
     ;
     Combatant.prototype.pay = function (cost) {
-        this.wound(cost.healthCost);
+        this.directDamage(cost.healthCost);
         this.energy -= cost.energyCost;
     };
     ;
@@ -859,6 +902,7 @@ var Combatant = (function () {
         }
         var tool = this.tools[index];
         tool.use(this, target);
+        this.statusCallback(StatusCallbacks.USE_TOOL, target);
     };
     ;
     Combatant.prototype.die = function () {
@@ -866,6 +910,27 @@ var Combatant = (function () {
     };
     Combatant.prototype.setDeathFunc = function (f) {
         this.deathFunc = f;
+    };
+    Combatant.prototype.addStatus = function (status) {
+        for (var i = 0; i < this.statuses.length; i++) {
+            var done = this.statuses[i].add(status);
+            if (done) {
+                return;
+            }
+        }
+        this.statuses.push(status);
+    };
+    Combatant.prototype.statusCallback = function (callback, other) {
+        var _this = this;
+        var callbacks = this.statuses.map(function (x) { return x[callback]; });
+        callbacks.forEach(function (x) { return x(_this, other); });
+        this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; });
+    };
+    Combatant.prototype.statusFold = function (fold, value) {
+        var foldingCallbacks = this.statuses.map(function (x) { return x[fold]; });
+        var result = foldingCallbacks.reduce(function (acc, x) { return x(acc); }, value);
+        this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; });
+        return result;
     };
     return Combatant;
 }());
@@ -879,7 +944,9 @@ var Player = (function (_super) {
         return _super.apply(this, [name, health, energy].concat(tools)) || this;
     }
     Player.prototype.clone = function () {
-        return new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+        var p = new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+        p.statuses = this.statuses.map(function (x) { return x.clone(); });
+        return p;
     };
     return Player;
 }(Combatant));
@@ -930,6 +997,7 @@ var Enemy = (function (_super) {
     }
     Enemy.prototype.clone = function () {
         var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+        copy.statuses = this.statuses.map(function (x) { return x.clone(); });
         copy.utilityFunction = this.utilityFunction;
         return copy;
     };
@@ -1380,3 +1448,25 @@ var Run = (function () {
     };
     return Run;
 }());
+var PoisonStatus = (function (_super) {
+    __extends(PoisonStatus, _super);
+    function PoisonStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    PoisonStatus.prototype.endTurn = function (affected, other) {
+        affected.directDamage(this.amount);
+        this.amount--;
+    };
+    PoisonStatus.prototype.add = function (other) {
+        if (other instanceof PoisonStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    PoisonStatus.prototype.clone = function () {
+        return new PoisonStatus(this.amount);
+    };
+    PoisonStatus._name = 'poison';
+    return PoisonStatus;
+}(AbstractStatus));
