@@ -25,4 +25,8 @@ class PoisonStatus extends AbstractStatus {
         return new PoisonStatus(this.amount);
     }
 
+    getName(): string {
+        return 'poison';
+    }
+
 }

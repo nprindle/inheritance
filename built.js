@@ -321,6 +321,9 @@ var UI = (function () {
         div.appendChild(UI.makeTextParagraph(c.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Health: " + c.health + " / " + c.maxHealth, 'health'));
         div.appendChild(UI.makeTextParagraph("Energy: " + c.energy + " / " + c.maxEnergy, 'energy'));
+        if (c.statuses.length > 0) {
+            div.appendChild(UI.makeTextParagraph(c.statuses.map(function (x) { return x.amount + " " + Strings.capitalize(x.getName()); }).join(', ')));
+        }
         var toolDiv = document.createElement('div');
         toolDiv.classList.add('tools');
         for (var i = 0; i < c.tools.length; i++) {
@@ -1405,6 +1408,8 @@ var AI = (function () {
             var movesList = [];
             var dummyBot = this.botCopy.clone();
             var dummyHuman = this.humanCopy.clone();
+            dummyBot.opponent = dummyHuman;
+            dummyHuman.opponent = dummyBot;
             dummyBot.refresh();
             dummyHuman.refresh();
             while (true) {
@@ -1487,6 +1492,9 @@ var PoisonStatus = (function (_super) {
     };
     PoisonStatus.prototype.clone = function () {
         return new PoisonStatus(this.amount);
+    };
+    PoisonStatus.prototype.getName = function () {
+        return 'poison';
     };
     PoisonStatus._name = 'poison';
     return PoisonStatus;
