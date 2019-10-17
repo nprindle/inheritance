@@ -27,6 +27,7 @@ abstract class Combatant {
 
   startFight(other: Combatant): void {
     this.opponent = other;
+    this.statuses = [];
     this.refresh();
   }
 

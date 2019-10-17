@@ -852,6 +852,7 @@ var Combatant = (function () {
     ;
     Combatant.prototype.startFight = function (other) {
         this.opponent = other;
+        this.statuses = [];
         this.refresh();
     };
     Combatant.prototype.startTurn = function () {
