@@ -1,30 +1,26 @@
-/// <reference path="RoomType.ts" />
 /// <reference path="Floor.ts" />
+/// <reference path="RoomEvent.ts" />
 
 class Room {
+    // Some events reoccur after a certain number of room entrances, so we keep
+    // track of the total number here
+    private static roomsEntered: number = 0;
+
     containerFloor: Floor;
-    type : RoomType;
-    exits : Room[];
+    exits: Room[];
     blockedSides: string[];
-    distanceFromEntrance : number;
+    distanceFromEntrance: number;
     visited: boolean;
     hasPlayer: boolean;
-    containedEnemy: Enemy;
-    containedTool: Tool;
+    roomEvent: RoomEvent;
 
-    constructor(containerFloor: Floor, type: RoomType, entrance? : Room, distanceFromEntrance? : number, hasPlayer? : boolean, containedEnemy? : Enemy, containedTool? : Tool) {
+    constructor(containerFloor: Floor, roomEvent: RoomEvent, entrance?: Room, hasPlayer?: boolean) {
         this.containerFloor = containerFloor;
-        this.type = type;
+        this.roomEvent = roomEvent;
         this.exits = entrance ? [entrance] : [];
-        if (entrance) {
-            this.distanceFromEntrance = entrance.distanceFromEntrance + 1
-        } else {
-            this.distanceFromEntrance = distanceFromEntrance || 0;
-        }
+        this.distanceFromEntrance = entrance ? entrance.distanceFromEntrance + 1 : 0;
         this.hasPlayer = hasPlayer || false;
         this.visited = false;
-        if (containedEnemy) this.containedEnemy = containedEnemy;
-        if (containedTool) this.containedTool = containedTool;
         this.blockedSides = [];
     }
 
@@ -33,24 +29,16 @@ class Room {
     }
 
     enter(): void {
-        for (var i = 0; i < this.exits.length; i++) {
-            this.exits[i].hasPlayer = false;
-        }
+        console.log("Entered");
+        Room.roomsEntered++;
+        this.exits.forEach(e => e.hasPlayer = false);
         this.visited = true;
         this.hasPlayer = true;
-        switch(this.type) {
-            case RoomType.Enemy:
-                if (this.containedEnemy.health != 0) {
-                    var f = new Fight(this.containerFloor.currentRun.player, this.containedEnemy, this);
-                    break;
-                }
-            case RoomType.Empty:
-            case RoomType.Entrance:
-            case RoomType.Exit:
-            case RoomType.Tool:
-                this.containerFloor.redraw();
-                break;
-        }
-        
+        this.roomEvent = this.roomEvent.onRoomEnter(this, Room.roomsEntered);
     }
+
+    getRoomType(): RoomType {
+        return this.roomEvent.roomType;
+    }
+
 }

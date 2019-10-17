@@ -4,13 +4,13 @@ class UI {
 
   static redrawFunction: Function;
 
-  static makeDiv(c?: string, cList? : string[], id?: string) {
+  static makeDiv(c?: string, cList?: string[], id?: string) {
     const div: HTMLElement = document.createElement('div');
     if (c) {
       div.classList.add(c);
     }
     if (cList) {
-      for (var i = 0; i < cList.length; i++) {
+      for (let i = 0; i < cList.length; i++) {
         div.classList.add(cList[i]);
       }
     }
@@ -176,15 +176,15 @@ class UI {
     return div;
   }
 
-  static renderFloor(floor : Floor) {
+  static renderFloor(floor: Floor) {
     console.log(floor);
-    const div : HTMLElement = UI.makeDiv("map");
+    const div: HTMLElement = UI.makeDiv("map");
     div.innerHTML = '';
-    for (var i = 0; i < floor.height; i++) {
-      const row : HTMLElement = UI.makeDiv("map-row");
-      for (var j = 0; j < floor.width; j++) {
-        var currentRoom = floor.rooms[i][j]
-        var visible = false;
+    for (let i = 0; i < floor.height; i++) {
+      const row: HTMLElement = UI.makeDiv("map-row");
+      for (let j = 0; j < floor.width; j++) {
+        let currentRoom = floor.rooms[i][j]
+        let visible = false;
         if (currentRoom) {
           row.appendChild(UI.renderRoom(currentRoom));
         } else {
@@ -196,31 +196,29 @@ class UI {
     return div;
   }
 
-  static renderRoom(room : Room, visible? : boolean) {
-    const div : HTMLElement = UI.makeDiv("room");
-    div.classList.add(room.type + "-room");
-    var visible = room.hasPlayer;
-    for (var i = 0; i < room.exits.length && !visible; i++) {
-      if (room.exits[i].hasPlayer) {
-        visible = true;
-      }
-    }
+  static renderRoom(room: Room) {
+    const div: HTMLElement = UI.makeDiv("room");
+    div.classList.add(room.getRoomType() + "-room");
+    let visible = room.hasPlayer || room.exits.some(e => e.hasPlayer);
     if (visible || room.visited) {
       div.classList.add("visible");
       if (room.hasPlayer) {
         div.appendChild(UI.makeRoomIcon('player'));
-      } else if (room.type !== RoomType.Empty) {
-        div.appendChild(UI.makeRoomIcon(room.type));
-      }
-      if (!room.hasPlayer && visible) {
-        div.onclick = function(e: MouseEvent) {
-          room.enter();
-        };
+      } else if (room.getRoomType() !== RoomType.Empty) {
+        div.appendChild(UI.makeRoomIcon(room.getRoomType()));
       }
     }
-    if (room.visited) div.classList.add("visited"); 
-    else div.classList.add("unvisited");
-    div.appendChild(document.createTextNode(room.distanceFromEntrance.toString())); 
+    if (!room.hasPlayer && visible) {
+      div.onclick = function(e: MouseEvent) {
+        room.enter();
+      };
+    }
+    if (room.visited) {
+      div.classList.add("visited");
+    } else {
+      div.classList.add("unvisited");
+    }
+    div.appendChild(document.createTextNode(room.distanceFromEntrance.toString()));
     return div;
   }
 
