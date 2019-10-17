@@ -19,8 +19,8 @@
     "typescript": "^3.6.4"
   },
   "scripts": {
-    "build-all": "npm run preprocess && npm run build && npm run postprocess",
-    "build": "tsc --project _source",
+    "build-all": "npm run build && npm run postprocess",
+    "build": "npm run preprocess && tsc --project _source",
     "preprocess": "node _preprocess.js",
     "postprocess": "node _postprocess.js",
     "start": "node server.js"
