@@ -2,8 +2,6 @@
 
 class PoisonStatus extends AbstractStatus {
 
-    static readonly _name: string = 'poison';
-
     constructor(amount: number) {
         super(amount);
     }
@@ -27,6 +25,10 @@ class PoisonStatus extends AbstractStatus {
 
     getName(): string {
         return 'poison';
+    }
+
+    getSortingNumber(): number {
+        return 0;
     }
 
 }

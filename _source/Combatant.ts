@@ -120,19 +120,24 @@ abstract class Combatant {
       }
     }
     this.statuses.push(status);
+    this.statusBookkeeping();
   }
 
   private statusCallback(callback: StatusCallbacks): void {
     const callbacks: Function[] = this.statuses.map(x => <Function> x[callback].bind(x));
     callbacks.forEach(x => x(this, this.opponent));
-    this.statuses = this.statuses.filter(status => status.amount !== 0);
+    this.statusBookkeeping();
   }
 
   private statusFold(fold: StatusFolds, value: number): number {
     const foldingCallbacks: Function[] = this.statuses.map(x => <Function> x[fold].bind(x));
     const result: number = foldingCallbacks.reduce((acc, x) => x(acc), value);
-    this.statuses = this.statuses.filter(status => status.amount !== 0);
+    this.statusBookkeeping();
     return result;
+  }
+
+  private statusBookkeeping(): void {
+    this.statuses = this.statuses.filter(status => status.amount !== 0).sort((a, b) => a.getSortingNumber() - b.getSortingNumber());
   }
 
 }

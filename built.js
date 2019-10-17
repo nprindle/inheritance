@@ -832,7 +832,6 @@ var AbstractStatus = (function () {
     AbstractStatus.prototype.amountHealedFold = function (acc) {
         return acc;
     };
-    AbstractStatus.sorting = 0;
     return AbstractStatus;
 }());
 var Combatant = (function () {
@@ -934,18 +933,22 @@ var Combatant = (function () {
             }
         }
         this.statuses.push(status);
+        this.statusBookkeeping();
     };
     Combatant.prototype.statusCallback = function (callback) {
         var _this = this;
         var callbacks = this.statuses.map(function (x) { return x[callback].bind(x); });
         callbacks.forEach(function (x) { return x(_this, _this.opponent); });
-        this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; });
+        this.statusBookkeeping();
     };
     Combatant.prototype.statusFold = function (fold, value) {
         var foldingCallbacks = this.statuses.map(function (x) { return x[fold].bind(x); });
         var result = foldingCallbacks.reduce(function (acc, x) { return x(acc); }, value);
-        this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; });
+        this.statusBookkeeping();
         return result;
+    };
+    Combatant.prototype.statusBookkeeping = function () {
+        this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; }).sort(function (a, b) { return a.getSortingNumber() - b.getSortingNumber(); });
     };
     return Combatant;
 }());
@@ -1496,6 +1499,8 @@ var PoisonStatus = (function (_super) {
     PoisonStatus.prototype.getName = function () {
         return 'poison';
     };
-    PoisonStatus._name = 'poison';
+    PoisonStatus.prototype.getSortingNumber = function () {
+        return 0;
+    };
     return PoisonStatus;
 }(AbstractStatus));

@@ -14,8 +14,7 @@ enum StatusFolds {
 }
 
 abstract class AbstractStatus {
-
-    static readonly sorting: number = 0;
+    
     amount: number;
 
     constructor(amount: number) {
@@ -67,5 +66,6 @@ abstract class AbstractStatus {
 
     //Accessing static members is difficult.
     abstract getName(): string;
+    abstract getSortingNumber(): number;
 
 }
