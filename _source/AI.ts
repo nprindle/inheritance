@@ -5,13 +5,18 @@ class AI {
     humanCopy: Player; // copy of the human-controlled combatant
     bestSequence: number[]; // the highest-utlity sequence that has been found
     bestSequenceScore: number; // the utility score of the best sequence
+    scoreFunction: (Enemy, Player) => number // the utility function used to assign scores to possible outcomes
 
     constructor(aiCombatant: Enemy, humanCombatant: Player) {
         // TODO use the clone() method the actual enemy and player combatants
         this.botCopy = aiCombatant.clone();
         this.humanCopy = humanCombatant.clone();
         this.bestSequence = []; // the default move is to just end the turn immediately
-        this.bestSequenceScore = this.botCopy.utilityFunction(this.botCopy, this.humanCopy);
+        this.scoreFunction = this.botCopy.utilityFunction;
+
+        //TODO check bot for status effects that change utility function
+
+        this.bestSequenceScore = this.scoreFunction(this.botCopy, this.humanCopy);
     }
 
     // simulates random turns to find a higher-scoring outcome than the current bestSequence
@@ -42,7 +47,7 @@ class AI {
                 movesList.push(chosenMove);
             }
 
-            let consequence = dummyBot.utilityFunction(dummyBot, dummyHuman);
+            let consequence = this.scoreFunction(dummyBot, dummyHuman);
             //console.log("Sequence " + movesList + "has utility score of " + consequence);
             if (consequence >= this.bestSequenceScore) {
                 this.bestSequenceScore = consequence;
