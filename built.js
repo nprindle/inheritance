@@ -937,12 +937,12 @@ var Combatant = (function () {
     };
     Combatant.prototype.statusCallback = function (callback) {
         var _this = this;
-        var callbacks = this.statuses.map(function (x) { return x[callback]; });
+        var callbacks = this.statuses.map(function (x) { return x[callback].bind(x); });
         callbacks.forEach(function (x) { return x(_this, _this.opponent); });
         this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; });
     };
     Combatant.prototype.statusFold = function (fold, value) {
-        var foldingCallbacks = this.statuses.map(function (x) { return x[fold]; });
+        var foldingCallbacks = this.statuses.map(function (x) { return x[fold].bind(x); });
         var result = foldingCallbacks.reduce(function (acc, x) { return x(acc); }, value);
         this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; });
         return result;
