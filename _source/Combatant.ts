@@ -10,6 +10,7 @@ abstract class Combatant {
   tools: Tool[];
   statuses: AbstractStatus[];
   deathFunc: Function;
+  opponent: Combatant;
 
   constructor(name: string, health: number, energy: number, ...tools: Tool[]) {
     this.name = name;
@@ -24,11 +25,26 @@ abstract class Combatant {
 
   abstract clone(): Combatant;
 
+  startFight(other: Combatant): void {
+    this.opponent = other;
+    this.refresh();
+  }
+
+  startTurn(): void {
+    this.statusCallback(StatusCallbacks.START_TURN);
+    this.refresh();
+  }
+
+  endTurn(): void {
+    this.statusCallback(StatusCallbacks.END_TURN);
+  }
+
   status(): string {
     return `${this.name}: ${this.health} / ${this.maxHealth}`;
   };
 
   wound(damage: number): void {
+    this.statusCallback(StatusCallbacks.TAKE_DAMAGE);
     this.directDamage(this.statusFold(StatusFolds.DAMAGE_TAKEN, damage));
   };
 
@@ -85,7 +101,7 @@ abstract class Combatant {
     }
     const tool: Tool = this.tools[index];
     tool.use(this, target);
-    this.statusCallback(StatusCallbacks.USE_TOOL, target);
+    this.statusCallback(StatusCallbacks.USE_TOOL);
   };
 
   die(): void {
@@ -106,9 +122,9 @@ abstract class Combatant {
     this.statuses.push(status);
   }
 
-  private statusCallback(callback: StatusCallbacks, other: Combatant): void {
+  private statusCallback(callback: StatusCallbacks): void {
     const callbacks: Function[] = this.statuses.map(x => <Function> x[callback]);
-    callbacks.forEach(x => x(this, other));
+    callbacks.forEach(x => x(this, this.opponent));
     this.statuses = this.statuses.filter(status => status.amount !== 0);
   }
 

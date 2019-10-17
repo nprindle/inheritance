@@ -848,11 +848,23 @@ var Combatant = (function () {
         this.statuses = [];
     }
     ;
+    Combatant.prototype.startFight = function (other) {
+        this.opponent = other;
+        this.refresh();
+    };
+    Combatant.prototype.startTurn = function () {
+        this.statusCallback(StatusCallbacks.START_TURN);
+        this.refresh();
+    };
+    Combatant.prototype.endTurn = function () {
+        this.statusCallback(StatusCallbacks.END_TURN);
+    };
     Combatant.prototype.status = function () {
         return this.name + ": " + this.health + " / " + this.maxHealth;
     };
     ;
     Combatant.prototype.wound = function (damage) {
+        this.statusCallback(StatusCallbacks.TAKE_DAMAGE);
         this.directDamage(this.statusFold(StatusFolds.DAMAGE_TAKEN, damage));
     };
     ;
@@ -902,7 +914,7 @@ var Combatant = (function () {
         }
         var tool = this.tools[index];
         tool.use(this, target);
-        this.statusCallback(StatusCallbacks.USE_TOOL, target);
+        this.statusCallback(StatusCallbacks.USE_TOOL);
     };
     ;
     Combatant.prototype.die = function () {
@@ -920,10 +932,10 @@ var Combatant = (function () {
         }
         this.statuses.push(status);
     };
-    Combatant.prototype.statusCallback = function (callback, other) {
+    Combatant.prototype.statusCallback = function (callback) {
         var _this = this;
         var callbacks = this.statuses.map(function (x) { return x[callback]; });
-        callbacks.forEach(function (x) { return x(_this, other); });
+        callbacks.forEach(function (x) { return x(_this, _this.opponent); });
         this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; });
     };
     Combatant.prototype.statusFold = function (fold, value) {
@@ -1016,11 +1028,12 @@ var Fight = (function () {
     function Fight(p, e, inRoom) {
         var _this = this;
         this.player = p;
-        p.refresh();
         this.enemy = e;
-        e.refresh();
-        if (inRoom)
+        p.startFight(e);
+        e.startFight(p);
+        if (inRoom) {
             this.inRoom = inRoom;
+        }
         this.endCallback = function () { };
         this.playersTurn = true;
         this.enemyButtons = [];
@@ -1033,9 +1046,15 @@ var Fight = (function () {
         this.endCallback = f;
     };
     Fight.prototype.endTurn = function () {
+        if (this.playersTurn) {
+            this.player.endTurn();
+            this.enemy.startTurn();
+        }
+        else {
+            this.enemy.endTurn();
+            this.player.startTurn();
+        }
         this.playersTurn = !this.playersTurn;
-        this.player.refresh();
-        this.enemy.refresh();
         this.enemyButtons = [];
         UI.redraw();
         if (!this.playersTurn) {
@@ -1375,6 +1394,8 @@ var AI = (function () {
     function AI(aiCombatant, humanCombatant) {
         this.botCopy = aiCombatant.clone();
         this.humanCopy = humanCombatant.clone();
+        this.botCopy.opponent = this.humanCopy;
+        this.humanCopy.opponent = this.botCopy;
         this.bestSequence = [];
         this.bestSequenceScore = this.botCopy.utilityFunction(this.botCopy, this.humanCopy);
     }
