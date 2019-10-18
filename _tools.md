@@ -6,6 +6,12 @@ Cost: 1 Energy
 
 Recover 1 health.
 
+## Poison Ray
+
+Cost: 1 Energy
+
+Give opponent 1 Poison.
+
 ## Singleton
 
 Cost: 1 Energy

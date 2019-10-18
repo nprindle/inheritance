@@ -987,6 +987,42 @@ var DamageEffect = (function (_super) {
     };
     return DamageEffect;
 }(AbstractEffect));
+var GiveOtherStatusEffect = (function (_super) {
+    __extends(GiveOtherStatusEffect, _super);
+    function GiveOtherStatusEffect(status) {
+        var _this = _super.call(this) || this;
+        _this.status = status;
+        return _this;
+    }
+    GiveOtherStatusEffect.prototype.effect = function (user, target) {
+        target.addStatus(this.status.clone());
+    };
+    GiveOtherStatusEffect.prototype.toString = function () {
+        return "give opponent " + this.status.amount + " " + Strings.capitalize(this.status.getName());
+    };
+    GiveOtherStatusEffect.prototype.clone = function () {
+        return new GiveOtherStatusEffect(this.status.clone());
+    };
+    return GiveOtherStatusEffect;
+}(AbstractEffect));
+var GiveSelfStatusEffect = (function (_super) {
+    __extends(GiveSelfStatusEffect, _super);
+    function GiveSelfStatusEffect(status) {
+        var _this = _super.call(this) || this;
+        _this.status = status;
+        return _this;
+    }
+    GiveSelfStatusEffect.prototype.effect = function (user, target) {
+        user.addStatus(this.status.clone());
+    };
+    GiveSelfStatusEffect.prototype.toString = function () {
+        return "gain " + this.status.amount + " " + Strings.capitalize(this.status.getName());
+    };
+    GiveSelfStatusEffect.prototype.clone = function () {
+        return new GiveSelfStatusEffect(this.status.clone());
+    };
+    return GiveSelfStatusEffect;
+}(AbstractEffect));
 var HealingEffect = (function (_super) {
     __extends(HealingEffect, _super);
     function HealingEffect(amount) {
@@ -1326,6 +1362,34 @@ var modifiers = new ItemPool();
 var characters = new ItemPool(true);
 var enemies = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
+var PoisonStatus = (function (_super) {
+    __extends(PoisonStatus, _super);
+    function PoisonStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    PoisonStatus.prototype.endTurn = function (affected, other) {
+        affected.directDamage(this.amount);
+        this.amount--;
+    };
+    PoisonStatus.prototype.add = function (other) {
+        if (other instanceof PoisonStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    PoisonStatus.prototype.clone = function () {
+        return new PoisonStatus(this.amount);
+    };
+    PoisonStatus.prototype.getName = function () {
+        return 'poison';
+    };
+    PoisonStatus.prototype.getSortingNumber = function () {
+        return 0;
+    };
+    return PoisonStatus;
+}(AbstractStatus));
+tools.add('poisonray', new Tool('Poison Ray', new Cost([1, CostTypes.Energy]), new GiveOtherStatusEffect(new PoisonStatus(1))));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('splash', new Tool('Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()));
@@ -1336,7 +1400,7 @@ modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2]
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
 characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')), 1);
-characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')), 0);
+characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench'), tools.get('poisonray')), 0);
 enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
 enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
 var CreditsEntry = (function () {
@@ -1478,30 +1542,3 @@ var Run = (function () {
     };
     return Run;
 }());
-var PoisonStatus = (function (_super) {
-    __extends(PoisonStatus, _super);
-    function PoisonStatus(amount) {
-        return _super.call(this, amount) || this;
-    }
-    PoisonStatus.prototype.endTurn = function (affected, other) {
-        affected.directDamage(this.amount);
-        this.amount--;
-    };
-    PoisonStatus.prototype.add = function (other) {
-        if (other instanceof PoisonStatus) {
-            this.amount += other.amount;
-            return true;
-        }
-        return false;
-    };
-    PoisonStatus.prototype.clone = function () {
-        return new PoisonStatus(this.amount);
-    };
-    PoisonStatus.prototype.getName = function () {
-        return 'poison';
-    };
-    PoisonStatus.prototype.getSortingNumber = function () {
-        return 0;
-    };
-    return PoisonStatus;
-}(AbstractStatus));

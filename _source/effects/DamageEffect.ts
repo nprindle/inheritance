@@ -1,4 +1,4 @@
-// <reference path="../AbstractEffect.ts" />
+/// <reference path="../AbstractEffect.ts" />
 
 class DamageEffect extends AbstractEffect {
 
