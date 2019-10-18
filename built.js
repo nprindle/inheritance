@@ -1386,8 +1386,14 @@ var BurnStatus = (function (_super) {
     BurnStatus.prototype.getName = function () {
         return 'burn';
     };
+    BurnStatus.prototype.getDescription = function () {
+        return "Take " + this.amount + " damage whenever you use a tool this turn.";
+    };
     BurnStatus.prototype.getSortingNumber = function () {
         return 0;
+    };
+    BurnStatus.prototype.getUtility = function () {
+        return -5 * this.amount;
     };
     return BurnStatus;
 }(AbstractStatus));
@@ -1413,8 +1419,19 @@ var PoisonStatus = (function (_super) {
     PoisonStatus.prototype.getName = function () {
         return 'poison';
     };
+    PoisonStatus.prototype.getDescription = function () {
+        if (this.amount === 1) {
+            return "Take 1 damage at the end of this turn.";
+        }
+        else {
+            return "Take " + this.amount + " damage at the end of this turn. Decreases by one each turn.";
+        }
+    };
     PoisonStatus.prototype.getSortingNumber = function () {
         return 0;
+    };
+    PoisonStatus.prototype.getUtility = function () {
+        return -1 * ((this.amount) * (this.amount + 1)) / 2;
     };
     return PoisonStatus;
 }(AbstractStatus));

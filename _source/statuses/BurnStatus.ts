@@ -30,8 +30,16 @@ class BurnStatus extends AbstractStatus {
         return 'burn';
     }
 
+    getDescription(): string {
+        return `Take ${this.amount} damage whenever you use a tool this turn.`
+    }
+
     getSortingNumber(): number {
         return 0;
+    }
+
+    getUtility(): number {
+        return -5 * this.amount;
     }
 
 }
