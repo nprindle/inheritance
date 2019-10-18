@@ -6,6 +6,12 @@ Cost: 1 Energy
 
 Recover 1 health.
 
+## Lighter
+
+Cost: 1 Energy
+
+Gain 2 Burn.
+
 ## Poison Ray
 
 Cost: 1 Energy

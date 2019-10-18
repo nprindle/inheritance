@@ -916,8 +916,8 @@ var Combatant = (function () {
             return;
         }
         var tool = this.tools[index];
-        tool.use(this, target);
         this.statusCallback(StatusCallbacks.USE_TOOL);
+        tool.use(this, target);
     };
     ;
     Combatant.prototype.die = function () {
@@ -1362,6 +1362,35 @@ var modifiers = new ItemPool();
 var characters = new ItemPool(true);
 var enemies = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
+var BurnStatus = (function (_super) {
+    __extends(BurnStatus, _super);
+    function BurnStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    BurnStatus.prototype.useTool = function (affected, other) {
+        affected.directDamage(this.amount);
+    };
+    BurnStatus.prototype.endTurn = function (affected, other) {
+        this.amount = 0;
+    };
+    BurnStatus.prototype.add = function (other) {
+        if (other instanceof BurnStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    BurnStatus.prototype.clone = function () {
+        return new BurnStatus(this.amount);
+    };
+    BurnStatus.prototype.getName = function () {
+        return 'burn';
+    };
+    BurnStatus.prototype.getSortingNumber = function () {
+        return 0;
+    };
+    return BurnStatus;
+}(AbstractStatus));
 var PoisonStatus = (function (_super) {
     __extends(PoisonStatus, _super);
     function PoisonStatus(amount) {
@@ -1389,6 +1418,7 @@ var PoisonStatus = (function (_super) {
     };
     return PoisonStatus;
 }(AbstractStatus));
+tools.add('lighter', new Tool('Lighter', new Cost([1, CostTypes.Energy]), new GiveSelfStatusEffect(new BurnStatus(2))));
 tools.add('poisonray', new Tool('Poison Ray', new Cost([1, CostTypes.Energy]), new GiveOtherStatusEffect(new PoisonStatus(1))));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
@@ -1400,7 +1430,7 @@ modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2]
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
 characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')), 1);
-characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench'), tools.get('poisonray')), 0);
+characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench'), tools.get('poisonray'), tools.get('lighter')), 0);
 enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
 enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
 var CreditsEntry = (function () {

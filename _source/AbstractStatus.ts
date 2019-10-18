@@ -66,6 +66,8 @@ abstract class AbstractStatus {
 
     //Accessing static members is difficult.
     abstract getName(): string;
+    //TODO: function for getting description
     abstract getSortingNumber(): number;
+    //TODO: function for getting utility
 
 }

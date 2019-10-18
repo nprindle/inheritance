@@ -20,6 +20,12 @@ Tools:
 
 * Give opponent 1 Poison.
 
+* **Lighter**
+
+* Cost: 1 Energy
+
+* Gain 2 Burn.
+
 ## The Clone
 
 Health: 10

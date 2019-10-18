@@ -101,8 +101,8 @@ abstract class Combatant {
       return;
     }
     const tool: Tool = this.tools[index];
-    tool.use(this, target);
     this.statusCallback(StatusCallbacks.USE_TOOL);
+    tool.use(this, target);
   };
 
   die(): void {
