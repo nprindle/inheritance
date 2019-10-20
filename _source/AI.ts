@@ -52,6 +52,10 @@ class AI {
                 movesList.push(chosenMove);
             }
 
+            // simulate status effect results
+            dummyBot.endTurn();
+            dummyHuman.endTurn();
+
             let consequence = this.scoreFunction(dummyBot, dummyHuman);
             //console.log("Sequence " + movesList + "has utility score of " + consequence);
             if (consequence >= this.bestSequenceScore) {
