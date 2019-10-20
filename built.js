@@ -515,100 +515,6 @@ var AbstractEffect = (function () {
     };
     return AbstractEffect;
 }());
-var NothingEffect = (function (_super) {
-    __extends(NothingEffect, _super);
-    function NothingEffect() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    NothingEffect.prototype.effect = function (user, foe) {
-        return;
-    };
-    NothingEffect.prototype.toString = function () {
-        return 'do nothing';
-    };
-    NothingEffect.prototype.clone = function () {
-        return new NothingEffect();
-    };
-    return NothingEffect;
-}(AbstractEffect));
-var CombinationEffect = (function (_super) {
-    __extends(CombinationEffect, _super);
-    function CombinationEffect() {
-        var effects = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            effects[_i] = arguments[_i];
-        }
-        var _this = _super.call(this) || this;
-        _this.effects = effects;
-        return _this;
-    }
-    CombinationEffect.prototype.effect = function (user, foe) {
-        for (var i = 0; i < this.effects.length; i++) {
-            this.effects[i].activate(user, foe);
-        }
-    };
-    CombinationEffect.prototype.toString = function () {
-        var acc = [];
-        for (var i = 0; i < this.effects.length; i++) {
-            acc.push(this.effects[i].toString());
-        }
-        return acc.join(' ');
-    };
-    CombinationEffect.prototype.clone = function () {
-        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
-    };
-    return CombinationEffect;
-}(AbstractEffect));
-var RepeatingEffect = (function (_super) {
-    __extends(RepeatingEffect, _super);
-    function RepeatingEffect(next, times) {
-        var _this = _super.call(this) || this;
-        _this.next = next;
-        _this.times = times;
-        return _this;
-    }
-    RepeatingEffect.prototype.effect = function (user, foe) {
-        for (var i = 0; i < this.times; i++) {
-            this.next.activate(user, foe);
-        }
-    };
-    RepeatingEffect.prototype.toString = function () {
-        return this.next.toString() + " " + this.times + " times";
-    };
-    RepeatingEffect.prototype.clone = function () {
-        return new RepeatingEffect(this.next.clone(), this.times);
-    };
-    return RepeatingEffect;
-}(AbstractEffect));
-var CounterEffect = (function (_super) {
-    __extends(CounterEffect, _super);
-    function CounterEffect(next, count) {
-        var _this = _super.call(this) || this;
-        _this.next = next;
-        _this.maxCounter = count;
-        _this.currentCounter = count;
-        return _this;
-    }
-    CounterEffect.prototype.effect = function (user, foe) {
-        this.currentCounter--;
-        if (this.currentCounter <= 0) {
-            this.next.activate(user, foe);
-            this.currentCounter = this.maxCounter;
-        }
-    };
-    CounterEffect.prototype.toString = function () {
-        if (this.currentCounter === 1) {
-            return "next use, " + this.next.toString();
-        }
-        else {
-            return "in " + this.currentCounter + " uses, " + this.next.toString();
-        }
-    };
-    CounterEffect.prototype.clone = function () {
-        return new CounterEffect(this.next.clone(), this.maxCounter);
-    };
-    return CounterEffect;
-}(AbstractEffect));
 var CostTypes;
 (function (CostTypes) {
     CostTypes[CostTypes["Health"] = 0] = "Health";
@@ -969,6 +875,63 @@ var Player = (function (_super) {
     };
     return Player;
 }(Combatant));
+var CombinationEffect = (function (_super) {
+    __extends(CombinationEffect, _super);
+    function CombinationEffect() {
+        var effects = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            effects[_i] = arguments[_i];
+        }
+        var _this = _super.call(this) || this;
+        _this.effects = effects;
+        return _this;
+    }
+    CombinationEffect.prototype.effect = function (user, foe) {
+        for (var i = 0; i < this.effects.length; i++) {
+            this.effects[i].activate(user, foe);
+        }
+    };
+    CombinationEffect.prototype.toString = function () {
+        var acc = [];
+        for (var i = 0; i < this.effects.length; i++) {
+            acc.push(this.effects[i].toString());
+        }
+        return acc.join(' ');
+    };
+    CombinationEffect.prototype.clone = function () {
+        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
+    };
+    return CombinationEffect;
+}(AbstractEffect));
+var CounterEffect = (function (_super) {
+    __extends(CounterEffect, _super);
+    function CounterEffect(next, count) {
+        var _this = _super.call(this) || this;
+        _this.next = next;
+        _this.maxCounter = count;
+        _this.currentCounter = count;
+        return _this;
+    }
+    CounterEffect.prototype.effect = function (user, foe) {
+        this.currentCounter--;
+        if (this.currentCounter <= 0) {
+            this.next.activate(user, foe);
+            this.currentCounter = this.maxCounter;
+        }
+    };
+    CounterEffect.prototype.toString = function () {
+        if (this.currentCounter === 1) {
+            return "next use, " + this.next.toString();
+        }
+        else {
+            return "in " + this.currentCounter + " uses, " + this.next.toString();
+        }
+    };
+    CounterEffect.prototype.clone = function () {
+        return new CounterEffect(this.next.clone(), this.maxCounter);
+    };
+    return CounterEffect;
+}(AbstractEffect));
 var DamageEffect = (function (_super) {
     __extends(DamageEffect, _super);
     function DamageEffect(damage) {
@@ -1040,6 +1003,43 @@ var HealingEffect = (function (_super) {
         return new HealingEffect(this.amount);
     };
     return HealingEffect;
+}(AbstractEffect));
+var NothingEffect = (function (_super) {
+    __extends(NothingEffect, _super);
+    function NothingEffect() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    NothingEffect.prototype.effect = function (user, foe) {
+        return;
+    };
+    NothingEffect.prototype.toString = function () {
+        return 'do nothing';
+    };
+    NothingEffect.prototype.clone = function () {
+        return new NothingEffect();
+    };
+    return NothingEffect;
+}(AbstractEffect));
+var RepeatingEffect = (function (_super) {
+    __extends(RepeatingEffect, _super);
+    function RepeatingEffect(next, times) {
+        var _this = _super.call(this) || this;
+        _this.next = next;
+        _this.times = times;
+        return _this;
+    }
+    RepeatingEffect.prototype.effect = function (user, foe) {
+        for (var i = 0; i < this.times; i++) {
+            this.next.activate(user, foe);
+        }
+    };
+    RepeatingEffect.prototype.toString = function () {
+        return this.next.toString() + " " + this.times + " times";
+    };
+    RepeatingEffect.prototype.clone = function () {
+        return new RepeatingEffect(this.next.clone(), this.times);
+    };
+    return RepeatingEffect;
 }(AbstractEffect));
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
