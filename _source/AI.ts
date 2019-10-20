@@ -15,9 +15,18 @@ class AI {
         this.botCopy.opponent = this.humanCopy;
         this.humanCopy.opponent = this.botCopy;
         this.bestSequence = []; // the default move is to just end the turn immediately
-        this.scoreFunction = this.botCopy.utilityFunction;
 
-        //TODO check bot for status effects that change utility function
+        // check bot for status effects that change utility function
+        // if more than one status implements an overriding utility function, use the one last in the sorted list of statuses
+        let statuses = this.botCopy.statuses;
+        let preferenceOverride: (bot: Enemy, human: Player) => number;
+        statuses.forEach(function(status){
+            if(status.overridenUtilityFunction != undefined) {
+                preferenceOverride = status.overridenUtilityFunction;
+            }
+        });
+
+        this.scoreFunction = preferenceOverride || this.botCopy.utilityFunction; // use enemy's utility function if there isn't one from a status effect
 
         this.bestSequenceScore = this.scoreFunction(this.botCopy, this.humanCopy);
     }
