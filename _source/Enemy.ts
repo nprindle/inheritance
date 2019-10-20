@@ -9,7 +9,7 @@ class Enemy extends Combatant {
     super(name, health, energy, ...tools);
 
     if (defaultUtilityFunction == undefined) {
-        this.utilityFunction = (bot: Enemy, human: Player) => AiUtilityFunctions.healthDifferenceUtility(bot, human, 1);
+        this.utilityFunction = AiUtilityFunctions.cautiousUtility;
     } else {
       this.utilityFunction = defaultUtilityFunction;
     }

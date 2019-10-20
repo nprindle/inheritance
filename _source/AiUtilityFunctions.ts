@@ -5,7 +5,7 @@ class AiUtilityFunctions {
      * a bot with aggression 0 will not care about damaging the player
      * a bot with aggression greater than 1 will prefer damaging the player over healing itself
      */
-    static healthDifferenceUtility(bot: Enemy, human: Player, aggression: number): number {
+    static genericUtility(bot: Enemy, human: Player, aggression: number): number {
         if (AiUtilityFunctions.dead(bot)) {
           return Number.MIN_VALUE; // 3rd law of robotics
         }
@@ -13,24 +13,30 @@ class AiUtilityFunctions {
           return Number.MAX_VALUE;
         }
 
-        return bot.health - (human.health * aggression);
+        let botStatusPoints = AiUtilityFunctions.statusUtilityPoints(bot);
+        let humanStatusPoints = AiUtilityFunctions.statusUtilityPoints(human);
+        let statusPoints = botStatusPoints - (humanStatusPoints * aggression);
+
+        let healthDifferencePoints = (bot.health - human.health * aggression);
+
+        return statusPoints + healthDifferencePoints;
     }
 
     static aggressiveUtility(bot: Enemy, human: Player) {
-        return AiUtilityFunctions.healthDifferenceUtility(bot, human, 10);
+        return AiUtilityFunctions.genericUtility(bot, human, 10);
     }
 
     static cautiousUtility(bot: Enemy, human: Player) {
-        return AiUtilityFunctions.healthDifferenceUtility(bot, human, 1);
+        return AiUtilityFunctions.genericUtility(bot, human, 1);
     }
 
     static defensiveUtility(bot: Enemy, human: Player) {
-        return AiUtilityFunctions.healthDifferenceUtility(bot, human, 0.25);
+        return AiUtilityFunctions.genericUtility(bot, human, 0.25);
     }
 
     // tries to damage itself at much as possible. May or may not also damage the player
     static suicidalUtility(bot: Enemy, human: Player): number {
-        return -1 * bot.health;
+        return -1 * (bot.health + AiUtilityFunctions.statusUtilityPoints(bot));
     }
 
     // ranks all outcomes as equally prefereable, so the result is chosen at random
@@ -40,5 +46,9 @@ class AiUtilityFunctions {
 
     private static dead(combatant: Combatant): boolean  {
         return combatant.health == 0;
+    }
+
+    private static statusUtilityPoints(combatant: Combatant): number {
+         return combatant.statuses.reduce((sum, current) => (sum + current.getUtility()), 0);
     }
 }
