@@ -1,9 +1,20 @@
 /// <reference path="Combatant.ts" />
 
-abstract class AbstractStatus {
+enum StatusCallbacks {
+    START_TURN = 'startTurn',
+    END_TURN = 'endTurn',
+    USE_TOOL = 'useTool',
+    TAKE_DAMAGE = 'takeDamage'
+}
 
-    static readonly sorting: number = 0;
-    static readonly _name: string;
+enum StatusFolds {
+    DAMAGE_TAKEN = 'damageTakenFold',
+    DAMAGE_DEALT = 'damageDealtFold',
+    AMOUNT_HEALED = 'amountHealedFold'
+}
+
+abstract class AbstractStatus {
+    
     amount: number;
 
     constructor(amount: number) {
@@ -52,5 +63,11 @@ abstract class AbstractStatus {
     abstract add(other: AbstractStatus): boolean;
 
     abstract clone(): AbstractStatus;
+
+    //Accessing static members is difficult.
+    abstract getName(): string;
+    abstract getDescription(): string;
+    abstract getSortingNumber(): number;
+    abstract getUtility(): number;
 
 }

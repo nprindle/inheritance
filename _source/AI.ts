@@ -11,6 +11,9 @@ class AI {
         // TODO use the clone() method the actual enemy and player combatants
         this.botCopy = aiCombatant.clone();
         this.humanCopy = humanCombatant.clone();
+        //make sure the opponents are correct
+        this.botCopy.opponent = this.humanCopy;
+        this.humanCopy.opponent = this.botCopy;
         this.bestSequence = []; // the default move is to just end the turn immediately
         this.scoreFunction = this.botCopy.utilityFunction;
 
@@ -27,6 +30,8 @@ class AI {
             // clone a simulation of the combatants
             let dummyBot = this.botCopy.clone();
             let dummyHuman = this.humanCopy.clone();
+            dummyBot.opponent = dummyHuman;
+            dummyHuman.opponent = dummyBot;
             dummyBot.refresh();
             dummyHuman.refresh();
 

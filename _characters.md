@@ -14,6 +14,18 @@ Tools:
 
 * Do 1 damage.
 
+* **Poison Ray**
+
+* Cost: 1 Energy
+
+* Give opponent 1 Poison.
+
+* **Lighter**
+
+* Cost: 1 Energy
+
+* Gain 2 Burn.
+
 ## The Clone
 
 Health: 10

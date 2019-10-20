@@ -328,6 +328,9 @@ var UI = (function () {
         div.appendChild(UI.makeTextParagraph(c.name, 'name'));
         div.appendChild(UI.makeTextParagraph("Health: " + c.health + " / " + c.maxHealth, 'health'));
         div.appendChild(UI.makeTextParagraph("Energy: " + c.energy + " / " + c.maxEnergy, 'energy'));
+        if (c.statuses.length > 0) {
+            div.appendChild(UI.makeTextParagraph(c.statuses.map(function (x) { return x.amount + " " + Strings.capitalize(x.getName()); }).join(', ')));
+        }
         var toolDiv = document.createElement('div');
         toolDiv.classList.add('tools');
         for (var i = 0; i < c.tools.length; i++) {
@@ -802,6 +805,19 @@ var Tool = (function () {
     };
     return Tool;
 }());
+var StatusCallbacks;
+(function (StatusCallbacks) {
+    StatusCallbacks["START_TURN"] = "startTurn";
+    StatusCallbacks["END_TURN"] = "endTurn";
+    StatusCallbacks["USE_TOOL"] = "useTool";
+    StatusCallbacks["TAKE_DAMAGE"] = "takeDamage";
+})(StatusCallbacks || (StatusCallbacks = {}));
+var StatusFolds;
+(function (StatusFolds) {
+    StatusFolds["DAMAGE_TAKEN"] = "damageTakenFold";
+    StatusFolds["DAMAGE_DEALT"] = "damageDealtFold";
+    StatusFolds["AMOUNT_HEALED"] = "amountHealedFold";
+})(StatusFolds || (StatusFolds = {}));
 var AbstractStatus = (function () {
     function AbstractStatus(amount) {
         this.amount = amount;
@@ -823,7 +839,6 @@ var AbstractStatus = (function () {
     AbstractStatus.prototype.amountHealedFold = function (acc) {
         return acc;
     };
-    AbstractStatus.sorting = 0;
     return AbstractStatus;
 }());
 var Combatant = (function () {
@@ -842,16 +857,25 @@ var Combatant = (function () {
         this.statuses = [];
     }
     ;
+    Combatant.prototype.startFight = function (other) {
+        this.opponent = other;
+        this.statuses = [];
+        this.refresh();
+    };
+    Combatant.prototype.startTurn = function () {
+        this.statusCallback(StatusCallbacks.START_TURN);
+        this.refresh();
+    };
+    Combatant.prototype.endTurn = function () {
+        this.statusCallback(StatusCallbacks.END_TURN);
+    };
     Combatant.prototype.status = function () {
         return this.name + ": " + this.health + " / " + this.maxHealth;
     };
     ;
     Combatant.prototype.wound = function (damage) {
-        this.health -= damage;
-        if (this.health <= 0) {
-            this.health = 0;
-            this.die();
-        }
+        this.statusCallback(StatusCallbacks.TAKE_DAMAGE);
+        this.directDamage(this.statusFold(StatusFolds.DAMAGE_TAKEN, damage));
     };
     ;
     Combatant.prototype.directDamage = function (damage) {
@@ -862,12 +886,14 @@ var Combatant = (function () {
         }
     };
     Combatant.prototype.heal = function (amount) {
+        this.directHeal(this.statusFold(StatusFolds.AMOUNT_HEALED, amount));
+    };
+    Combatant.prototype.directHeal = function (amount) {
         this.health += amount;
         if (this.health > this.maxHealth) {
             this.health = this.maxHealth;
         }
     };
-    ;
     Combatant.prototype.refresh = function () {
         this.energy = this.maxEnergy;
         for (var i = 0; i < this.tools.length; i++) {
@@ -879,7 +905,7 @@ var Combatant = (function () {
     };
     ;
     Combatant.prototype.pay = function (cost) {
-        this.wound(cost.healthCost);
+        this.directDamage(cost.healthCost);
         this.energy -= cost.energyCost;
     };
     ;
@@ -897,6 +923,7 @@ var Combatant = (function () {
             return;
         }
         var tool = this.tools[index];
+        this.statusCallback(StatusCallbacks.USE_TOOL);
         tool.use(this, target);
     };
     ;
@@ -905,6 +932,31 @@ var Combatant = (function () {
     };
     Combatant.prototype.setDeathFunc = function (f) {
         this.deathFunc = f;
+    };
+    Combatant.prototype.addStatus = function (status) {
+        for (var i = 0; i < this.statuses.length; i++) {
+            var done = this.statuses[i].add(status);
+            if (done) {
+                return;
+            }
+        }
+        this.statuses.push(status);
+        this.statusBookkeeping();
+    };
+    Combatant.prototype.statusCallback = function (callback) {
+        var _this = this;
+        var callbacks = this.statuses.map(function (x) { return x[callback].bind(x); });
+        callbacks.forEach(function (x) { return x(_this, _this.opponent); });
+        this.statusBookkeeping();
+    };
+    Combatant.prototype.statusFold = function (fold, value) {
+        var foldingCallbacks = this.statuses.map(function (x) { return x[fold].bind(x); });
+        var result = foldingCallbacks.reduce(function (acc, x) { return x(acc); }, value);
+        this.statusBookkeeping();
+        return result;
+    };
+    Combatant.prototype.statusBookkeeping = function () {
+        this.statuses = this.statuses.filter(function (status) { return status.amount !== 0; }).sort(function (a, b) { return a.getSortingNumber() - b.getSortingNumber(); });
     };
     return Combatant;
 }());
@@ -918,7 +970,7 @@ var Player = (function (_super) {
         return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
     }
     Player.prototype.clone = function () {
-        var p = new (Player.bind.apply(Player, __spreadArrays([void 0, this.name, this.health, this.energy], this.tools.map(function (x) { return x.clone(); }))))();
+        var p = new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
         p.statuses = this.statuses.map(function (x) { return x.clone(); });
         return p;
     };
@@ -941,6 +993,42 @@ var DamageEffect = (function (_super) {
         return new DamageEffect(this.damage);
     };
     return DamageEffect;
+}(AbstractEffect));
+var GiveOtherStatusEffect = (function (_super) {
+    __extends(GiveOtherStatusEffect, _super);
+    function GiveOtherStatusEffect(status) {
+        var _this = _super.call(this) || this;
+        _this.status = status;
+        return _this;
+    }
+    GiveOtherStatusEffect.prototype.effect = function (user, target) {
+        target.addStatus(this.status.clone());
+    };
+    GiveOtherStatusEffect.prototype.toString = function () {
+        return "give opponent " + this.status.amount + " " + Strings.capitalize(this.status.getName());
+    };
+    GiveOtherStatusEffect.prototype.clone = function () {
+        return new GiveOtherStatusEffect(this.status.clone());
+    };
+    return GiveOtherStatusEffect;
+}(AbstractEffect));
+var GiveSelfStatusEffect = (function (_super) {
+    __extends(GiveSelfStatusEffect, _super);
+    function GiveSelfStatusEffect(status) {
+        var _this = _super.call(this) || this;
+        _this.status = status;
+        return _this;
+    }
+    GiveSelfStatusEffect.prototype.effect = function (user, target) {
+        user.addStatus(this.status.clone());
+    };
+    GiveSelfStatusEffect.prototype.toString = function () {
+        return "gain " + this.status.amount + " " + Strings.capitalize(this.status.getName());
+    };
+    GiveSelfStatusEffect.prototype.clone = function () {
+        return new GiveSelfStatusEffect(this.status.clone());
+    };
+    return GiveSelfStatusEffect;
 }(AbstractEffect));
 var HealingEffect = (function (_super) {
     __extends(HealingEffect, _super);
@@ -977,7 +1065,7 @@ var Enemy = (function (_super) {
         return _this;
     }
     Enemy.prototype.clone = function () {
-        var copy = new (Enemy.bind.apply(Enemy, __spreadArrays([void 0, this.name, this.health, this.energy, this.utilityFunction], this.tools.map(function (x) { return x.clone(); }))))();
+        var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
         copy.statuses = this.statuses.map(function (x) { return x.clone(); });
         copy.utilityFunction = this.utilityFunction;
         return copy;
@@ -988,11 +1076,12 @@ var Fight = (function () {
     function Fight(p, e, inRoom) {
         var _this = this;
         this.player = p;
-        p.refresh();
         this.enemy = e;
-        e.refresh();
-        if (inRoom)
+        p.startFight(e);
+        e.startFight(p);
+        if (inRoom) {
             this.inRoom = inRoom;
+        }
         this.endCallback = function () { };
         this.playersTurn = true;
         this.enemyButtons = [];
@@ -1005,9 +1094,15 @@ var Fight = (function () {
         this.endCallback = f;
     };
     Fight.prototype.endTurn = function () {
+        if (this.playersTurn) {
+            this.player.endTurn();
+            this.enemy.startTurn();
+        }
+        else {
+            this.enemy.endTurn();
+            this.player.startTurn();
+        }
         this.playersTurn = !this.playersTurn;
-        this.player.refresh();
-        this.enemy.refresh();
         this.enemyButtons = [];
         UI.redraw();
         if (!this.playersTurn) {
@@ -1272,6 +1367,81 @@ var modifiers = new ItemPool();
 var characters = new ItemPool(true);
 var enemies = new ItemPool();
 tools.add('bandages', new Tool('Bandages', new Cost([1, CostTypes.Energy]), new HealingEffect(1)));
+var BurnStatus = (function (_super) {
+    __extends(BurnStatus, _super);
+    function BurnStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    BurnStatus.prototype.useTool = function (affected, other) {
+        affected.directDamage(this.amount);
+    };
+    BurnStatus.prototype.endTurn = function (affected, other) {
+        this.amount = 0;
+    };
+    BurnStatus.prototype.add = function (other) {
+        if (other instanceof BurnStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    BurnStatus.prototype.clone = function () {
+        return new BurnStatus(this.amount);
+    };
+    BurnStatus.prototype.getName = function () {
+        return 'burn';
+    };
+    BurnStatus.prototype.getDescription = function () {
+        return "Take " + this.amount + " damage whenever you use a tool this turn.";
+    };
+    BurnStatus.prototype.getSortingNumber = function () {
+        return 0;
+    };
+    BurnStatus.prototype.getUtility = function () {
+        return -5 * this.amount;
+    };
+    return BurnStatus;
+}(AbstractStatus));
+var PoisonStatus = (function (_super) {
+    __extends(PoisonStatus, _super);
+    function PoisonStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    PoisonStatus.prototype.endTurn = function (affected, other) {
+        affected.directDamage(this.amount);
+        this.amount--;
+    };
+    PoisonStatus.prototype.add = function (other) {
+        if (other instanceof PoisonStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    PoisonStatus.prototype.clone = function () {
+        return new PoisonStatus(this.amount);
+    };
+    PoisonStatus.prototype.getName = function () {
+        return 'poison';
+    };
+    PoisonStatus.prototype.getDescription = function () {
+        if (this.amount === 1) {
+            return "Take 1 damage at the end of this turn.";
+        }
+        else {
+            return "Take " + this.amount + " damage at the end of this turn. Decreases by one each turn.";
+        }
+    };
+    PoisonStatus.prototype.getSortingNumber = function () {
+        return 0;
+    };
+    PoisonStatus.prototype.getUtility = function () {
+        return -1 * ((this.amount) * (this.amount + 1)) / 2;
+    };
+    return PoisonStatus;
+}(AbstractStatus));
+tools.add('lighter', new Tool('Lighter', new Cost([1, CostTypes.Energy]), new GiveSelfStatusEffect(new BurnStatus(2))));
+tools.add('poisonray', new Tool('Poison Ray', new Cost([1, CostTypes.Energy]), new GiveOtherStatusEffect(new PoisonStatus(1))));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('splash', new Tool('Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()));
@@ -1282,41 +1452,9 @@ modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2]
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
 characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')), 1);
-characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench')), 0);
-var AiUtilityFunctions = (function () {
-    function AiUtilityFunctions() {
-    }
-    AiUtilityFunctions.healthDifferenceUtility = function (bot, human, aggression) {
-        if (AiUtilityFunctions.dead(bot)) {
-            return Number.MIN_VALUE;
-        }
-        if (AiUtilityFunctions.dead(human)) {
-            return Number.MAX_VALUE;
-        }
-        return bot.health - (human.health * aggression);
-    };
-    AiUtilityFunctions.aggressiveUtility = function (bot, human) {
-        return AiUtilityFunctions.healthDifferenceUtility(bot, human, 10);
-    };
-    AiUtilityFunctions.cautiousUtility = function (bot, human) {
-        return AiUtilityFunctions.healthDifferenceUtility(bot, human, 1);
-    };
-    AiUtilityFunctions.defensiveUtility = function (bot, human) {
-        return AiUtilityFunctions.healthDifferenceUtility(bot, human, 0.25);
-    };
-    AiUtilityFunctions.suicidalUtility = function (bot, human) {
-        return -1 * bot.health;
-    };
-    AiUtilityFunctions.blindUtility = function (bot, human) {
-        return Number.MAX_VALUE;
-    };
-    AiUtilityFunctions.dead = function (combatant) {
-        return combatant.health == 0;
-    };
-    return AiUtilityFunctions;
-}());
-enemies.add('goldfish', new Enemy('Goldfish', 10, 10, AiUtilityFunctions.cautiousUtility, tools.get('splash'), tools.get('wrench')));
-enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, AiUtilityFunctions.aggressiveUtility, tools.get('sixshooter')));
+characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench'), tools.get('poisonray'), tools.get('lighter')), 0);
+enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
+enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
 var CreditsEntry = (function () {
     function CreditsEntry(name) {
         var roles = [];
@@ -1379,6 +1517,8 @@ var AI = (function () {
     function AI(aiCombatant, humanCombatant) {
         this.botCopy = aiCombatant.clone();
         this.humanCopy = humanCombatant.clone();
+        this.botCopy.opponent = this.humanCopy;
+        this.humanCopy.opponent = this.botCopy;
         this.bestSequence = [];
         this.scoreFunction = this.botCopy.utilityFunction;
         this.bestSequenceScore = this.scoreFunction(this.botCopy, this.humanCopy);
@@ -1389,6 +1529,8 @@ var AI = (function () {
             var movesList = [];
             var dummyBot = this.botCopy.clone();
             var dummyHuman = this.humanCopy.clone();
+            dummyBot.opponent = dummyHuman;
+            dummyHuman.opponent = dummyBot;
             dummyBot.refresh();
             dummyHuman.refresh();
             while (true) {
