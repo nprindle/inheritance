@@ -1,5 +1,6 @@
 /// <reference path="effects/CombinationEffect.ts" />
 /// <reference path="effects/CounterEffect.ts" />
+/// <reference path="effects/CycleEffect.ts" />
 /// <reference path="effects/DamageEffect.ts" />
 /// <reference path="effects/GiveOtherStatusEffect.ts" />
 /// <reference path="effects/GiveSelfStatusEffect.ts" />

@@ -932,6 +932,32 @@ var CounterEffect = (function (_super) {
     };
     return CounterEffect;
 }(AbstractEffect));
+var CycleEffect = (function (_super) {
+    __extends(CycleEffect, _super);
+    function CycleEffect() {
+        var effects = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            effects[_i] = arguments[_i];
+        }
+        var _this = _super.call(this) || this;
+        _this.effects = effects;
+        _this.index = 0;
+        return _this;
+    }
+    CycleEffect.prototype.effect = function (user, target) {
+        this.effects[this.index].effect(user, target);
+        this.index = (this.index + 1) % this.effects.length;
+    };
+    CycleEffect.prototype.clone = function () {
+        var clone = new (CycleEffect.bind.apply(CycleEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
+        clone.index = this.index;
+        return clone;
+    };
+    CycleEffect.prototype.toString = function () {
+        return this.effects[this.index].toString() + ". Cycle effects.";
+    };
+    return CycleEffect;
+}(AbstractEffect));
 var DamageEffect = (function (_super) {
     __extends(DamageEffect, _super);
     function DamageEffect(damage) {
