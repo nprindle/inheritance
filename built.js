@@ -803,6 +803,12 @@ var Combatant = (function () {
         return this.health > cost.healthCost && this.energy >= cost.energyCost;
     };
     ;
+    Combatant.prototype.gainEnergy = function (amount) {
+        this.energy += amount;
+    };
+    Combatant.prototype.loseEnergy = function (amount) {
+        this.energy = Math.max(this.energy - amount, 0);
+    };
     Combatant.prototype.pay = function (cost) {
         this.directDamage(cost.healthCost);
         this.energy -= cost.energyCost;
@@ -976,6 +982,24 @@ var DamageEffect = (function (_super) {
     };
     return DamageEffect;
 }(AbstractEffect));
+var GainEnergyEffect = (function (_super) {
+    __extends(GainEnergyEffect, _super);
+    function GainEnergyEffect(amount) {
+        var _this = _super.call(this) || this;
+        _this.amount = amount;
+        return _this;
+    }
+    GainEnergyEffect.prototype.effect = function (user, target) {
+        user.gainEnergy(this.amount);
+    };
+    GainEnergyEffect.prototype.toString = function () {
+        return "gain " + this.amount + " energy";
+    };
+    GainEnergyEffect.prototype.clone = function () {
+        return new GainEnergyEffect(this.amount);
+    };
+    return GainEnergyEffect;
+}(AbstractEffect));
 var GiveOtherStatusEffect = (function (_super) {
     __extends(GiveOtherStatusEffect, _super);
     function GiveOtherStatusEffect(status) {
@@ -1029,6 +1053,24 @@ var HealingEffect = (function (_super) {
         return new HealingEffect(this.amount);
     };
     return HealingEffect;
+}(AbstractEffect));
+var LoseEnergyEffect = (function (_super) {
+    __extends(LoseEnergyEffect, _super);
+    function LoseEnergyEffect(amount) {
+        var _this = _super.call(this) || this;
+        _this.amount = amount;
+        return _this;
+    }
+    LoseEnergyEffect.prototype.effect = function (user, target) {
+        user.loseEnergy(this.amount);
+    };
+    LoseEnergyEffect.prototype.toString = function () {
+        return "lose " + this.amount + " energy";
+    };
+    LoseEnergyEffect.prototype.clone = function () {
+        return new LoseEnergyEffect(this.amount);
+    };
+    return LoseEnergyEffect;
 }(AbstractEffect));
 var NothingEffect = (function (_super) {
     __extends(NothingEffect, _super);
@@ -1495,6 +1537,41 @@ var ConfusionStatus = (function (_super) {
     };
     return ConfusionStatus;
 }(AbstractStatus));
+var FreezeStatus = (function (_super) {
+    __extends(FreezeStatus, _super);
+    function FreezeStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    FreezeStatus.prototype.useTool = function (affected, other) {
+        affected.loseEnergy(this.amount);
+    };
+    FreezeStatus.prototype.endTurn = function (affected, other) {
+        this.amount = 0;
+    };
+    FreezeStatus.prototype.add = function (other) {
+        if (other instanceof FreezeStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    FreezeStatus.prototype.clone = function () {
+        return new FreezeStatus(this.amount);
+    };
+    FreezeStatus.prototype.getName = function () {
+        return 'freeze';
+    };
+    FreezeStatus.prototype.getDescription = function () {
+        return "Lose " + this.amount + " energy whenever you use a tool this turn.";
+    };
+    FreezeStatus.prototype.getSortingNumber = function () {
+        return 0;
+    };
+    FreezeStatus.prototype.getUtility = function () {
+        return -2 * this.amount;
+    };
+    return FreezeStatus;
+}(AbstractStatus));
 var PoisonStatus = (function (_super) {
     __extends(PoisonStatus, _super);
     function PoisonStatus(amount) {
@@ -1534,18 +1611,20 @@ var PoisonStatus = (function (_super) {
     return PoisonStatus;
 }(AbstractStatus));
 tools.add('confusionray', new Tool('Confusion Ray', new Cost([5, CostTypes.Energy]), new GiveOtherStatusEffect(new ConfusionStatus(2)), new UsesMod(1)));
+tools.add('energizer', new Tool('Energizer', new Cost(), new CycleEffect(new GainEnergyEffect(1), new GainEnergyEffect(1), new GainEnergyEffect(1), new LoseEnergyEffect(4))));
 tools.add('lighter', new Tool('Lighter', new Cost([1, CostTypes.Energy]), new GiveSelfStatusEffect(new BurnStatus(2))));
 tools.add('poisonray', new Tool('Poison Ray', new Cost([1, CostTypes.Energy]), new GiveOtherStatusEffect(new PoisonStatus(1))));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
 tools.add('sixshooter', new Tool('Six Shooter', new Cost([3, CostTypes.Energy]), new RepeatingEffect(new DamageEffect(1), 6), new UsesMod(1)));
 tools.add('splash', new Tool('Splash', new Cost([1, CostTypes.Energy]), new NothingEffect()));
+tools.add('thermocouple', new Tool('Thermocouple', new Cost([2, CostTypes.Energy]), new CycleEffect(new GiveOtherStatusEffect(new BurnStatus(1)), new GiveOtherStatusEffect(new FreezeStatus(1)))));
 tools.add('windupraygun', new Tool('Wind-Up Ray Gun', new Cost([1, CostTypes.Energy]), new CounterEffect(new DamageEffect(10), 3), new UsesMod(1)));
 tools.add('wrench', new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1)));
 modifiers.add('hearty', new Modifier('Hearty', new CounterEffect(new HealingEffect(1), 5)));
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
-characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun'), tools.get('confusionray')), 1);
+characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun'), tools.get('confusionray'), tools.get('thermocouple'), tools.get('energizer')), 1);
 characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench'), tools.get('poisonray'), tools.get('lighter')), 0);
 enemies.add('goldfish', new Enemy('Goldfish', 10, 10, AiUtilityFunctions.cautiousUtility, tools.get('splash'), tools.get('wrench')));
 enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, AiUtilityFunctions.aggressiveUtility, tools.get('sixshooter')));
