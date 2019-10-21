@@ -11,6 +11,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 function appendText(text, node) {
     if (node === void 0) { node = document.body; }
     var textnode = document.createTextNode(text);
@@ -555,7 +562,7 @@ var CombinationEffect = (function (_super) {
         return acc.join(' ');
     };
     CombinationEffect.prototype.clone = function () {
-        return new (CombinationEffect.bind.apply(CombinationEffect, [void 0].concat(this.effects.map(function (x) { return x.clone(); }))))();
+        return new (CombinationEffect.bind.apply(CombinationEffect, __spreadArrays([void 0], this.effects.map(function (x) { return x.clone(); }))))();
     };
     return CombinationEffect;
 }(AbstractEffect));
@@ -786,7 +793,7 @@ var Tool = (function () {
     };
     Tool.prototype.clone = function () {
         var effectsClones = this.effects.map(function (x) { return x.clone(); });
-        var t = new (Tool.bind.apply(Tool, [void 0, this.name, this.cost.clone()].concat(effectsClones)))();
+        var t = new (Tool.bind.apply(Tool, __spreadArrays([void 0, this.name, this.cost.clone()], effectsClones)))();
         t.usesPerTurn = this.usesPerTurn;
         t.multiplier = this.multiplier;
         var modifiers = [];
@@ -960,7 +967,7 @@ var Player = (function (_super) {
         for (var _i = 3; _i < arguments.length; _i++) {
             tools[_i - 3] = arguments[_i];
         }
-        return _super.apply(this, [name, health, energy].concat(tools)) || this;
+        return _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
     }
     Player.prototype.clone = function () {
         var p = new (Player.bind.apply(Player, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
@@ -1043,27 +1050,25 @@ var HealingEffect = (function (_super) {
 }(AbstractEffect));
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
-    function Enemy(name, health, energy) {
+    function Enemy(name, health, energy, defaultUtilityFunction) {
         var tools = [];
-        for (var _i = 3; _i < arguments.length; _i++) {
-            tools[_i - 3] = arguments[_i];
+        for (var _i = 4; _i < arguments.length; _i++) {
+            tools[_i - 4] = arguments[_i];
         }
-        return _super.apply(this, [name, health, energy].concat(tools)) || this;
+        var _this = _super.apply(this, __spreadArrays([name, health, energy], tools)) || this;
+        if (defaultUtilityFunction == undefined) {
+            _this.utilityFunction = function (bot, human) { return AiUtilityFunctions.healthDifferenceUtility(bot, human, 1); };
+        }
+        else {
+            _this.utilityFunction = defaultUtilityFunction;
+        }
+        return _this;
     }
     Enemy.prototype.clone = function () {
         var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
         copy.statuses = this.statuses.map(function (x) { return x.clone(); });
         copy.utilityFunction = this.utilityFunction;
         return copy;
-    };
-    Enemy.prototype.utilityFunction = function (simulatedBot, simulatedHuman) {
-        if (simulatedBot.health == 0) {
-            return Number.MIN_VALUE;
-        }
-        if (simulatedHuman.health == 0) {
-            return Number.MAX_VALUE;
-        }
-        return simulatedBot.health - simulatedHuman.health;
     };
     return Enemy;
 }(Combatant));
@@ -1265,7 +1270,7 @@ var ItemPool = (function () {
         for (var _i = 2; _i < arguments.length; _i++) {
             tags[_i - 2] = arguments[_i];
         }
-        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item, 0].concat(tags)))();
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, __spreadArrays([void 0, key, item, 0], tags)))();
         this.keys.push(key);
     };
     ItemPool.prototype.addSorted = function (key, item, position) {
@@ -1273,7 +1278,7 @@ var ItemPool = (function () {
         for (var _i = 3; _i < arguments.length; _i++) {
             tags[_i - 3] = arguments[_i];
         }
-        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, [void 0, key, item, position].concat(tags)))();
+        this.items[key] = new (ItemPoolEntry.bind.apply(ItemPoolEntry, __spreadArrays([void 0, key, item, position], tags)))();
         this.keys.push(key);
     };
     ItemPool.prototype.get = function (key) {
@@ -1310,7 +1315,7 @@ var ItemPool = (function () {
             }
         };
         var this_1 = this;
-        for (var _a = 0, _b = [tags].concat(fallbacks); _a < _b.length; _a++) {
+        for (var _a = 0, _b = __spreadArrays([tags], fallbacks); _a < _b.length; _a++) {
             var ts = _b[_a];
             var state_1 = _loop_1(ts);
             if (state_1 === "break")
@@ -1332,7 +1337,7 @@ var ItemPool = (function () {
         for (var _i = 2; _i < arguments.length; _i++) {
             fallbacks[_i - 2] = arguments[_i];
         }
-        var unseen = this.selectUnseenTags.apply(this, [seen, tags].concat(fallbacks));
+        var unseen = this.selectUnseenTags.apply(this, __spreadArrays([seen, tags], fallbacks));
         return unseen.map(function (k) { return _this.get(k); }).filter(function (x) { return x !== null; });
     };
     ItemPool.prototype.selectRandomUnseen = function (seen, tags) {
@@ -1341,7 +1346,7 @@ var ItemPool = (function () {
         for (var _i = 2; _i < arguments.length; _i++) {
             fallbacks[_i - 2] = arguments[_i];
         }
-        var unseen = this.selectUnseenTags.apply(this, [seen, tags].concat(fallbacks));
+        var unseen = this.selectUnseenTags.apply(this, __spreadArrays([seen, tags], fallbacks));
         var key = Random.fromArray(unseen);
         seen.push(key);
         return this.get(key);
@@ -1473,7 +1478,7 @@ var Game = (function () {
         ]));
     };
     Game.showCharSelect = function () {
-        UI.fillScreen(UI.renderCharacterSelect.apply(UI, [Game.newRun, Game.showTitle].concat(characters.getAll())));
+        UI.fillScreen(UI.renderCharacterSelect.apply(UI, __spreadArrays([Game.newRun, Game.showTitle], characters.getAll())));
         console.log(characters.getAll());
     };
     Game.newRun = function (character) {
@@ -1515,7 +1520,8 @@ var AI = (function () {
         this.botCopy.opponent = this.humanCopy;
         this.humanCopy.opponent = this.botCopy;
         this.bestSequence = [];
-        this.bestSequenceScore = this.botCopy.utilityFunction(this.botCopy, this.humanCopy);
+        this.scoreFunction = this.botCopy.utilityFunction;
+        this.bestSequenceScore = this.scoreFunction(this.botCopy, this.humanCopy);
     }
     AI.prototype.search = function (iterations) {
         var startTime = new Date();
@@ -1543,7 +1549,7 @@ var AI = (function () {
                 dummyBot.useTool(chosenMove, dummyHuman);
                 movesList.push(chosenMove);
             }
-            var consequence = dummyBot.utilityFunction(dummyBot, dummyHuman);
+            var consequence = this.scoreFunction(dummyBot, dummyHuman);
             if (consequence >= this.bestSequenceScore) {
                 this.bestSequenceScore = consequence;
                 this.bestSequence = movesList;
@@ -1589,3 +1595,25 @@ var Run = (function () {
     };
     return Run;
 }());
+var PoisonStatus = (function (_super) {
+    __extends(PoisonStatus, _super);
+    function PoisonStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    PoisonStatus.prototype.endTurn = function (affected, other) {
+        affected.directDamage(this.amount);
+        this.amount--;
+    };
+    PoisonStatus.prototype.add = function (other) {
+        if (other instanceof PoisonStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    PoisonStatus.prototype.clone = function () {
+        return new PoisonStatus(this.amount);
+    };
+    PoisonStatus._name = 'poison';
+    return PoisonStatus;
+}(AbstractStatus));
