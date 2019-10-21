@@ -49,3 +49,15 @@ Tools:
 * Give opponent 2 Confusion.
 
 * Usable 1 time(s) per turn
+
+* **Thermocouple**
+
+* Cost: 2 Energy
+
+* Give opponent 1 Burn. Cycle effects.
+
+* **Energizer**
+
+* Cost: Free
+
+* Gain 1 energy. Cycle effects.

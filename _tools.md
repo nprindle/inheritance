@@ -14,6 +14,12 @@ Give opponent 2 Confusion.
 
 Usable 1 time(s) per turn
 
+## Energizer
+
+Cost: Free
+
+Gain 1 energy. Cycle effects.
+
 ## Lighter
 
 Cost: 1 Energy
@@ -47,6 +53,12 @@ Usable 1 time(s) per turn
 Cost: 1 Energy
 
 Do nothing.
+
+## Thermocouple
+
+Cost: 2 Energy
+
+Give opponent 1 Burn. Cycle effects.
 
 ## Wind-Up Ray Gun
 
