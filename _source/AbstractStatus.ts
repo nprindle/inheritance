@@ -58,6 +58,11 @@ abstract class AbstractStatus {
         return acc;
     }
 
+    // Overrides an enemy's utility function to change its AI behavior
+    // This method is optional; status effects that don't change AI behavior should not implement it
+    overridenUtilityFunction?(bot: Enemy, human: Player): number;
+
+
     //This method tries to add some other status to this status. It's important to get this right!
     //This should return false if the add hasn't been completed and true if it has.
     abstract add(other: AbstractStatus): boolean;

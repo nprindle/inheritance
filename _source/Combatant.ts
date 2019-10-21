@@ -81,6 +81,14 @@ abstract class Combatant {
     return this.health > cost.healthCost && this.energy >= cost.energyCost;
   };
 
+  gainEnergy(amount: number): void {
+    this.energy += amount;
+  }
+
+  loseEnergy(amount: number): void {
+    this.energy = Math.max(this.energy - amount, 0);
+  }
+
   pay(cost: Cost): void {
     this.directDamage(cost.healthCost);
     this.energy -= cost.energyCost;
