@@ -6,6 +6,14 @@ Cost: 1 Energy
 
 Recover 1 health.
 
+## Confusion Ray
+
+Cost: 5 Energy
+
+Give opponent 2 Confusion.
+
+Usable 1 time(s) per turn
+
 ## Lighter
 
 Cost: 1 Energy

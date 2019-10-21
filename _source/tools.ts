@@ -1,4 +1,5 @@
 /// <reference path="tools/Bandages.ts" />
+/// <reference path="tools/ConfusionRay.ts" />
 /// <reference path="tools/Lighter.ts" />
 /// <reference path="tools/PoisonRay.ts" />
 /// <reference path="tools/Singleton.ts" />

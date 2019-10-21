@@ -954,7 +954,7 @@ var CycleEffect = (function (_super) {
         return clone;
     };
     CycleEffect.prototype.toString = function () {
-        return this.effects[this.index].toString() + ". Cycle effects.";
+        return this.effects[this.index].toString() + ". Cycle effects";
     };
     return CycleEffect;
 }(AbstractEffect));
@@ -1069,27 +1069,25 @@ var RepeatingEffect = (function (_super) {
 }(AbstractEffect));
 var Enemy = (function (_super) {
     __extends(Enemy, _super);
-    function Enemy(name, health, energy) {
+    function Enemy(name, health, energy, defaultUtilityFunction) {
         var tools = [];
-        for (var _i = 3; _i < arguments.length; _i++) {
-            tools[_i - 3] = arguments[_i];
+        for (var _i = 4; _i < arguments.length; _i++) {
+            tools[_i - 4] = arguments[_i];
         }
-        return _super.apply(this, [name, health, energy].concat(tools)) || this;
+        var _this = _super.apply(this, [name, health, energy].concat(tools)) || this;
+        if (defaultUtilityFunction == undefined) {
+            _this.utilityFunction = AiUtilityFunctions.cautiousUtility;
+        }
+        else {
+            _this.utilityFunction = defaultUtilityFunction;
+        }
+        return _this;
     }
     Enemy.prototype.clone = function () {
-        var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy].concat(this.tools.map(function (x) { return x.clone(); }))))();
+        var copy = new (Enemy.bind.apply(Enemy, [void 0, this.name, this.health, this.energy, this.utilityFunction].concat(this.tools.map(function (x) { return x.clone(); }))))();
         copy.statuses = this.statuses.map(function (x) { return x.clone(); });
         copy.utilityFunction = this.utilityFunction;
         return copy;
-    };
-    Enemy.prototype.utilityFunction = function (simulatedBot, simulatedHuman) {
-        if (simulatedBot.health == 0) {
-            return Number.MIN_VALUE;
-        }
-        if (simulatedHuman.health == 0) {
-            return Number.MAX_VALUE;
-        }
-        return simulatedBot.health - simulatedHuman.health;
     };
     return Enemy;
 }(Combatant));
@@ -1423,6 +1421,80 @@ var BurnStatus = (function (_super) {
     };
     return BurnStatus;
 }(AbstractStatus));
+var AiUtilityFunctions = (function () {
+    function AiUtilityFunctions() {
+    }
+    AiUtilityFunctions.genericUtility = function (bot, human, aggression) {
+        if (AiUtilityFunctions.dead(bot)) {
+            return Number.MIN_VALUE;
+        }
+        if (AiUtilityFunctions.dead(human)) {
+            return Number.MAX_VALUE;
+        }
+        var botStatusPoints = AiUtilityFunctions.statusUtilityPoints(bot);
+        var humanStatusPoints = AiUtilityFunctions.statusUtilityPoints(human);
+        var statusPoints = botStatusPoints - (humanStatusPoints * aggression);
+        var healthDifferencePoints = (bot.health - human.health * aggression);
+        return statusPoints + healthDifferencePoints;
+    };
+    AiUtilityFunctions.aggressiveUtility = function (bot, human) {
+        return AiUtilityFunctions.genericUtility(bot, human, 10);
+    };
+    AiUtilityFunctions.cautiousUtility = function (bot, human) {
+        return AiUtilityFunctions.genericUtility(bot, human, 1);
+    };
+    AiUtilityFunctions.defensiveUtility = function (bot, human) {
+        return AiUtilityFunctions.genericUtility(bot, human, 0.25);
+    };
+    AiUtilityFunctions.suicidalUtility = function (bot, human) {
+        return -1 * (bot.health + AiUtilityFunctions.statusUtilityPoints(bot));
+    };
+    AiUtilityFunctions.blindUtility = function (bot, human) {
+        return Number.MAX_VALUE;
+    };
+    AiUtilityFunctions.dead = function (combatant) {
+        return combatant.health == 0;
+    };
+    AiUtilityFunctions.statusUtilityPoints = function (combatant) {
+        return combatant.statuses.reduce(function (sum, current) { return (sum + current.getUtility()); }, 0);
+    };
+    return AiUtilityFunctions;
+}());
+var ConfusionStatus = (function (_super) {
+    __extends(ConfusionStatus, _super);
+    function ConfusionStatus(amount) {
+        return _super.call(this, amount) || this;
+    }
+    ConfusionStatus.prototype.endTurn = function (affected, other) {
+        this.amount--;
+    };
+    ConfusionStatus.prototype.overridenUtilityFunction = function (bot, human) {
+        return AiUtilityFunctions.blindUtility(bot, human);
+    };
+    ConfusionStatus.prototype.add = function (other) {
+        if (other instanceof ConfusionStatus) {
+            this.amount += other.amount;
+            return true;
+        }
+        return false;
+    };
+    ConfusionStatus.prototype.clone = function () {
+        return new ConfusionStatus(this.amount);
+    };
+    ConfusionStatus.prototype.getName = function () {
+        return 'confusion';
+    };
+    ConfusionStatus.prototype.getDescription = function () {
+        return 'Make random moves instead of thinking strategically';
+    };
+    ConfusionStatus.prototype.getSortingNumber = function () {
+        return 10;
+    };
+    ConfusionStatus.prototype.getUtility = function () {
+        return -5 * this.amount;
+    };
+    return ConfusionStatus;
+}(AbstractStatus));
 var PoisonStatus = (function (_super) {
     __extends(PoisonStatus, _super);
     function PoisonStatus(amount) {
@@ -1461,6 +1533,7 @@ var PoisonStatus = (function (_super) {
     };
     return PoisonStatus;
 }(AbstractStatus));
+tools.add('confusionray', new Tool('Confusion Ray', new Cost([5, CostTypes.Energy]), new GiveOtherStatusEffect(new ConfusionStatus(2)), new UsesMod(1)));
 tools.add('lighter', new Tool('Lighter', new Cost([1, CostTypes.Energy]), new GiveSelfStatusEffect(new BurnStatus(2))));
 tools.add('poisonray', new Tool('Poison Ray', new Cost([1, CostTypes.Energy]), new GiveOtherStatusEffect(new PoisonStatus(1))));
 tools.add('singleton', new Tool('Singleton', new Cost([1, CostTypes.Energy]), new DamageEffect(5), new UsesMod(1)));
@@ -1472,10 +1545,10 @@ modifiers.add('hearty', new Modifier('Hearty', new CounterEffect(new HealingEffe
 modifiers.add('jittering', new Modifier('Jittering', [ModifierTypes.CostMult, 2], [ModifierTypes.MultAdd, 1]));
 modifiers.add('lightweight', new Modifier('Lightweight', [ModifierTypes.CostMult, 0], [ModifierTypes.UsesPerTurn, 1]));
 modifiers.add('spiky', new Modifier('Spiky', [ModifierTypes.AddEnergyCost, 1], new DamageEffect(1)));
-characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun')), 1);
+characters.addSorted('clone', new Player('The Clone', 10, 10, tools.get('windupraygun'), tools.get('confusionray')), 1);
 characters.addSorted('kid', new Player('The Granddaughter', 15, 10, tools.get('wrench'), tools.get('poisonray'), tools.get('lighter')), 0);
-enemies.add('goldfish', new Enemy('Goldfish', 10, 10, tools.get('splash'), tools.get('wrench')));
-enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, tools.get('sixshooter')));
+enemies.add('goldfish', new Enemy('Goldfish', 10, 10, AiUtilityFunctions.cautiousUtility, tools.get('splash'), tools.get('wrench')));
+enemies.add('goldfishwithagun', new Enemy('Goldfish With A Gun', 10, 5, AiUtilityFunctions.aggressiveUtility, tools.get('sixshooter')));
 var CreditsEntry = (function () {
     function CreditsEntry(name) {
         var roles = [];
@@ -1541,7 +1614,15 @@ var AI = (function () {
         this.botCopy.opponent = this.humanCopy;
         this.humanCopy.opponent = this.botCopy;
         this.bestSequence = [];
-        this.bestSequenceScore = this.botCopy.utilityFunction(this.botCopy, this.humanCopy);
+        var statuses = this.botCopy.statuses;
+        var preferenceOverride;
+        statuses.forEach(function (status) {
+            if (status.overridenUtilityFunction != undefined) {
+                preferenceOverride = status.overridenUtilityFunction;
+            }
+        });
+        this.scoreFunction = preferenceOverride || this.botCopy.utilityFunction;
+        this.bestSequenceScore = this.scoreFunction(this.botCopy, this.humanCopy);
     }
     AI.prototype.search = function (iterations) {
         var startTime = new Date();
@@ -1569,7 +1650,9 @@ var AI = (function () {
                 dummyBot.useTool(chosenMove, dummyHuman);
                 movesList.push(chosenMove);
             }
-            var consequence = dummyBot.utilityFunction(dummyBot, dummyHuman);
+            dummyBot.endTurn();
+            dummyHuman.endTurn();
+            var consequence = this.scoreFunction(dummyBot, dummyHuman);
             if (consequence >= this.bestSequenceScore) {
                 this.bestSequenceScore = consequence;
                 this.bestSequence = movesList;
