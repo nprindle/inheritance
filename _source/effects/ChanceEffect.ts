@@ -23,11 +23,12 @@ class ChanceEffect extends AbstractEffect {
   }
 
   toString(): string {
-    let chance = this.chance.toFixed(0);
+    let chance = (this.chance * 100).toFixed(0);
     if (this.otherwise) {
-        return `${chance}% chance: ${this.next.toString()}. Otherwise: ${this.otherwise.toString()}`;
+        let otherChance = (100 - this.chance * 100).toFixed(0);
+        return `${chance}% chance to ${this.next.toString()}; ${otherChance}% chance to ${this.otherwise.toString()} instead`;
     } else {
-        return `${chance}% chance: ${this.next.toString()}`;
+        return `${chance}% chance to ${this.next.toString()}`;
     }
   }
 
