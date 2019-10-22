@@ -3,5 +3,8 @@
 /// <reference path="../effects.ts" />
 /// <reference path="../statuses.ts" />
 tools.add('lighter',
-  new Tool('Lighter', new Cost([1, CostTypes.Energy]), new GiveSelfStatusEffect(new BurnStatus(2)))
+  new Tool('Lighter', new Cost([1, CostTypes.Energy]),
+    new GiveSelfStatusEffect(new BurnStatus(2)),
+    new GiveSelfStatusEffect(new StrengthStatus(1))
+  )
 );
