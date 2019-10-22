@@ -2,3 +2,4 @@
 /// <reference path="statuses/ConfusionStatus.ts" />
 /// <reference path="statuses/FreezeStatus.ts" />
 /// <reference path="statuses/PoisonStatus.ts" />
+/// <reference path="statuses/SurviveStatus.ts" />
