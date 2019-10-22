@@ -9,7 +9,6 @@ window = {
 };
 require('./built.js');
 const fs = require('fs');
-const totals = {};
 
 function concatenator(acc, x) {
   return acc.concat(x);
@@ -18,8 +17,6 @@ function concatenator(acc, x) {
 function generateLines(header, pool, func) {
   const items = pool.getAll();
   const lines = items.map(x => func(x));
-  //save totals
-  totals[header] = items.length;
   //lines is an array of arrays, so...
   return [`# ${header}`].concat(lines.reduce(concatenator));
 }
@@ -49,15 +46,3 @@ function writeCombatant(combatant) {
     `Tools:`
   ].concat(combatant.tools.map(x => writeTool(x, false)).reduce(concatenator).map(x => `* ${x}`));
 }
-
-console.log('Assembling Markdown descriptions...');
-
-writeLines(generateLines('Tools', processor.tools, writeTool), '_tools.md');
-writeLines(generateLines('Modifiers', processor.modifiers, writeModifier), '_modifiers.md');
-writeLines(generateLines('Characters', processor.characters, writeCombatant), '_characters.md');
-writeLines(generateLines('Enemies', processor.enemies, writeCombatant), '_enemies.md');
-
-console.log('Descriptions assembled! We have:');
-const headers = Object.keys(totals);
-headers.forEach(x => console.log(`${x}: ${totals[x]}`));
-console.log(`There are ${Math.pow(2, totals.Modifiers) * totals.Tools} possible tools.`);
