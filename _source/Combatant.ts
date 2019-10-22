@@ -135,13 +135,13 @@ abstract class Combatant {
     this.statusBookkeeping();
   }
 
-  private statusCallback(callback: StatusCallbacks): void {
+  statusCallback(callback: StatusCallbacks): void {
     const callbacks: Function[] = this.statuses.map(x => <Function> x[callback].bind(x));
     callbacks.forEach(x => x(this, this.opponent));
     this.statusBookkeeping();
   }
 
-  private statusFold(fold: StatusFolds, value: number): number {
+  statusFold(fold: StatusFolds, value: number): number {
     const foldingCallbacks: Function[] = this.statuses.map(x => <Function> x[fold].bind(x));
     const result: number = foldingCallbacks.reduce((acc, x) => x(acc), value);
     this.statusBookkeeping();
