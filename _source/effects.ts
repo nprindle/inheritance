@@ -1,3 +1,4 @@
+/// <reference path="effects/ChanceEffect.ts" />
 /// <reference path="effects/CombinationEffect.ts" />
 /// <reference path="effects/CounterEffect.ts" />
 /// <reference path="effects/CycleEffect.ts" />

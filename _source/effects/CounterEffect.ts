@@ -1,4 +1,4 @@
-/// <referenceh path="../AbstractEffect.ts" />
+/// <reference path="../AbstractEffect.ts" />
 
 //TODO: how should this work with multipliers?
 

@@ -4,7 +4,8 @@ enum StatusCallbacks {
     START_TURN = 'startTurn',
     END_TURN = 'endTurn',
     USE_TOOL = 'useTool',
-    TAKE_DAMAGE = 'takeDamage'
+    TAKE_DAMAGE = 'takeDamage',
+    DIE = 'die'
 }
 
 enum StatusFolds {
@@ -42,6 +43,11 @@ abstract class AbstractStatus {
     //Called whenever the affected takes damage.
     takeDamage(affected: Combatant, other: Combatant): void {
 
+    }
+
+    //Called whenever the affected dies.
+    die(affected: Combatant, other: Combatant): void {
+        
     }
 
     //These functions are used for reducing over certain values - damage taken, amount healed, etc.

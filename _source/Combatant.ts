@@ -114,7 +114,10 @@ abstract class Combatant {
   };
 
   die(): void {
-    this.deathFunc.call(this);
+    this.statusCallback(StatusCallbacks.DIE);
+    if (this.health <= 0) { //this check is necessary because the callbacks might heal the combatant
+      this.deathFunc.call(this);
+    }
   }
 
   setDeathFunc(f: Function): void {
@@ -132,13 +135,13 @@ abstract class Combatant {
     this.statusBookkeeping();
   }
 
-  private statusCallback(callback: StatusCallbacks): void {
+  statusCallback(callback: StatusCallbacks): void {
     const callbacks: Function[] = this.statuses.map(x => <Function> x[callback].bind(x));
     callbacks.forEach(x => x(this, this.opponent));
     this.statusBookkeeping();
   }
 
-  private statusFold(fold: StatusFolds, value: number): number {
+  statusFold(fold: StatusFolds, value: number): number {
     const foldingCallbacks: Function[] = this.statuses.map(x => <Function> x[fold].bind(x));
     const result: number = foldingCallbacks.reduce((acc, x) => x(acc), value);
     this.statusBookkeeping();
