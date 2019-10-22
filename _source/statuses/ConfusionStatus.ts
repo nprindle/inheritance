@@ -30,7 +30,7 @@ class ConfusionStatus extends AbstractStatus {
     }
 
     getName(): string {
-        return 'confusion';
+        return 'confused';
     }
 
     getDescription(): string {
