@@ -1,3 +1,9 @@
 built.js
 _*.md
 node_modules
+_source/characters.ts
+_source/effects.ts
+_source/enemies.ts
+_source/modifiers.ts
+_source/statuses.ts
+_source/tools.ts
