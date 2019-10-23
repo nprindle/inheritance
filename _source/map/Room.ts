@@ -1,31 +1,28 @@
-/// <reference path="RoomType.ts" />
 /// <reference path="Floor.ts" />
+/// <reference path="RoomEvent.ts" />
 
 class Room {
-    containerFloor: Floor;
-    type : RoomType;
-    exits : Room[];
-    blockedSides: string[];
-    distanceFromEntrance : number;
-    visited: boolean;
-    hasPlayer: boolean;
-    containedEnemy: Enemy;
-    containedTool: Tool;
+    // Some events reoccur after a certain number of room entrances, so we keep
+    // track of the total number here
+    private static roomsEntered: number = 0;
 
-    constructor(containerFloor: Floor, type: RoomType, entrance? : Room, distanceFromEntrance? : number, hasPlayer? : boolean, containedEnemy? : Enemy, containedTool? : Tool) {
+    containerFloor: Floor;
+    coordinates: [number, number];
+    exits: Room[];
+    distanceFromEntrance: number;
+    visited: boolean;
+    // TODO: invert this dependency, use coordinates instead
+    hasPlayer: boolean;
+    roomEvent: RoomEvent;
+
+    constructor(containerFloor: Floor, coordinates: [number, number], roomEvent: RoomEvent, entrance?: Room, hasPlayer?: boolean) {
         this.containerFloor = containerFloor;
-        this.type = type;
+        this.coordinates = coordinates;
+        this.roomEvent = roomEvent;
         this.exits = entrance ? [entrance] : [];
-        if (entrance) {
-            this.distanceFromEntrance = entrance.distanceFromEntrance + 1
-        } else {
-            this.distanceFromEntrance = distanceFromEntrance || 0;
-        }
+        this.distanceFromEntrance = entrance ? entrance.distanceFromEntrance + 1 : 0;
         this.hasPlayer = hasPlayer || false;
         this.visited = false;
-        if (containedEnemy) this.containedEnemy = containedEnemy;
-        if (containedTool) this.containedTool = containedTool;
-        this.blockedSides = [];
     }
 
     continueFloor(): void {
@@ -33,24 +30,41 @@ class Room {
     }
 
     enter(): void {
-        for (var i = 0; i < this.exits.length; i++) {
-            this.exits[i].hasPlayer = false;
-        }
+        Room.roomsEntered++;
+        this.exits.forEach(e => e.hasPlayer = false);
         this.visited = true;
         this.hasPlayer = true;
-        switch(this.type) {
-            case RoomType.Enemy:
-                if (this.containedEnemy.health != 0) {
-                    var f = new Fight(this.containerFloor.currentRun.player, this.containedEnemy, this);
-                    break;
-                }
-            case RoomType.Empty:
-            case RoomType.Entrance:
-            case RoomType.Exit:
-            case RoomType.Tool:
-                this.containerFloor.redraw();
-                break;
-        }
-        
+        this.roomEvent = this.roomEvent.onRoomEnter(this, Room.roomsEntered);
     }
+
+    getRoomType(): RoomType {
+        return this.roomEvent.roomType;
+    }
+
+    // Get the coordinates of all exits from this room
+    getExitCoordinates(): [number, number][] {
+        return this.exits.map(e => e.coordinates);
+    }
+
+    // Note: includes coordinates off the map as blocked
+    getBlockedCoordinates(): [number, number][] {
+        let offsets = [[1, 0], [0, 1], [-1, 0], [0, -1]] as [number, number][];
+        let exitCoords: [number, number][] = this.exits.map(e => e.coordinates);
+        let surrounding: [number, number][] = offsets.map(o => {
+            return [this.coordinates[0] + o[0], this.coordinates[1] + o[1]];
+        });
+        return surrounding.filter(x => !exitCoords.some(c => c == x));
+    }
+
+    // Returns offsets from this room that are not accessible from this room. An
+    // offset is one of [1, 0], [0, 1], [-1, 0], or [0, -1].
+    getBlockedOffsets(): [number, number][] {
+        let offsets = [[1, 0], [0, 1], [-1, 0], [0, -1]] as [number, number][];
+        let exitCoords = this.exits.map(e => e.coordinates);
+        return offsets.filter(offset => {
+            let coord = [offset[0] + this.coordinates[0], offset[1] + this.coordinates[1]];
+            return !exitCoords.some(c => c == coord);
+        });
+    }
+
 }
