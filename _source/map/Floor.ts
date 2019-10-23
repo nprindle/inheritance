@@ -29,11 +29,12 @@ class Floor {
             this.rooms[i] = new Array<Room>(this.width);
         }
 
-        let entranceRoom = new Room(this, new EmptyRoomEvent(RoomType.Entrance));
+        let entranceCoords = [Random.intLessThan(this.height), Random.intLessThan(this.width)] as [number, number];
+        let entranceRoom = new Room(this, entranceCoords, new EmptyRoomEvent(RoomType.Entrance));
         entranceRoom.hasPlayer = true;
         entranceRoom.visited = true;
 
-        this.rooms[Random.intLessThan(this.height)][Random.intLessThan(this.width)] = entranceRoom;
+        this.rooms[entranceCoords[0]][entranceCoords[1]] = entranceRoom;
         let maxRoomDistance = 0;
         for (let i = 0; i < this.roomCount - 1; i++) {
             let roomIndex;
@@ -47,7 +48,7 @@ class Floor {
             } while (!newRoomIndex || this.shouldGenNewRoom(newRoomIndex));
             let roomEvent = RoomEvent.randomRoomEvent(floorSettings);
             let entrance = this.rooms[roomIndex[0]][roomIndex[1]]
-            let newRoom = new Room(this, roomEvent, entrance);
+            let newRoom = new Room(this, newRoomIndex, roomEvent, entrance);
             this.rooms[newRoomIndex[0]][newRoomIndex[1]] = newRoom;
             this.rooms[roomIndex[0]][roomIndex[1]].exits.push(newRoom);
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
@@ -56,7 +57,6 @@ class Floor {
         let potentialExits = Arrays.flatten(this.rooms).filter(x => x.distanceFromEntrance >= minExitDistance);
         let exitRoom = Random.fromArray(potentialExits);
         exitRoom.roomEvent = new EmptyRoomEvent(RoomType.Exit);
-        console.log(this);
     }
 
     draw(): void {
