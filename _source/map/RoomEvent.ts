@@ -1,7 +1,7 @@
 /// <reference path="Floor.ts" />
 
 abstract class RoomEvent {
-    roomType: RoomType;
+    abstract roomType: RoomType;
 
     // Upon entering each room, this will trigger some event for the room, such
     // as picking up a tool or starting a fight. After the event, a new event is
@@ -70,7 +70,7 @@ class EnemyRoomEvent extends RoomEvent {
     roomType = RoomType.Enemy;
 
     // The last roomsEntered count when the enemy was defeated
-    private lastEntered: number;
+    private lastEntered: number = 0;
     private firstEntry: boolean = true;
 
     // The enemy is allowed to recover after the player has entered and left a

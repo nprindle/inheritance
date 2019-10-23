@@ -43,7 +43,7 @@ class Floor {
                 roomIndex = Random.intCoord(this.height, this.width);
                 if (this.rooms[roomIndex[0]][roomIndex[1]] !== undefined) {
                     let newRoomOffset = Floor.randomDirectionOffset();
-                    newRoomIndex = [roomIndex[0] + newRoomOffset[0], roomIndex[1] + newRoomOffset[1]];
+                    newRoomIndex = [roomIndex[0] + newRoomOffset[0], roomIndex[1] + newRoomOffset[1]] as [number, number];
                 }
             } while (!newRoomIndex || this.shouldGenNewRoom(newRoomIndex));
             let roomEvent = RoomEvent.randomRoomEvent(floorSettings);
