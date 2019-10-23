@@ -11,6 +11,7 @@ class Room {
     exits: Room[];
     distanceFromEntrance: number;
     visited: boolean;
+    // TODO: invert this dependency, use coordinates instead
     hasPlayer: boolean;
     roomEvent: RoomEvent;
 
@@ -40,6 +41,7 @@ class Room {
         return this.roomEvent.roomType;
     }
 
+    // Get the coordinates of all exits from this room
     getExitCoordinates(): [number, number][] {
         return this.exits.map(e => e.coordinates);
     }

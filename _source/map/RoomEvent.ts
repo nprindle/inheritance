@@ -14,6 +14,9 @@ abstract class RoomEvent {
         return weights.map(w => [w.name, w.weight]);
     }
 
+    // This type enforces structure on the JSON floor data, so if the keys in
+    // the data change, this will probably give you a confusing type error. It's
+    // better than a runtime error, at least.
     public static randomRoomEvent(floorSettings: { [W in "roomWeights" | "enemies" | "tools"]: { name: string; weight: number }[] }): RoomEvent {
         let roomWeights = RoomEvent.parseWeights(floorSettings.roomWeights);
         let floorEnemies = RoomEvent.parseWeights(floorSettings.enemies);
@@ -24,7 +27,7 @@ abstract class RoomEvent {
         if (roomType === RoomType.Enemy) {
             let enemy = enemies.get(Random.weightedRandom(floorEnemies))
             let recovery = Infinity; // TODO
-            event = new EnemyRoomEvent(enemy, );
+            event = new EnemyRoomEvent(enemy, recovery);
         } else if (roomType === RoomType.Tool) {
             let tool = tools.get(Random.weightedRandom(floorTools));
             event = new ToolRoomEvent(tool);
