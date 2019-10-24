@@ -31,6 +31,14 @@ class Run {
         // }
     }
 
+    nextModifier(...tagSets: ModifierTags[][]): Modifier {
+        return modifiers.selectRandomUnseen(this.seenModifiers, ...tagSets)!;
+    }
+
+    nextEnemy(...tagSets: EnemyTags[][]): Enemy {
+        return enemies.selectRandomUnseen(this.seenEnemies, ...tagSets)!;
+    }
+
     offerModifier(): void {
         // TODO: don't do an unsafe assertion here
         let m = modifiers.selectRandomUnseen(this.seenModifiers)!;
