@@ -67,4 +67,8 @@ class Room {
         });
     }
 
+    clearEvent(): void {
+        this.roomEvent = new EmptyRoomEvent(RoomType.Empty);
+    }
+
 }

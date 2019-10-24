@@ -167,7 +167,7 @@ class UI {
         }
         div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
             m.apply(t);
-            callback();
+            callback(true);
         }, false, 'apply'));
         return div;
     }
@@ -181,7 +181,7 @@ class UI {
         }
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function() {
-                exitCallback();
+                exitCallback(false);
             }));
         } else {
             div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));

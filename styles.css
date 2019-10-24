@@ -244,24 +244,8 @@ button.endturn:active {
     margin-left: -50px;
 }
 
-.room.visited.entrance-room {
-    background-color: green;
-}
-
-.room.visited.exit-room {
-    background-color: yellow;
-}
-
-.room.visited.empty-room {
+.room.visited {
     background-color: #FFF;
-}
-
-.room.visited.enemy-room {
-    background-color: red;
-}
-
-.room.visited.tool-room {
-    background-color: royalblue;
 }
 
 .room.unvisited.visible {

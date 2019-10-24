@@ -103,10 +103,13 @@ class ModifierRoomEvent extends RoomEvent {
     }
 
     onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
-        UI.fillScreen(UI.renderModifier(this.modifier, Game.currentRun.player, () => {
+        UI.fillScreen(UI.renderModifier(this.modifier, Game.currentRun.player, (taken) => {
+            if (taken) {
+                room.clearEvent();
+            }
             room.containerFloor.redraw();
         }));
-        return new EmptyRoomEvent(RoomType.Empty);
+        return this;
     }
 
 }
