@@ -13,12 +13,12 @@
 /// <reference path="Game.ts" />
 
 window.onload = function() {
-  Game.showTitle();
+    Game.showTitle();
 }
 
 if (window.innerHeight === 0) {
-  window.console.log('tools', tools);
-  window.console.log('modifiers', modifiers);
-  window.console.log('enemies', enemies);
-  window.console.log('characters', characters);
+    window.console.log('tools', tools);
+    window.console.log('modifiers', modifiers);
+    window.console.log('enemies', enemies);
+    window.console.log('characters', characters);
 }

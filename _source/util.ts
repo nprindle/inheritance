@@ -1,18 +1,18 @@
 function appendText(text: string, node: HTMLElement = document.body): void {
-  const textnode = document.createTextNode(text);
-  node.appendChild(textnode);
+    const textnode = document.createTextNode(text);
+    node.appendChild(textnode);
 }
 
 // Filter an array in-place
 function filterInPlace<T>(arr: T[], pred: (x: T) => boolean): void {
-  let i = 0;
-  let j = 0;
-  while(i < arr.length) {
-    const x = arr[i];
-    if (pred(x)) {
-      arr[j++] = x;
+    let i = 0;
+    let j = 0;
+    while(i < arr.length) {
+        const x = arr[i];
+        if (pred(x)) {
+            arr[j++] = x;
+        }
+        i++;
     }
-    i++;
-  }
-  arr.length = j;
+    arr.length = j;
 }
