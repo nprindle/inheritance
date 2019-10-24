@@ -2,22 +2,22 @@
 
 class GiveOtherStatusEffect extends AbstractEffect {
 
-  status: AbstractStatus;
-  constructor(status: AbstractStatus) {
-    super();
-    this.status = status;
-  }
+    status: AbstractStatus;
+    constructor(status: AbstractStatus) {
+        super();
+        this.status = status;
+    }
 
-  effect(user: Combatant, target: Combatant): void {
-    target.addStatus(this.status.clone());
-  }
+    effect(user: Combatant, target: Combatant): void {
+        target.addStatus(this.status.clone());
+    }
 
-  toString(): string {
-    return `give opponent ${this.status.amount} ${Strings.capitalize(this.status.getName())}`;
-  }
+    toString(): string {
+        return `give opponent ${this.status.amount} ${Strings.capitalize(this.status.getName())}`;
+    }
 
-  clone(): GiveOtherStatusEffect {
-    return new GiveOtherStatusEffect(this.status.clone());
-  }
+    clone(): GiveOtherStatusEffect {
+        return new GiveOtherStatusEffect(this.status.clone());
+    }
 
 }

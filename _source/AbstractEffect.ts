@@ -1,13 +1,13 @@
 abstract class AbstractEffect {
 
-  activate(user: Combatant, foe: Combatant): void {
-    this.effect(user, foe);
-  }
+    activate(user: Combatant, foe: Combatant): void {
+        this.effect(user, foe);
+    }
 
-  abstract effect(user: Combatant, foe: Combatant): void;
+    abstract effect(user: Combatant, foe: Combatant): void;
 
-  abstract toString(): string;
+    abstract toString(): string;
 
-  abstract clone(): AbstractEffect;
+    abstract clone(): AbstractEffect;
 
 }
