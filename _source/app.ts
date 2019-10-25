@@ -13,6 +13,7 @@
 /// <reference path="Game.ts" />
 
 window.onload = function() {
+    NotePool.reloadAllNotes();
     Game.showTitle();
 }
 
