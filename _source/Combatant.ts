@@ -1,5 +1,6 @@
 /// <reference path="Tool.ts" />
 /// <reference path="AbstractStatus.ts" />
+/// <reference path="Trait.ts" />
 
 abstract class Combatant {
     name: string;
@@ -8,17 +9,20 @@ abstract class Combatant {
     energy: number;
     maxEnergy: number;
     tools: Tool[];
+    traits: Trait[];
     statuses: AbstractStatus[];
     deathFunc: Function;
     opponent: Combatant;
 
-    constructor(name: string, health: number, energy: number, ...tools: Tool[]) {
+    constructor(name: string, health: number, energy: number, ...others: (Tool | Trait)[]) {
         this.name = name;
         this.health = health;
         this.maxHealth = health;
         this.energy = energy;
         this.maxEnergy = energy;
-        this.tools = tools;
+        //TODO: Ask Prindle if this is typesafe.
+        this.tools = <Tool[]> others.filter(x => x instanceof Tool);
+        this.traits = <Trait[]> others.filter(x => x instanceof Trait);
         this.deathFunc = function() {};
         this.statuses = [];
     };
@@ -28,6 +32,7 @@ abstract class Combatant {
     startFight(other: Combatant): void {
         this.opponent = other;
         this.statuses = [];
+        this.traits.forEach(trait => trait.startFight(this));
         this.refresh();
     }
 
@@ -133,6 +138,10 @@ abstract class Combatant {
         }
         this.statuses.push(status);
         this.statusBookkeeping();
+    }
+
+    addTrait(trait: Trait): void {
+      this.traits.push(trait);
     }
 
     statusCallback(callback: StatusCallbacks): void {
