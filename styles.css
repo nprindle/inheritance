@@ -47,7 +47,8 @@ html {
     border-bottom: 1px solid black;
 }
 
-.player .tool {
+.player .tool,
+.offer .tool {
     border-left: 1px solid black;
     padding-left: 20px;
 }

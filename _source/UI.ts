@@ -173,12 +173,15 @@ class UI {
     }
 
     static renderModifier(m: Modifier, p: Player, exitCallback: Function, refusable: boolean = true) {
+        const mainDiv: HTMLElement = UI.makeDiv('offer');
         const div: HTMLElement = UI.makeDiv('modifier');
         div.appendChild(UI.makePara(m.name, 'name'));
         div.appendChild(UI.makePara(m.describe(), 'desc'));
+        const toolDiv: HTMLElement = UI.makeDiv('tools');
         for (let i = 0; i < p.tools.length; i++) {
-            div.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
+            toolDiv.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
         }
+        div.appendChild(toolDiv);
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function() {
                 exitCallback(false);
@@ -186,7 +189,8 @@ class UI {
         } else {
             div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
         }
-        return div;
+        mainDiv.appendChild(div);
+        return mainDiv;
     }
 
     static renderFloor(floor: Floor) {
