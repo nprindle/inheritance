@@ -15,7 +15,7 @@ enum StatusFolds {
 }
 
 abstract class AbstractStatus {
-    
+
     amount: number;
 
     constructor(amount: number) {
@@ -47,7 +47,7 @@ abstract class AbstractStatus {
 
     //Called whenever the affected dies.
     die(affected: Combatant, other: Combatant): void {
-        
+
     }
 
     //These functions are used for reducing over certain values - damage taken, amount healed, etc.
@@ -80,5 +80,9 @@ abstract class AbstractStatus {
     abstract getDescription(): string;
     abstract getSortingNumber(): number;
     abstract getUtility(): number;
+
+    toString(): string {
+      return `${this.amount} ${Strings.capitalize(this.getName())}`
+    }
 
 }

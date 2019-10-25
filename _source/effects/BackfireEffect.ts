@@ -1,6 +1,6 @@
 /// <reference path="../AbstractEffect.ts" />
 
-class DamageEffect extends AbstractEffect {
+class BackfireEffect extends AbstractEffect {
 
     damage: number;
     constructor(damage: number) {
@@ -9,15 +9,15 @@ class DamageEffect extends AbstractEffect {
     }
 
     effect(user: Combatant, target: Combatant): void {
-        target.wound(user.statusFold(StatusFolds.DAMAGE_DEALT, this.damage));
+        user.wound(this.damage);
     }
 
     toString(): string {
-        return `do ${this.damage} damage`;
+        return `take ${this.damage} damage`;
     }
 
-    clone(): DamageEffect {
-        return new DamageEffect(this.damage);
+    clone(): BackfireEffect {
+        return new BackfireEffect(this.damage);
     }
 
 }

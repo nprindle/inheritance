@@ -1,6 +1,6 @@
 /// <reference path="../ItemPool.ts" />
 /// <reference path="../Tool.ts" />
 /// <reference path="../effects.ts" />
-tools.add('wrench',
-    new Tool('Wrench', new Cost([1, CostTypes.Energy]), new DamageEffect(1))
+tools.add('thumbtack',
+    new Tool('Thumbtack', new Cost(), new BackfireEffect(1))
 );
