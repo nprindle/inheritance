@@ -5,8 +5,8 @@ class Enemy extends Combatant {
 
     utilityFunction: (Enemy, Player) => number;
 
-    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (Enemy, Human) => number, ...tools: Tool[]) {
-        super(name, health, energy, ...tools);
+    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (Enemy, Human) => number, ...others: (Tool | Trait)[]) {
+        super(name, health, energy, ...others);
 
         if (defaultUtilityFunction == undefined) {
             this.utilityFunction = AiUtilityFunctions.cautiousUtility;

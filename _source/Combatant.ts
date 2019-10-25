@@ -10,6 +10,7 @@ abstract class Combatant {
     maxEnergy: number;
     tools: Tool[];
     traits: Trait[];
+    //TODO: make traits use the same superscript notation as modifiers
     statuses: AbstractStatus[];
     deathFunc: Function;
     opponent: Combatant;

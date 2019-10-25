@@ -2,8 +2,8 @@
 
 class Player extends Combatant {
 
-    constructor(name: string, health: number, energy: number, ...tools: Tool[]) {
-        super(name, health, energy, ...tools);
+    constructor(name: string, health: number, energy: number, ...others: (Tool | Trait)[]) {
+        super(name, health, energy, ...others);
     }
 
     clone(): Player {
