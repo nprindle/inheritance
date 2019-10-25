@@ -7,7 +7,7 @@ class BurnStatus extends AbstractStatus {
     }
 
     useTool(affected: Combatant, other: Combatant) {
-        affected.directDamage(this.amount);
+        affected.wound(this.amount);
     }
 
     endTurn(affected: Combatant, other: Combatant) {
