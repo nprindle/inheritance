@@ -2,6 +2,7 @@
 /// <reference path="Modifier.ts" />
 /// <reference path="Enemy.ts" />
 /// <reference path="Player.ts" />
+/// <reference path="Trait.ts" />
 
 class ItemPoolEntry<T extends { clone: () => T }, E> {
 
@@ -113,6 +114,22 @@ class ItemPool<T extends { clone: () => T }, E> {
 }
 
 const tools = new ItemPool<Tool, string>();
-const modifiers = new ItemPool<Modifier, string>();
+
+enum ModifierTags {
+
+}
+
+const modifiers = new ItemPool<Modifier, ModifierTags>();
 const characters = new ItemPool<Player, string>(true);
-const enemies = new ItemPool<Enemy, string>();
+
+enum EnemyTags {
+    level1, level2, level3, boss
+}
+
+const enemies = new ItemPool<Enemy, EnemyTags>();
+
+enum TraitTags {
+
+}
+
+const traits = new ItemPool<Trait, TraitTags>();

@@ -1,37 +1,33 @@
 /// <reference path="../AbstractStatus.ts" />
 
-class BurnStatus extends AbstractStatus {
+class RotStatus extends AbstractStatus {
 
     constructor(amount: number) {
         super(amount);
     }
 
-    useTool(affected: Combatant, other: Combatant) {
-        affected.wound(this.amount);
-    }
-
     endTurn(affected: Combatant, other: Combatant) {
-        this.amount = 0;
+        affected.directDamage(this.amount);
     }
 
     add(other: AbstractStatus): boolean {
-        if (other instanceof BurnStatus) {
+        if (other instanceof RotStatus) {
             this.amount += other.amount;
             return true;
         }
         return false;
     }
 
-    clone(): BurnStatus {
-        return new BurnStatus(this.amount);
+    clone(): RotStatus {
+        return new RotStatus(this.amount);
     }
 
     getName(): string {
-        return 'burn';
+        return 'rot';
     }
 
     getDescription(): string {
-        return `Take ${this.amount} damage whenever you use a tool this turn.`
+      return `Take ${this.amount} damage at the end of every turn.`;
     }
 
     getSortingNumber(): number {
@@ -39,7 +35,7 @@ class BurnStatus extends AbstractStatus {
     }
 
     getUtility(): number {
-        return -5 * this.amount;
+        return -10 * this.amount;
     }
 
 }

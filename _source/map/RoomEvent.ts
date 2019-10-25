@@ -14,23 +14,21 @@ abstract class RoomEvent {
         return weights.map(w => [w.name, w.weight]);
     }
 
-    // This type enforces structure on the JSON floor data, so if the keys in
-    // the data change, this will probably give you a confusing type error. It's
-    // better than a runtime error, at least.
-    public static randomRoomEvent(floorSettings: { [W in "roomWeights" | "enemies" | "tools"]: { name: string; weight: number }[] }): RoomEvent {
-        let roomWeights = RoomEvent.parseWeights(floorSettings.roomWeights);
-        let floorEnemies = RoomEvent.parseWeights(floorSettings.enemies);
-        let floorTools = RoomEvent.parseWeights(floorSettings.tools);
-
-        let roomType = Random.weightedRandom(roomWeights) as RoomType;
+    // This used to have a freaky JSON type on the parameter.
+    // Now it has a FloorConfig class. So much cleaner.
+    public static randomRoomEvent(settings: FloorConfig): RoomEvent {
+        let roomType = settings.getRoomType();
         let event;
         if (roomType === RoomType.Enemy) {
-            let enemy = enemies.get(Random.weightedRandom(floorEnemies))
+            let enemy = settings.getEnemy();
             let recovery = Infinity; // TODO
             event = new EnemyRoomEvent(enemy, recovery);
         } else if (roomType === RoomType.Tool) {
-            let tool = tools.get(Random.weightedRandom(floorTools));
-            event = new ToolRoomEvent(tool);
+            event = new EmptyRoomEvent(RoomType.Empty);
+        } else if (roomType === RoomType.Modifier) {
+            event = new ModifierRoomEvent(settings.getModifier());
+        } else if (roomType === RoomType.Trait) {
+          return new TraitRoomEvent(settings.getTrait());
         } else {
             return new EmptyRoomEvent(roomType);
         }
@@ -96,3 +94,46 @@ class EnemyRoomEvent extends RoomEvent {
     }
 }
 
+class ModifierRoomEvent extends RoomEvent {
+
+    roomType = RoomType.Modifier;
+    private modifier: Modifier;
+
+    constructor(m: Modifier) {
+        super();
+        this.modifier = m;
+    }
+
+    onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
+        UI.fillScreen(UI.renderModifier(this.modifier, Game.currentRun.player, (taken) => {
+            if (taken) {
+                room.clearEvent();
+            }
+            room.containerFloor.redraw();
+        }));
+        return this;
+    }
+
+}
+
+class TraitRoomEvent extends RoomEvent {
+
+    roomType = RoomType.Trait;
+    private trait: Trait;
+
+    constructor(t: Trait) {
+        super();
+        this.trait = t;
+    }
+
+    onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
+        UI.fillScreen(UI.renderTrait(this.trait, Game.currentRun.player, (taken) => {
+            if (taken) {
+                room.clearEvent();
+            }
+            room.containerFloor.redraw();
+        }));
+        return this;
+    }
+
+}

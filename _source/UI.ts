@@ -102,7 +102,11 @@ class UI {
         for (let i = 0; i < c.statuses.length; i++) {
             div.classList.add(`status-${c.statuses[i].getName()}`);
         }
-        div.appendChild(UI.makePara(c.name, 'name'));
+        let name = c.name;
+        if (c.traits.length > 0) {
+          name = `${name} (${c.traits.map(x => x.name).join(', ')})`;
+        }
+        div.appendChild(UI.makePara(name, 'name'));
         div.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
         div.appendChild(UI.makePara(`Energy: ${c.energy} / ${c.maxEnergy}`, 'energy'));
         if (c.statuses.length > 0) {
@@ -167,26 +171,50 @@ class UI {
         }
         div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
             m.apply(t);
-            callback();
+            callback(true);
         }, false, 'apply'));
         return div;
     }
 
     static renderModifier(m: Modifier, p: Player, exitCallback: Function, refusable: boolean = true) {
+        const mainDiv: HTMLElement = UI.makeDiv('offer');
         const div: HTMLElement = UI.makeDiv('modifier');
         div.appendChild(UI.makePara(m.name, 'name'));
         div.appendChild(UI.makePara(m.describe(), 'desc'));
+        const toolDiv: HTMLElement = UI.makeDiv('tools');
         for (let i = 0; i < p.tools.length; i++) {
-            div.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
+            toolDiv.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
         }
+        div.appendChild(toolDiv);
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function() {
-                exitCallback();
+                exitCallback(false);
             }));
         } else {
             div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
         }
-        return div;
+        mainDiv.appendChild(div);
+        return mainDiv;
+    }
+
+    static renderTrait(t: Trait, p: Player, exitCallback: Function, refusable: boolean = true) {
+        const mainDiv: HTMLElement = UI.makeDiv('offer');
+        const div: HTMLElement = UI.makeDiv('trait');
+        div.appendChild(UI.makePara(`${t.name} Potion`, 'name'));
+        div.appendChild(UI.makePara(t.describe(), 'desc'));
+        div.appendChild(UI.makeButton('Drink', function() {
+          p.addTrait(t);
+          exitCallback(true);
+        }))
+        if (refusable) {
+            div.appendChild(UI.makeButton('No Thank You', function() {
+                exitCallback(false);
+            }));
+        } else {
+            div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
+        }
+        mainDiv.appendChild(div);
+        return mainDiv;
     }
 
     static renderFloor(floor: Floor) {

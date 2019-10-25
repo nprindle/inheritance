@@ -19,10 +19,10 @@ class Floor {
     constructor(level: number, currentRun: Run) {
         this.currentRun = currentRun
         let floorSettings = floors[level];
-        this.width = floorSettings.width;
-        this.height = floorSettings.height;
+        this.width = floorSettings.getWidth();
+        this.height = floorSettings.getHeight();
 
-        this.roomCount = Random.intBetween(floorSettings.minRooms, floorSettings.minRooms + 1);
+        this.roomCount = floorSettings.getNumRooms();
 
         this.rooms = new Array<Array<Room>>(this.height);
         for (let i = 0; i < this.rooms.length; i++) {
