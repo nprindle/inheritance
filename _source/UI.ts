@@ -102,7 +102,11 @@ class UI {
         for (let i = 0; i < c.statuses.length; i++) {
             div.classList.add(`status-${c.statuses[i].getName()}`);
         }
-        div.appendChild(UI.makePara(c.name, 'name'));
+        let name = c.name;
+        if (c.traits.length > 0) {
+          name = `${name} (${c.traits.map(x => x.name).join(', ')})`;
+        }
+        div.appendChild(UI.makePara(name, 'name'));
         div.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
         div.appendChild(UI.makePara(`Energy: ${c.energy} / ${c.maxEnergy}`, 'energy'));
         if (c.statuses.length > 0) {
