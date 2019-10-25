@@ -27,6 +27,8 @@ abstract class RoomEvent {
             event = new EmptyRoomEvent(RoomType.Empty);
         } else if (roomType === RoomType.Modifier) {
             event = new ModifierRoomEvent(settings.getModifier());
+        } else if (roomType === RoomType.Trait) {
+          return new TraitRoomEvent(settings.getTrait());
         } else {
             return new EmptyRoomEvent(roomType);
         }
@@ -104,6 +106,28 @@ class ModifierRoomEvent extends RoomEvent {
 
     onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
         UI.fillScreen(UI.renderModifier(this.modifier, Game.currentRun.player, (taken) => {
+            if (taken) {
+                room.clearEvent();
+            }
+            room.containerFloor.redraw();
+        }));
+        return this;
+    }
+
+}
+
+class TraitRoomEvent extends RoomEvent {
+
+    roomType = RoomType.Trait;
+    private trait: Trait;
+
+    constructor(t: Trait) {
+        super();
+        this.trait = t;
+    }
+
+    onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
+        UI.fillScreen(UI.renderTrait(this.trait, Game.currentRun.player, (taken) => {
             if (taken) {
                 room.clearEvent();
             }

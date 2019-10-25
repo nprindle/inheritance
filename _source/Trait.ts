@@ -20,4 +20,8 @@ class Trait {
     return new Trait(this.name, ...this.appliedStatuses.map(x => x.clone()));
   }
 
+  describe(): string {
+    return `Start fights with ${this.appliedStatuses.map(x => x.toString()).join(', ')}`;
+  }
+
 }

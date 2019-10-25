@@ -6,6 +6,7 @@ class Run {
     player: Player;
     seenEnemies: string[];
     seenModifiers: string[];
+    seenTraits: string[];
     numEvents: number;
 
     constructor(player: Player) {
@@ -14,6 +15,7 @@ class Run {
         this.numEvents = 0;
         this.seenEnemies = [];
         this.seenModifiers = [];
+        this.seenTraits = [];
     }
 
     start(): void {
@@ -37,6 +39,10 @@ class Run {
 
     nextEnemy(...tagSets: EnemyTags[][]): Enemy {
         return enemies.selectRandomUnseen(this.seenEnemies, ...tagSets)!;
+    }
+
+    nextTrait(...tagSets: TraitTags[][]): Trait {
+      return traits.selectRandomUnseen(this.seenTraits, ...tagSets);
     }
 
     offerModifier(): void {

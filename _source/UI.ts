@@ -197,6 +197,26 @@ class UI {
         return mainDiv;
     }
 
+    static renderTrait(t: Trait, p: Player, exitCallback: Function, refusable: boolean = true) {
+        const mainDiv: HTMLElement = UI.makeDiv('offer');
+        const div: HTMLElement = UI.makeDiv('trait');
+        div.appendChild(UI.makePara(`${t.name} Potion`, 'name'));
+        div.appendChild(UI.makePara(t.describe(), 'desc'));
+        div.appendChild(UI.makeButton('Drink', function() {
+          p.addTrait(t);
+          exitCallback(true);
+        }))
+        if (refusable) {
+            div.appendChild(UI.makeButton('No Thank You', function() {
+                exitCallback(false);
+            }));
+        } else {
+            div.appendChild(UI.makeButton("Can't Refuse!", function() {}, true));
+        }
+        mainDiv.appendChild(div);
+        return mainDiv;
+    }
+
     static renderFloor(floor: Floor) {
         console.log(floor);
         const div: HTMLElement = UI.makeDiv("map");

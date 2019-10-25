@@ -4,5 +4,6 @@ enum RoomType {
     Exit = "exit",
     Enemy = "enemy",
     Tool = "tool",
-    Modifier = "modifier"
+    Modifier = "modifier",
+    Trait = "trait"
 }
