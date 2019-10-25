@@ -18,6 +18,7 @@ makeDirectoryReferences('modifiers');
 makeDirectoryReferences('characters');
 makeDirectoryReferences('enemies');
 makeDirectoryReferences('statuses');
+makeDirectoryReferences('traits');
 
 console.log('The game contains:');
 const keys = Object.keys(totals);
