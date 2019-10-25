@@ -9,6 +9,7 @@ class Player extends Combatant {
     clone(): Player {
         let p = new Player(this.name, this.health, this.energy, ...this.tools.map(x => x.clone()));
         p.statuses = this.statuses.map(x => x.clone());
+        p.traits = this.traits.map(x => x.clone());
         return p;
     }
 
