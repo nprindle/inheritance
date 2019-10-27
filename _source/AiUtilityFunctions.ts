@@ -1,16 +1,19 @@
 // Contains different possible utility functions that determine which outcomes the enemy AI prefers
 class AiUtilityFunctions {
 
+    private static worstValue = Number.NEGATIVE_INFINITY;
+    private static bestValue = Number.POSITIVE_INFINITY;
+
     /* aggression is the relative importance of damaging the player over healing the bot.
      * a bot with aggression 0 will not care about damaging the player
      * a bot with aggression greater than 1 will prefer damaging the player over healing itself
      */
     static genericUtility(bot: Enemy, human: Player, aggression: number): number {
         if (AiUtilityFunctions.dead(bot)) {
-          return Number.MIN_VALUE; // 3rd law of robotics
+          return this.worstValue; // 3rd law of robotics
         }
         if (AiUtilityFunctions.dead(human)) {
-          return Number.MAX_VALUE;
+          return this.bestValue;
         }
 
         let botStatusPoints = AiUtilityFunctions.statusUtilityPoints(bot);
@@ -41,7 +44,7 @@ class AiUtilityFunctions {
 
     // ranks all outcomes as equally prefereable, so the result is chosen at random
     static blindUtility(bot: Enemy, human: Player): number {
-        return Number.MAX_VALUE;
+        return this.bestValue;
     }
 
     private static dead(combatant: Combatant): boolean  {

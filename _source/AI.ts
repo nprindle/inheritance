@@ -76,12 +76,43 @@ class AI {
         let finishTime = new Date();
         let duration = finishTime.getTime() - startTime.getTime();
         console.log("Sim time (milliseconds): " + duration);
+        console.log("Selected outcome utility: " + this.bestSequenceScore);
     }
 
     static bestMoveSequence(aiCombatant: Enemy, humanCombatant: Player, simIterations: number) {
         let sim = new AI(aiCombatant, humanCombatant);
         sim.search(simIterations);
+        // sim.debugChosenSequence();
         return sim.bestSequence;
+    }
+
+    debugChosenSequence() {
+        // clone a simulation of the combatants
+        let dummyBot = this.botCopy.clone();
+        let dummyHuman = this.humanCopy.clone();
+        dummyBot.opponent = dummyHuman;
+        dummyHuman.opponent = dummyBot;
+        dummyBot.refresh();
+        dummyHuman.refresh();
+
+        console.log("Chosen sequence: " + this.bestSequence);
+
+        this.bestSequence.forEach((move: number) => {
+            dummyBot.useTool(move, dummyHuman);
+            console.log("Dummybot health: " + dummyBot.health);
+            console.log("DummyHuman health: " + dummyHuman.health);
+        })
+
+        console.log("Ending turn simulation: ");
+        dummyBot.endTurn();
+        dummyHuman.endTurn();
+        console.log("Dummybot health: " + dummyBot.health);
+        console.log("DummyHuman health: " + dummyHuman.health);
+
+        console.log("Evaluating with utility function:");
+        console.log(this.scoreFunction);
+        console.log("Assigned utility: " + this.scoreFunction(dummyBot, dummyHuman));
+        console.log("Sim utility finding: " + this.bestSequenceScore);
     }
 }
 
