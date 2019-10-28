@@ -26,7 +26,7 @@ class Room {
     }
 
     continueFloor(): void {
-        UI.fillScreen(UI.renderFloor(this.containerFloor));
+        this.containerFloor.redraw();
     }
 
     enter(): void {
