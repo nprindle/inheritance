@@ -22,4 +22,8 @@ class Strings {
         return digits.map(x => Strings.superscripts[x]).join('');
     }
 
+    public static cssSanitize(str: string) {
+        return str.split(' ').join('-');
+    }
+
 }
