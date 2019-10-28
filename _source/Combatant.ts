@@ -88,7 +88,7 @@ abstract class Combatant {
     };
 
     gainEnergy(amount: number): void {
-        this.energy += amount;
+        this.energy += this.statusFold(StatusFolds.ENERGY_GAINED, amount);
     }
 
     loseEnergy(amount: number): void {

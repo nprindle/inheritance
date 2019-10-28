@@ -11,7 +11,8 @@ enum StatusCallbacks {
 enum StatusFolds {
     DAMAGE_TAKEN = 'damageTakenFold',
     DAMAGE_DEALT = 'damageDealtFold',
-    AMOUNT_HEALED = 'amountHealedFold'
+    AMOUNT_HEALED = 'amountHealedFold',
+    ENERGY_GAINED = 'energyGainedFold'
 }
 
 abstract class AbstractStatus {
@@ -61,6 +62,10 @@ abstract class AbstractStatus {
     }
 
     amountHealedFold(acc: number): number {
+        return acc;
+    }
+
+    energyGainedFold(acc: number): number {
         return acc;
     }
 
