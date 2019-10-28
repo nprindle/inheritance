@@ -11,7 +11,6 @@ abstract class Combatant {
     tools: Tool[];
     traits: Trait[];
     traitNames: [string, number][];
-    //TODO: make traits use the same superscript notation as modifiers
     statuses: AbstractStatus[];
     deathFunc: Function;
     opponent: Combatant;
