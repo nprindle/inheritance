@@ -104,7 +104,7 @@ class UI {
         }
         let name = c.name;
         if (c.traits.length > 0) {
-          name = `${name} (${c.traits.map(x => x.name).join(', ')})`;
+          name = `${name} (${c.traitNames.map(tuple => Strings.powerTuple(tuple)).join(', ')})`;
         }
         div.appendChild(UI.makePara(name, 'name'));
         div.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));

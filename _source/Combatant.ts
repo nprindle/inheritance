@@ -10,6 +10,7 @@ abstract class Combatant {
     maxEnergy: number;
     tools: Tool[];
     traits: Trait[];
+    traitNames: [string, number][];
     //TODO: make traits use the same superscript notation as modifiers
     statuses: AbstractStatus[];
     deathFunc: Function;
@@ -23,7 +24,10 @@ abstract class Combatant {
         this.maxEnergy = energy;
         //TODO: Ask Prindle if this is typesafe.
         this.tools = <Tool[]> others.filter(x => x instanceof Tool);
-        this.traits = <Trait[]> others.filter(x => x instanceof Trait);
+        this.traits = [];
+        this.traitNames = [];
+        let traits = <Trait[]> others.filter(x => x instanceof Trait);
+        traits.forEach(trait => this.addTrait(trait));
         this.deathFunc = function() {};
         this.statuses = [];
     };
@@ -142,7 +146,16 @@ abstract class Combatant {
     }
 
     addTrait(trait: Trait): void {
-      this.traits.push(trait);
+        this.traits.push(trait);
+        let name = trait.name;
+        for (let i = 0; i < this.traitNames.length; i++) {
+            let current = this.traitNames[i];
+            if (current[0] === name) {
+                current[1] = current[1] + 1;
+                return;
+            }
+        }
+        this.traitNames.push([name, 1]);
     }
 
     statusCallback(callback: StatusCallbacks): void {
