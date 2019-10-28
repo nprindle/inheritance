@@ -100,7 +100,7 @@ class UI {
         }
         const div: HTMLElement = UI.makeDiv(which);
         for (let i = 0; i < c.statuses.length; i++) {
-            div.classList.add(`status-${c.statuses[i].getName()}`);
+            div.classList.add(`status-${Strings.cssSanitize(c.statuses[i].getName())}`);
         }
         let name = c.name;
         if (c.traits.length > 0) {
