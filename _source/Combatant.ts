@@ -40,6 +40,10 @@ abstract class Combatant {
         this.refresh();
     }
 
+    endFight(): void {
+        this.statuses = [];
+    }
+
     startTurn(): void {
         this.refresh();
         this.statusCallback(StatusCallbacks.START_TURN);
