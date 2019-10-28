@@ -42,8 +42,8 @@ abstract class Combatant {
     }
 
     startTurn(): void {
-        this.statusCallback(StatusCallbacks.START_TURN);
         this.refresh();
+        this.statusCallback(StatusCallbacks.START_TURN);
     }
 
     endTurn(): void {
@@ -81,7 +81,7 @@ abstract class Combatant {
     }
 
     refresh(): void {
-        this.energy = this.maxEnergy;
+        this.gainEnergy(this.maxEnergy - this.energy);
         for (let i = 0; i < this.tools.length; i++) {
             this.tools[i].refresh();
         }
