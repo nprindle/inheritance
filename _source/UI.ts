@@ -91,7 +91,7 @@ class UI {
         }, 500);
     }
 
-    static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean, buttonArr?: HTMLElement[]): HTMLElement {
+    static renderCombatantInfo(c: Combatant): HTMLElement {
         let which;
         if (c instanceof Player) {
             which = 'player';
@@ -124,10 +124,28 @@ class UI {
             }
             div.appendChild(statusPara);
         }
+        return div;
+    }
+
+    static renderCombatant(c: Combatant, target: Combatant, isTurn: boolean, buttonArr?: HTMLElement[]): HTMLElement {
+        const div: HTMLElement = UI.renderCombatantInfo(c);
         const toolDiv: HTMLElement = document.createElement('div');
         toolDiv.classList.add('tools');
         for (let i = 0; i < c.tools.length; i++) {
             let currentDiv: HTMLElement = UI.renderCombatTool(c.tools[i], c, i, target, isTurn, buttonArr);
+            currentDiv.classList.add(`tool_${i}`);
+            toolDiv.appendChild(currentDiv);
+        }
+        div.appendChild(toolDiv);
+        return div;
+    }
+
+    static renderCombatantSidebar(c: Combatant): HTMLElement {
+        const div: HTMLElement = UI.renderCombatantInfo(c);
+        const toolDiv: HTMLElement = document.createElement('div');
+        toolDiv.classList.add('tools');
+        for (let i = 0; i < c.tools.length; i++) {
+            let currentDiv: HTMLElement = UI.renderTool(c.tools[i]);
             currentDiv.classList.add(`tool_${i}`);
             toolDiv.appendChild(currentDiv);
         }
