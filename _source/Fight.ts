@@ -27,6 +27,7 @@ class Fight {
         // this.player.setDeathFunc(() => { this.end(); });
         this.enemy.setDeathFunc(() => { this.end(); });
         this.div = document.createElement('div');
+        this.player.startTurn();
         this.draw();
     }
 
