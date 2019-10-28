@@ -293,6 +293,13 @@ class UI {
         return div;
     }
 
+    static renderGameView(floor: Floor, player: Player): HTMLElement {
+        const div = UI.makeDiv('game');
+        div.appendChild(UI.renderFloor(floor));
+        div.appendChild(UI.renderCombatantSidebar(player));
+        return div;
+    }
+
     static renderOptions(options: [string, Function][]): HTMLElement {
         const buttons: HTMLElement = UI.makeDiv('buttons');
         for (let i = 0; i < options.length; i++) {

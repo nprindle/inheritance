@@ -3,7 +3,8 @@ html {
 }
 
 .arena,
-.offer {
+.offer,
+.game {
     display: flex;
     flex-direction: row;
     justify-content: space-around;

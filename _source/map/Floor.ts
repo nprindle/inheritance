@@ -66,8 +66,7 @@ class Floor {
     }
 
     redraw(): void {
-        document.body.innerHTML = '';
-        document.body.appendChild(UI.renderFloor(this));
+        UI.fillScreen(UI.renderGameView(this, Game.currentRun.player));
     }
 
     end(): void {
