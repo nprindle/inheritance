@@ -1,5 +1,4 @@
 /// <reference path="../AbstractStatus.ts" />
-/// <reference path="../AiUtilityFunctions.ts" />
 /// <reference path="../Enemy.ts" />
 /// <reference path="../Player.ts" />
 
