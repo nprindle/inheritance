@@ -34,7 +34,7 @@ class ConfusionStatus extends AbstractStatus {
     }
 
     getDescription(): string {
-        return 'Make random moves instead of thinking strategically';
+        return 'Make random moves instead of thinking strategically.';
     }
 
     getSortingNumber(): number {
