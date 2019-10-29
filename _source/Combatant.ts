@@ -137,7 +137,7 @@ abstract class Combatant {
         this.deathFunc = f;
     }
 
-    addStatus(status: AbstractStatus) {
+    addStatus(status: AbstractStatus): void {
         for (let i = 0; i < this.statuses.length; i++) {
             let done = this.statuses[i].add(status);
             if (done) {
@@ -146,6 +146,15 @@ abstract class Combatant {
         }
         this.statuses.push(status);
         this.statusBookkeeping();
+    }
+
+    getStatusAmount(query: AbstractStatus): number {
+        const matches: AbstractStatus[] = this.statuses.filter(status => status.sameKind(query));
+        return matches.reduce((acc, val) => acc + val.amount, 0);
+    }
+
+    removeStatus(remove: AbstractStatus): void {
+        this.statuses = this.statuses.filter(status => !status.sameKind(remove));
     }
 
     addTrait(trait: Trait): void {
