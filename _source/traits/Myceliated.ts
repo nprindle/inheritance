@@ -2,5 +2,5 @@
 /// <reference path="../Trait.ts" />
 /// <reference path="../statuses.ts" />
 traits.add('myceliated',
-    new Trait('Myceliated', new FungalStatus(2))
+    new Trait('Myceliated', new FungalStatus(1))
 );
