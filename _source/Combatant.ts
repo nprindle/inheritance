@@ -63,6 +63,9 @@ abstract class Combatant {
 
     //This bypasses status folding.
     directDamage(damage: number): void {
+        if (damage === 0) {
+            return;
+        }
         this.health -= damage;
         this.statusCallback(StatusCallbacks.TAKE_DAMAGE);
         if (this.health <= 0) {
