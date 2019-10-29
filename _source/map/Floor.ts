@@ -35,6 +35,7 @@ class Floor {
         entranceRoom.visited = true;
 
         this.rooms[entranceCoords[0]][entranceCoords[1]] = entranceRoom;
+        let assignableRooms = [];
         let maxRoomDistance = 0;
         for (let i = 0; i < this.roomCount - 1; i++) {
             let roomIndex;
@@ -46,17 +47,23 @@ class Floor {
                     newRoomIndex = [roomIndex[0] + newRoomOffset[0], roomIndex[1] + newRoomOffset[1]] as [number, number];
                 }
             } while (!newRoomIndex || this.shouldGenNewRoom(newRoomIndex));
-            let roomEvent = RoomEvent.randomRoomEvent(floorSettings);
             let entrance = this.rooms[roomIndex[0]][roomIndex[1]]
-            let newRoom = new Room(this, newRoomIndex, roomEvent, entrance);
+            let newRoom = new Room(this, newRoomIndex, new EmptyRoomEvent(RoomType.Empty), entrance);
             this.rooms[newRoomIndex[0]][newRoomIndex[1]] = newRoom;
             this.rooms[roomIndex[0]][roomIndex[1]].exits.push(newRoom);
+            assignableRooms.push(newRoom);
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
         }
         let minExitDistance = Math.ceil(maxRoomDistance * 3.0 / 4);
         let potentialExits = Arrays.flatten(this.rooms).filter(x => x.distanceFromEntrance >= minExitDistance);
         let exitRoom = Random.fromArray(potentialExits);
         exitRoom.roomEvent = new EmptyRoomEvent(RoomType.Exit);
+
+        assignableRooms = assignableRooms.filter(room => room !== exitRoom);
+        let events = floorSettings.getEvents(assignableRooms.length);
+        for (let i = 0; i < events.length; i++) {
+            assignableRooms[i].roomEvent = events[i];
+        }
     }
 
     draw(): void {

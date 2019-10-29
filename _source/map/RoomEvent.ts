@@ -13,27 +13,6 @@ abstract class RoomEvent {
     private static parseWeights(weights: { name: string; weight: number }[]): [string, number][] {
         return weights.map(w => [w.name, w.weight]);
     }
-
-    // This used to have a freaky JSON type on the parameter.
-    // Now it has a FloorConfig class. So much cleaner.
-    public static randomRoomEvent(settings: FloorConfig): RoomEvent {
-        let roomType = settings.getRoomType();
-        let event;
-        if (roomType === RoomType.Enemy) {
-            let enemy = settings.getEnemy();
-            let recovery = Infinity; // TODO
-            event = new EnemyRoomEvent(enemy, recovery);
-        } else if (roomType === RoomType.Tool) {
-            event = new EmptyRoomEvent(RoomType.Empty);
-        } else if (roomType === RoomType.Modifier) {
-            event = new ModifierRoomEvent(settings.getModifier());
-        } else if (roomType === RoomType.Trait) {
-          return new TraitRoomEvent(settings.getTrait());
-        } else {
-            return new EmptyRoomEvent(roomType);
-        }
-        return event;
-    }
 }
 
 class EmptyRoomEvent extends RoomEvent {
