@@ -69,5 +69,5 @@ class FloorConfig {
 }
 
 const floors: FloorConfig[] = [
-    new FloorConfig([15, 20], [EnemyTags.level1], [3, 5], [], [3, 5], [], [2, 3])
+    new FloorConfig([15, 20], [EnemyTags.level1], [3, 5], [], [3, 5], [TraitTags.standard], [2, 3])
 ];
