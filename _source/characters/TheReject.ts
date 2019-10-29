@@ -5,5 +5,6 @@
 characters.addSorted('reject', new Player('The Reject', 10, 10,
     tools.get('mutagens')!,
     tools.get('boneclaws')!,
-    tools.get('rawhideskin')!
+    tools.get('rawhideskin')!,
+    tools.get('geneburst')!
 ), 5);
