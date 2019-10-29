@@ -170,6 +170,23 @@ abstract class Combatant {
         this.traitNames.push([name, 1]);
     }
 
+    removeTrait(index: number): void {
+        let trait = this.traits[index];
+        this.traits.splice(index, 1);
+        let name = trait.name;
+        for (let i = 0; i < this.traitNames.length; i++) {
+            let current = this.traitNames[i];
+            if (current[0] === name) {
+                current[1] = current[1] - 1;
+                if (current[1] === 0) {
+                    this.traitNames.splice(i, 1);
+                }
+                console.log(this.traitNames, this.traits);
+                return;
+            }
+        }
+    }
+
     statusCallback(callback: StatusCallbacks): void {
         const callbacks: Function[] = this.statuses.map(x => <Function> x[callback].bind(x));
         callbacks.forEach(x => x(this, this.opponent));
