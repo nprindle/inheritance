@@ -4,4 +4,12 @@ class Arrays {
         return arr.reduce((acc = [], x) => acc.concat(x));
     }
 
+    public static generate<T>(length: number, func: () => T): T[] {
+        const result: T[] = [];
+        for (let i = 0; i < length; i++) {
+            result.push(func());
+        }
+        return result;
+    }
+
 }
