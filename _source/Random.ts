@@ -12,6 +12,10 @@ class Random {
         return Random.between(min, max) << 0;
     }
 
+    public static tupleInt(tuple: [number, number]) {
+        return Random.intBetween(tuple[0], tuple[1]);
+    }
+
     public static lessThan(max: number): number {
         return Random.between(0, max);
     }
@@ -40,6 +44,16 @@ class Random {
             }
         }
         return arr[0][0];
+    }
+
+    public static shuffle<T>(arr: T[]): T[] {
+        for (let i = 0; i < arr.length - 2; i++) {
+            let j: number = Random.intBetween(i, arr.length);
+            let temp: T = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+        return arr;
     }
 
 }
