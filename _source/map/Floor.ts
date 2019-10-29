@@ -61,7 +61,7 @@ class Floor {
 
         assignableRooms = assignableRooms.filter(room => room !== exitRoom);
         let events = floorSettings.getEvents(assignableRooms.length);
-        for (let i = 0; i < events.length; i++) {
+        for (let i = 0; i < assignableRooms.length; i++) {
             assignableRooms[i].roomEvent = events[i];
         }
     }
