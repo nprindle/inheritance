@@ -2,5 +2,6 @@
 /// <reference path="../Trait.ts" />
 /// <reference path="../statuses.ts" />
 traits.add('tough',
-    new Trait('Tough', new ShieldStatus(10))
+    new Trait('Tough', new ShieldStatus(5)),
+    TraitTags.standard
 );
