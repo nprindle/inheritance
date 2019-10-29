@@ -6,7 +6,7 @@ class PoisonStatus extends AbstractStatus {
         super(amount);
     }
 
-    endTurn(affected: Combatant, other: Combatant) {
+    startTurn(affected: Combatant, other: Combatant) {
         affected.directDamage(this.amount);
         this.amount--;
     }
@@ -31,7 +31,7 @@ class PoisonStatus extends AbstractStatus {
         if (this.amount === 1) {
             return `Take 1 damage at the end of this turn.`;
         } else {
-            return `Take ${this.amount} damage at the end of this turn. Decreases by one each turn.`;
+            return `Take ${this.amount} damage at the start of next turn. Decreases by one each turn.`;
         }
     }
 
