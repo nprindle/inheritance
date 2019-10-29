@@ -28,6 +28,10 @@ class EnergyDebtStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof EnergyDebtStatus;
+    }
+
     clone(): EnergyDebtStatus {
         return new EnergyDebtStatus(this.amount);
     }

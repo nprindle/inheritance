@@ -18,6 +18,10 @@ class RotStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof RotStatus;
+    }
+
     clone(): RotStatus {
         return new RotStatus(this.amount);
     }

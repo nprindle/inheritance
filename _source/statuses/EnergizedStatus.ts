@@ -10,7 +10,6 @@ class EnergizedStatus extends AbstractStatus {
     }
 
     startTurn(affected: Combatant, other: Combatant) {
-        console.log("funny bart");
         affected.energy += this.amount; //otherwise it can get eaten by energy debt
     }
 
@@ -24,6 +23,10 @@ class EnergizedStatus extends AbstractStatus {
             return true;
         }
         return false;
+    }
+
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof EnergyDebtStatus;
     }
 
     clone(): EnergizedStatus {

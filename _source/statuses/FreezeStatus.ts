@@ -22,6 +22,10 @@ class FreezeStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof FreezeStatus;
+    }
+
     clone(): FreezeStatus {
         return new FreezeStatus(this.amount);
     }

@@ -19,6 +19,10 @@ class PoisonStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof PoisonStatus;
+    }
+
     clone(): PoisonStatus {
         return new PoisonStatus(this.amount);
     }

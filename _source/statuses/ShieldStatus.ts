@@ -27,6 +27,10 @@ class ShieldStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof ShieldStatus;
+    }
+
     clone(): ShieldStatus {
         return new ShieldStatus(this.amount);
     }

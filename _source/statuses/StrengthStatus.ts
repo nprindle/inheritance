@@ -18,6 +18,10 @@ class StrengthStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof StrengthStatus;
+    }
+
     clone(): StrengthStatus {
         return new StrengthStatus(this.amount);
     }
@@ -39,7 +43,7 @@ class StrengthStatus extends AbstractStatus {
     }
 
     getUtility(): number {
-        return -5 * this.amount;
+        return 2 * this.amount;
     }
 
 }

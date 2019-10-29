@@ -86,6 +86,9 @@ abstract class AbstractStatus {
     abstract getSortingNumber(): number;
     abstract getUtility(): number;
 
+    //Type comparisons are hard.
+    abstract sameKind(other: AbstractStatus): boolean;
+
     toString(): string {
       return `${this.amount} ${Strings.capitalize(this.getName())}`
     }

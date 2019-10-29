@@ -18,6 +18,10 @@ class SurviveStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof SurviveStatus;
+    }
+
     clone(): SurviveStatus {
         return new SurviveStatus(this.amount);
     }

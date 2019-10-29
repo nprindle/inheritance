@@ -19,6 +19,10 @@ class FungalStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof FungalStatus;
+    }
+
     clone(): FungalStatus {
         return new FungalStatus(this.amount);
     }

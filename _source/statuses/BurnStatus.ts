@@ -22,6 +22,10 @@ class BurnStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof BurnStatus;
+    }
+
     clone(): BurnStatus {
         return new BurnStatus(this.amount);
     }

@@ -25,6 +25,10 @@ class ConfusionStatus extends AbstractStatus {
         return false;
     }
 
+    sameKind(other: AbstractStatus): boolean {
+        return other instanceof EnergizedStatus;
+    }
+
     clone(): ConfusionStatus {
         return new ConfusionStatus(this.amount);
     }
