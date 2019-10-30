@@ -18,15 +18,15 @@ class FloorConfig {
     traitTags: TraitTags[];
     numTraits: [number, number];
 
-    constructor(name: string, numRooms: [number, number], enemyTags: EnemyTags[], numEnemies: [number, number], modifierTags: ModifierTags[], numModifiers: [number, number], traitTags: TraitTags[], numTraits: [number, number]) {
-        this.name = name;
-        this.numRooms = numRooms;
-        this.enemyTags = enemyTags;
-        this.numEnemies = numEnemies;
-        this.modifierTags = modifierTags;
-        this.numModifiers = numModifiers;
-        this.traitTags = traitTags;
-        this.numTraits = numTraits;
+    constructor(params: { name: string; numRooms: [number, number]; enemyTags: EnemyTags[]; numEnemies: [number, number]; modifierTags: ModifierTags[]; numModifiers: [number, number]; traitTags: TraitTags[]; numTraits: [number, number] }) {
+        this.name = params.name;
+        this.numRooms = params.numRooms;
+        this.enemyTags = params.enemyTags;
+        this.numEnemies = params.numEnemies;
+        this.modifierTags = params.modifierTags;
+        this.numModifiers = params.numModifiers;
+        this.traitTags = params.traitTags;
+        this.numTraits = params.numTraits;
     }
 
     getEvents(rooms: number): RoomEvent[] {
@@ -72,5 +72,14 @@ class FloorConfig {
 }
 
 const floors: FloorConfig[] = [
-    new FloorConfig("The Foyer", [10, 15], [EnemyTags.level1], [2, 4], [], [2, 4], [TraitTags.standard], [1, 2])
+    new FloorConfig({
+        name: "The Foyer",
+        numRooms: [10, 15],
+        enemyTags: [EnemyTags.level1],
+        numEnemies: [2, 4],
+        modifierTags: [],
+        numModifiers: [2, 4],
+        traitTags: [TraitTags.standard],
+        numTraits: [1, 2],
+    })
 ];
