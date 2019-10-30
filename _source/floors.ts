@@ -3,46 +3,80 @@
 /// <reference path="ItemPool.ts" />
 /// <reference path="Random.ts" />
 
+abstract class RoomEventPool {
+    abstract getEvents(): RoomEvent[];
+}
+
+class EnemyEventPool extends RoomEventPool {
+
+    tags: EnemyTags[];
+    num: [number, number]
+
+    constructor(min: number, max: number, tags: EnemyTags[]) {
+        super();
+        this.num = [min, max];
+        this.tags = tags;
+    }
+
+    getEvents(): RoomEvent[] {
+        const enemies =  Arrays.generate(Random.tupleInt(this.num), () => Game.currentRun.nextEnemy(this.tags));
+        return enemies.map(enemy => new EnemyRoomEvent(enemy));
+    }
+
+}
+
+class TraitEventPool extends RoomEventPool {
+
+    tags: TraitTags[];
+    num: [number, number]
+
+    constructor(min: number, max: number, tags: TraitTags[]) {
+        super();
+        this.num = [min, max];
+        this.tags = tags;
+    }
+
+    getEvents(): RoomEvent[] {
+        const traits =  Arrays.generate(Random.tupleInt(this.num), () => Game.currentRun.nextTrait(this.tags));
+        return traits.map(trait => new TraitRoomEvent(trait));
+    }
+
+}
+
+class ModifierEventPool extends RoomEventPool {
+
+    tags: ModifierTags[];
+    num: [number, number]
+
+    constructor(min: number, max: number, tags: ModifierTags[]) {
+        super();
+        this.num = [min, max];
+        this.tags = tags;
+    }
+
+    getEvents(): RoomEvent[] {
+        const mods =  Arrays.generate(Random.tupleInt(this.num), () => Game.currentRun.nextModifier(this.tags));
+        return mods.map(modifier => new ModifierRoomEvent(modifier));
+    }
+
+}
+
 class FloorConfig {
 
     name: string;
 
     numRooms: [number, number];
 
-    enemyTags: EnemyTags[];
-    numEnemies: [number, number];
+    eventPools: RoomEventPool[];
 
-    modifierTags: ModifierTags[];
-    numModifiers: [number, number];
-
-    traitTags: TraitTags[];
-    numTraits: [number, number];
-
-    constructor(params: { name: string; numRooms: [number, number]; enemyTags: EnemyTags[]; numEnemies: [number, number]; modifierTags: ModifierTags[]; numModifiers: [number, number]; traitTags: TraitTags[]; numTraits: [number, number] }) {
-        this.name = params.name;
-        this.numRooms = params.numRooms;
-        this.enemyTags = params.enemyTags;
-        this.numEnemies = params.numEnemies;
-        this.modifierTags = params.modifierTags;
-        this.numModifiers = params.numModifiers;
-        this.traitTags = params.traitTags;
-        this.numTraits = params.numTraits;
+    constructor(name: string, numRooms: [number, number], eventPools: RoomEventPool[]) {
+        this.name = name;
+        this.numRooms = numRooms;
+        this.eventPools = eventPools;
     }
 
-    getEvents(rooms: number): RoomEvent[] {
-        const enemyEvents: RoomEvent[] = Arrays.generate(Random.tupleInt(this.numEnemies),
-            () => new EnemyRoomEvent(this.getEnemy()));
-        const modEvents: RoomEvent[] = Arrays.generate(Random.tupleInt(this.numModifiers),
-            () => new ModifierRoomEvent(this.getModifier()));
-        const traitEvents: RoomEvent[] = Arrays.generate(Random.tupleInt(this.numTraits),
-            () => new TraitRoomEvent(this.getTrait()));
-        console.log(enemyEvents, modEvents, traitEvents)
-        const events: RoomEvent[] = enemyEvents.concat(modEvents).concat(traitEvents);
-        while (events.length < rooms) {
-            events.push(new EmptyRoomEvent(RoomType.Empty));
-        }
-        console.log(events);
-        return Random.shuffle(events);
+    getEvents(): RoomEvent[] {
+        return Arrays.flatten(this.eventPools.map(eventPool => eventPool.getEvents()));
     }
 
     getNumRooms(): number {
@@ -57,29 +91,12 @@ class FloorConfig {
         return 5;
     }
 
-    getEnemy(): Enemy {
-        return Game.currentRun.nextEnemy(this.enemyTags);
-    }
-
-    getModifier(): Modifier {
-        return Game.currentRun.nextModifier(this.modifierTags);
-    }
-
-    getTrait(): Trait {
-        return Game.currentRun.nextTrait(this.traitTags);
-    }
-
 }
 
 const floors: FloorConfig[] = [
-    new FloorConfig({
-        name: "The Foyer",
-        numRooms: [10, 15],
-        enemyTags: [EnemyTags.level1],
-        numEnemies: [2, 4],
-        modifierTags: [],
-        numModifiers: [2, 4],
-        traitTags: [TraitTags.standard],
-        numTraits: [1, 2],
-    })
+    new FloorConfig("The Foyer", [12, 15], [
+        new EnemyEventPool(2, 4, [EnemyTags.level1]),
+        new TraitEventPool(1, 2, [TraitTags.standard]),
+        new ModifierEventPool(2, 4, [])
+    ])
 ];
