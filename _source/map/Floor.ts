@@ -60,8 +60,9 @@ class Floor {
         exitRoom.roomEvent = new EmptyRoomEvent(RoomType.Exit);
 
         assignableRooms = assignableRooms.filter(room => room !== exitRoom);
+        assignableRooms = Random.shuffle(assignableRooms);
         let events = floorSettings.getEvents(assignableRooms.length);
-        for (let i = 0; i < assignableRooms.length; i++) {
+        for (let i = 0; i < events.length && i < assignableRooms.length; i++) {
             assignableRooms[i].roomEvent = events[i];
         }
     }
