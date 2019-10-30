@@ -5,6 +5,8 @@
 
 class FloorConfig {
 
+    name: string;
+
     numRooms: [number, number];
 
     enemyTags: EnemyTags[];
@@ -16,7 +18,8 @@ class FloorConfig {
     traitTags: TraitTags[];
     numTraits: [number, number];
 
-    constructor(numRooms: [number, number], enemyTags: EnemyTags[], numEnemies: [number, number], modifierTags: ModifierTags[], numModifiers: [number, number], traitTags: TraitTags[], numTraits: [number, number]) {
+    constructor(name: string, numRooms: [number, number], enemyTags: EnemyTags[], numEnemies: [number, number], modifierTags: ModifierTags[], numModifiers: [number, number], traitTags: TraitTags[], numTraits: [number, number]) {
+        this.name = name;
         this.numRooms = numRooms;
         this.enemyTags = enemyTags;
         this.numEnemies = numEnemies;
@@ -69,5 +72,5 @@ class FloorConfig {
 }
 
 const floors: FloorConfig[] = [
-    new FloorConfig([15, 20], [EnemyTags.level1], [3, 5], [], [3, 5], [TraitTags.standard], [2, 3])
+    new FloorConfig("The Foyer", [10, 15], [EnemyTags.level1], [2, 4], [], [2, 4], [TraitTags.standard], [1, 2])
 ];
