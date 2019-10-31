@@ -46,7 +46,7 @@ class TraitEventPool extends RoomEventPool {
 class ModifierEventPool extends RoomEventPool {
 
     tags: ModifierTags[];
-    num: [number, number]
+    num: [number, number];
 
     constructor(min: number, max: number, tags: ModifierTags[]) {
         super();
@@ -57,6 +57,27 @@ class ModifierEventPool extends RoomEventPool {
     getEvents(): RoomEvent[] {
         const mods =  Arrays.generate(Random.tupleInt(this.num), () => Game.currentRun.nextModifier(this.tags));
         return mods.map(modifier => new ModifierRoomEvent(modifier));
+    }
+
+}
+
+class EliteEnemyEventPool extends RoomEventPool {
+
+    num: [number, number];
+    tags: EnemyTags[];
+
+    constructor(min: number, max: number, tags: EnemyTags[]) {
+        super();
+        this.num = [min, max];
+        this.tags = tags;
+    }
+
+    getEvents(): RoomEvent[] {
+        //generate compliant enemies
+        const enemies =  Arrays.generate(Random.tupleInt(this.num), () => Game.currentRun.nextEnemy(this.tags));
+        //give them each an elite trait
+        enemies.forEach(enemy => enemy.addLootTrait(Game.currentRun.nextTrait([TraitTags.elite])));
+        return enemies.map(enemy => new EnemyRoomEvent(enemy));
     }
 
 }
@@ -97,6 +118,7 @@ const floors: FloorConfig[] = [
     new FloorConfig("The Foyer", [12, 15], [
         new EnemyEventPool(2, 4, [EnemyTags.level1]),
         new TraitEventPool(1, 2, [TraitTags.standard]),
-        new ModifierEventPool(2, 4, [])
+        new ModifierEventPool(2, 4, []),
+        new EliteEnemyEventPool(1, 1, [EnemyTags.level1])
     ])
 ];
