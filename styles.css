@@ -153,6 +153,7 @@ button.endturn:active {
 .titlescreen,
 .credits,
 .journal,
+.note,
 .charselect {
     display: flex;
     flex-direction: column;
@@ -164,6 +165,7 @@ button.endturn:active {
 
 .titlescreen>.buttons,
 .journal>.buttons,
+.note>.buttons,
 .charselect>.buttons {
     display: flex;
     flex-direction: column;
@@ -172,8 +174,19 @@ button.endturn:active {
     flex-wrap: wrap;
 }
 
+.notetitle {
+    font-family: monospace;
+}
+
+.notebody {
+    font-family: monospace;
+    font-size: 18px;
+}
+
 .titlescreen button,
 .credits button,
+.journal button,
+.note button,
 .charselect button {
     font-size: 24px;
     padding: 5px;

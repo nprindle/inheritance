@@ -340,10 +340,10 @@ class UI {
     }
 
     static renderNote(exit: Function, note: Note): HTMLElement {
-        const div: HTMLElement = UI.makeDiv(''); //TODO apply CSS class
-        div.appendChild(UI.makeHeader(note.title));
-        div.appendChild(UI.makePara(note.content));
-        div.appendChild(UI.makeButton("Back", exit));
+        const div: HTMLElement = UI.makeDiv('note');
+        div.appendChild(UI.makeHeader(note.title, 'notetitle'));
+        div.appendChild(UI.makePara(note.content, 'notebody'));
+        div.appendChild(UI.makeButton("Close", exit));
         return div;
     }
 
