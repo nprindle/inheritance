@@ -152,6 +152,7 @@ button.endturn:active {
 
 .titlescreen,
 .credits,
+.journal,
 .charselect {
     display: flex;
     flex-direction: column;
@@ -162,6 +163,7 @@ button.endturn:active {
 }
 
 .titlescreen>.buttons,
+.journal>.buttons,
 .charselect>.buttons {
     display: flex;
     flex-direction: column;

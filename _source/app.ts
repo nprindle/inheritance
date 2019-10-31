@@ -13,7 +13,12 @@
 /// <reference path="Game.ts" />
 
 window.onload = function() {
+    // load notes
     NotePool.reloadAllNotes();
+    // unlock these notes at the start of the game (all other notes default to locked)
+    NotePool.unlockSpecificNote("I am a title");
+    NotePool.unlockSpecificNote("Title Goes Here");
+
     Game.showTitle();
 }
 

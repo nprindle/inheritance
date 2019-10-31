@@ -331,6 +331,22 @@ class UI {
         return div;
     }
 
+    static renderJournal(callback: Function, exit: Function, unlockedNotes: Note[]): HTMLElement {
+        const div: HTMLElement = UI.makeDiv('journal');
+        div.appendChild(UI.makeHeader('Unlocked Files'));
+        const noteTuples: [string, Function][] = unlockedNotes.map(note => <[string, Function]> [note.title, () => callback(note)]);
+        div.appendChild(UI.renderOptions(noteTuples.concat([['Close Journal', exit]])));
+        return div;
+    }
+
+    static renderNote(exit: Function, note: Note): HTMLElement {
+        const div: HTMLElement = UI.makeDiv(''); //TODO apply CSS class
+        div.appendChild(UI.makeHeader(note.title));
+        div.appendChild(UI.makePara(note.content));
+        div.appendChild(UI.makeButton("Back", exit));
+        return div;
+    }
+
     static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('charselect');
         div.appendChild(UI.makeHeader('Choose Your Character'));
