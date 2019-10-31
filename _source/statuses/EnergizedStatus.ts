@@ -26,7 +26,7 @@ class EnergizedStatus extends AbstractStatus {
     }
 
     sameKind(other: AbstractStatus): boolean {
-        return other instanceof EnergyDebtStatus;
+        return other instanceof EnergizedStatus;
     }
 
     clone(): EnergizedStatus {

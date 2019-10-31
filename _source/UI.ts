@@ -99,7 +99,8 @@ class UI {
             which = 'enemy';
         }
         const div: HTMLElement = UI.makeDiv(which);
-        for (let i = 0; i < c.statuses.length; i++) {
+        const statuses: AbstractStatus[] = c.statuses.filter(status => status.amount !== 0);
+        for (let i = 0; i < statuses.length; i++) {
             div.classList.add(`status-${Strings.cssSanitize(c.statuses[i].getName())}`);
         }
         let name = c.name;
@@ -109,9 +110,9 @@ class UI {
         div.appendChild(UI.makePara(name, 'name'));
         div.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
         div.appendChild(UI.makePara(`Energy: ${c.energy} / ${c.maxEnergy}`, 'energy'));
-        if (c.statuses.length > 0) {
+        if (statuses.length > 0) {
             const statusPara: HTMLElement = UI.makePara('');
-            const statusSpans: HTMLElement[] = c.statuses.map(status => {
+            const statusSpans: HTMLElement[] = statuses.map(status => {
                 const name = `${status.amount} ${Strings.capitalize(status.getName())}`;
                 const desc = status.getDescription();
                 return UI.makeTooltip(name, desc);

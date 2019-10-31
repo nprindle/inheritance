@@ -176,6 +176,9 @@ abstract class Combatant {
     removeTrait(index: number): void {
         let trait = this.traits[index];
         this.traits.splice(index, 1);
+        //remove effects of the trait...
+        trait.removeEffects(this);
+        //remove trait name
         let name = trait.name;
         for (let i = 0; i < this.traitNames.length; i++) {
             let current = this.traitNames[i];
@@ -204,7 +207,10 @@ abstract class Combatant {
     }
 
     private statusBookkeeping(): void {
-        this.statuses = this.statuses.filter(status => status.amount !== 0).sort((a, b) => a.getSortingNumber() - b.getSortingNumber());
+        console.log('bookkeeping...');
+        this.statuses = this.statuses.filter(status => status.amount !== 0);
+        this.statuses = this.statuses.sort((a, b) => a.getSortingNumber() - b.getSortingNumber());
+        console.log(this.statuses);
     }
 
 }

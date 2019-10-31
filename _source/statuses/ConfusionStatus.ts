@@ -26,7 +26,7 @@ class ConfusionStatus extends AbstractStatus {
     }
 
     sameKind(other: AbstractStatus): boolean {
-        return other instanceof EnergizedStatus;
+        return other instanceof ConfusionStatus;
     }
 
     clone(): ConfusionStatus {
