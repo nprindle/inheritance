@@ -18,6 +18,8 @@ window.onload = function() {
     // unlock these notes at the start of the game (all other notes default to locked)
     NotePool.unlockSpecificNote("I am a title");
     NotePool.unlockSpecificNote("Title Goes Here");
+    NotePool.unlockSpecificNote("This file contains \"quotes\"");
+    
 
     Game.showTitle();
 }

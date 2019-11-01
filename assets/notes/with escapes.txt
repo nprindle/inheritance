@@ -1,0 +1,7 @@
+This file contains "quotes"
+"Hello, World!" should have its double quotes escaped.
+The same is true for `single quotes` and \backslashes\!
+We should be able to include the literal contents of escape codes like \n or \\ and have them interpreted literally.
+Also, out IDEs and text editors often replace tabs with 2 or 4 spaces
+    like this. However, to display properly in the browser, it's probably better to use real tabs
+	like this. In either case, it's better to escape them by replacing them with `\t` when the preprocessor generates code from this file.
