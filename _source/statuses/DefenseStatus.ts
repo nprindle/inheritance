@@ -34,7 +34,7 @@ class DefenseStatus extends AbstractStatus {
         if (this.amount > 0) {
             return `Take ${this.amount} less damage from attacks.`;
         } else {
-            return `Take ${this.amount} more damage from attacks.`;
+            return `Take ${Math.abs(this.amount)} more damage from attacks.`;
         }
     }
 
