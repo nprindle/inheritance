@@ -15,12 +15,19 @@ enum StatusFolds {
     ENERGY_GAINED = 'energyGainedFold'
 }
 
+enum StatusValidators {
+    NONZERO,
+    POSITIVE
+}
+
 abstract class AbstractStatus {
 
     amount: number;
+    validator: StatusValidators;
 
-    constructor(amount: number) {
+    constructor(amount: number, validator: StatusValidators) {
         this.amount = amount;
+        this.validator = validator;
     }
 
     //A lot of the methods here have the parameters "affected" and "other." The affected is the one with the status effect, and the other is their opponent.
@@ -88,6 +95,15 @@ abstract class AbstractStatus {
 
     //Type comparisons are hard.
     abstract sameKind(other: AbstractStatus): boolean;
+
+    isValid(): boolean {
+        switch (this.validator) {
+            case StatusValidators.NONZERO:
+                return this.amount !== 0;
+            case StatusValidators.POSITIVE:
+                return this.amount > 0;
+        }
+    }
 
     toString(): string {
       return `${this.amount} ${Strings.capitalize(this.getName())}`

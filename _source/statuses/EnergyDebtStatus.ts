@@ -6,7 +6,7 @@
 class EnergyDebtStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.POSITIVE);
     }
 
     energyGainedFold(acc: number): number {

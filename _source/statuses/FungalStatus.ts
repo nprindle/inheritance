@@ -4,7 +4,7 @@
 class FungalStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.POSITIVE);
     }
 
     takeDamage(affected: Combatant, other: Combatant) {

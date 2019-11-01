@@ -3,7 +3,7 @@
 class FreezeStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.POSITIVE);
     }
 
     useTool(affected: Combatant, other: Combatant) {

@@ -3,7 +3,7 @@
 class DefenseStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.NONZERO);
     }
 
     damageTakenFold(acc: number): number {

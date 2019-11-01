@@ -3,7 +3,7 @@
 class PoisonStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.POSITIVE);
     }
 
     startTurn(affected: Combatant, other: Combatant) {

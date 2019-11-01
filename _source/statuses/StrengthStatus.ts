@@ -3,7 +3,7 @@
 class StrengthStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.NONZERO);
     }
 
     damageDealtFold(acc: number): number {

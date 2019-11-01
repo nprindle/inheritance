@@ -6,7 +6,7 @@
 class ConfusionStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.POSITIVE);
     }
 
     endTurn(affected: Combatant, other: Combatant) {

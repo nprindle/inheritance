@@ -5,7 +5,7 @@
 class ShieldStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.POSITIVE);
     }
 
     damageTakenFold(acc: number): number {

@@ -99,7 +99,7 @@ class UI {
             which = 'enemy';
         }
         const div: HTMLElement = UI.makeDiv(which);
-        const statuses: AbstractStatus[] = c.statuses.filter(status => status.amount !== 0);
+        const statuses: AbstractStatus[] = c.statuses.filter(status => status.isValid());
         for (let i = 0; i < statuses.length; i++) {
             div.classList.add(`status-${Strings.cssSanitize(c.statuses[i].getName())}`);
         }

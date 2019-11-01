@@ -3,7 +3,7 @@
 class SurviveStatus extends AbstractStatus {
 
     constructor(amount: number) {
-        super(amount);
+        super(amount, StatusValidators.POSITIVE);
     }
 
     die(affected: Combatant, other: Combatant): void {
