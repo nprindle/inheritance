@@ -332,6 +332,27 @@ class UI {
         return div;
     }
 
+    static renderJournal(callback: Function, exit: Function, unlockedNotes: Note[]): HTMLElement {
+        const div: HTMLElement = UI.makeDiv('journal');
+        div.appendChild(UI.makeHeader('Unlocked Files'));
+        const noteTuples: [string, Function][] = unlockedNotes.map(note => <[string, Function]> [note.title, () => callback(note)]);
+        div.appendChild(UI.renderOptions(noteTuples.concat([['Close Journal', exit]])));
+        return div;
+    }
+
+    static renderNote(exit: Function, note: Note): HTMLElement {
+        const div: HTMLElement = UI.makeDiv('note');
+        div.appendChild(UI.makeHeader(note.title, 'notetitle'));
+
+        const noteBodyContainer: HTMLElement = UI.makeDiv('notebodycontainer');
+        let paragraphs: string[] = note.content.split("\n");
+        paragraphs.forEach(paragraph => noteBodyContainer.appendChild(UI.makePara(paragraph, 'notebody')));
+
+        div.appendChild(noteBodyContainer);
+        div.appendChild(UI.makeButton("Close", exit));
+        return div;
+    }
+
     static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('charselect');
         div.appendChild(UI.makeHeader('Choose Your Character'));

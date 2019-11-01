@@ -7,7 +7,7 @@ class Game {
             UI.renderTitleScreen([
                 ['New Game', () => Game.showCharSelect()],
                 ['Settings', () => {}], //TODO: settings
-                ['Files', () => {}], //TODO: files (what should we call these?)
+                ['Journal', () => Game.showJournal()],
                 ['Credits', () => Game.showCredits()],
             ])
         );
@@ -38,6 +38,14 @@ class Game {
                 new CreditsEntry('Map icons use various Tombats fonts by Tom7.')
             ], () => Game.showTitle())
         );
+    }
+
+    static showJournal(): void {
+        UI.fillScreen(UI.renderJournal(Game.showNote, Game.showTitle, NotePool.getUnlockedNotes()));
+    }
+
+    static showNote(note: Note) {
+        UI.fillScreen(UI.renderNote(Game.showJournal, note));
     }
 
     static showGameOver(run: Run): void {

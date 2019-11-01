@@ -12,6 +12,31 @@ function makeDirectoryReferences(dir, ...lines) {
   fs.writeFileSync(fulldir + '.ts', file + '\n');
 }
 
+// used to escape characters from the .txt file when generating the NoteResources.ts source code
+function escapeString(str) {
+  if (typeof(str) == "string") {
+    str = str.replace(/\\/g, "\\\\"); // escape backslashes
+
+    // we probably want our notes to use real tabs, not spaces, so that they display correctly in the browser
+    // we're programmers, so our text editors are usually configured to replace tabs with 2 or 4 spaces, which is wrong for this case
+    str = str.replace(/    /g, "\t"); // replace 4 consecutive spaces with a tab
+    str = str.replace(/    /g, "\t"); // replace 2 consecutive spaces with a tab
+
+    // replace tabs with 4 non-breaking spaces because our UI HTML builder doesn't render tabs
+    fakeTab = "\u00A0".repeat(4);
+    str = str.replace(/\t/g, fakeTab); 
+
+
+    str = str.replace(/"/g, "\\\""); // escape double quotes
+    str = str.replace(/'/g, "\\\'"); // escape single quotes
+    str = str.replace(/\r?\n|\r/g, "\\n"); // escape newlines (and convert CRLF to LF)
+    return str;
+  } else {
+    console.log(typeof(str));
+    throw "Attempted to escape something that is not a string";
+  }
+}
+
 // generate NoteResources.ts from the .txt files in assets/notes
 function generateNoteResources() {
 
@@ -31,13 +56,13 @@ function generateNoteResources() {
     let lines = file.split("\n");
 
     
-    let title = lines.shift(); // get title (first line of txt file)
-    title = title.replace(/\r?\n|\r/g, ""); // remove newlines from title
-
-    let content = lines.join(""); // join content lines with the escape sequence for a new line, not a literal new line
+    let title = lines.shift(); //get title (first line of txt file)
+    title = title.replace(/\r?\n|\r/g, ""); // remove any new-lines from the title
+    title = escapeString(title); // escape special characters in title
+    
+    let content = escapeString(lines.join("")); // remaining lines make up the body
 
     let instruction = "  NotePool.loadNote(\"" + title + "\", \"" + content + "\");";
-    instruction = instruction.replace(/\r?\n|\r/g, "\\n"); // escape all newlines
 
     codeLines.push(instruction);
   });

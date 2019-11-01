@@ -2,4 +2,4 @@ Title Goes Here
 This is the body. These are sentences.
 This is a sentence after a line break.
 
-This is a sentence after 2 line breaks. Cool, Right?
+This is a paragraph that should be wrapped across multiple lines. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum. Lorem ipsum.
