@@ -34,7 +34,7 @@ class StrengthStatus extends AbstractStatus {
         if (this.amount > 0) {
             return `Deal ${this.amount} more damage whenever you attack.`;
         } else {
-            return `Deal ${this.amount} less damage whenever you attack.`;
+            return `Deal ${Math.abs(this.amount)} less damage whenever you attack.`;
         }
     }
 
