@@ -343,7 +343,12 @@ class UI {
     static renderNote(exit: Function, note: Note): HTMLElement {
         const div: HTMLElement = UI.makeDiv('note');
         div.appendChild(UI.makeHeader(note.title, 'notetitle'));
-        div.appendChild(UI.makePara(note.content, 'notebody'));
+
+        const noteBodyContainer: HTMLElement = UI.makeDiv('notebodycontainer');
+        let paragraphs: string[] = note.content.split("\n");
+        paragraphs.forEach(paragraph => noteBodyContainer.appendChild(UI.makePara(paragraph, 'notebody')));
+
+        div.appendChild(noteBodyContainer);
         div.appendChild(UI.makeButton("Close", exit));
         return div;
     }

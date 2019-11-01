@@ -178,9 +178,15 @@ button.endturn:active {
     font-family: monospace;
 }
 
+.notebodycontainer {
+    max-width: 33%;
+    align-content: left;
+}
+
 .notebody {
     font-family: monospace;
     font-size: 18px;
+    text-align: left;
 }
 
 .titlescreen button,

@@ -3,5 +3,5 @@ This file contains "quotes"
 The same is true for `single quotes` and \backslashes\!
 We should be able to include the literal contents of escape codes like \n or \\ and have them interpreted literally.
 Also, out IDEs and text editors often replace tabs with 2 or 4 spaces
-    like this. However, to display properly in the browser, it's probably better to use real tabs
-	like this. Since our UI system currently doesn't render tabs in paragraphs, the preprocessor will replace any of these with a sequence of 4 non-breaking space characters.
+    However, we should ideally escape any examples of real tabs.
+	Since our UI system currently doesn't render tabs in paragraphs, the preprocessor will replace any of these with a sequence of 4 non-breaking space characters.
