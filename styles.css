@@ -186,7 +186,7 @@ button.endturn:active {
 .notebody {
     font-family: monospace;
     font-size: 18px;
-    text-align: left;
+    text-align: justify;
 }
 
 .titlescreen button,
