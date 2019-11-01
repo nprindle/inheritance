@@ -8,6 +8,7 @@ class SurviveStatus extends AbstractStatus {
 
     die(affected: Combatant, other: Combatant): void {
         affected.health = 1;
+        this.amount--;
     }
 
     add(other: AbstractStatus): boolean {
