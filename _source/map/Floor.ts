@@ -65,6 +65,7 @@ class Floor {
         for (let i = 0; i < events.length && i < assignableRooms.length; i++) {
             assignableRooms[i].roomEvent = events[i];
         }
+        UI.announce(floorSettings.name);
     }
 
     draw(): void {
