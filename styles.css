@@ -279,3 +279,45 @@ button.endturn:active {
 .room.none {
     background-color: black;
 }
+
+.announcement {
+    position: fixed;
+    text-align: center;
+    width: 50%;
+    top: 25%;
+    left: 25%;
+    /*text-shadow: 3px 3px #FFF;*/
+    font-variant: small-caps;
+    font-size: 48px;
+}
+
+.announcement span {
+    opacity: 0;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.announcement span.letter {
+    animation: appear 4s;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 1;
+    }
+
+    0% {
+        opacity: 0;
+    }
+}

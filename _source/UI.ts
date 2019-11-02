@@ -376,4 +376,20 @@ class UI {
         elems.forEach(elem => document.body.appendChild(elem));
     }
 
+    static announce(text: string): void {
+        const h1: HTMLElement = UI.makeHeader('', 'announcement');
+        const spans: HTMLElement[] = text.split('').map(letter => UI.makeElem('span', letter));
+        const delay: number = 500;
+        spans.forEach((span, index) => {
+            h1.appendChild(span);
+            window.setTimeout(() => {
+                span.classList.add('letter');
+            }, index * delay);
+        });
+        document.body.appendChild(h1);
+        window.setTimeout(() => {
+            document.body.removeChild(h1);
+        }, delay * spans.length + 4000);
+    }
+
 }
