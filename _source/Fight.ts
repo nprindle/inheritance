@@ -91,9 +91,11 @@ class Fight {
     end(): void {
         this.player.endFight();
         this.enemy.endFight();
-        document.body.removeChild(this.div);
-        if (this.inRoom) this.inRoom.continueFloor();
-        else this.endCallback();
+        if (this.inRoom) {
+            this.inRoom.continueFloor();
+        } else {
+            this.endCallback();
+        }
     }
 
 }
