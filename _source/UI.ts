@@ -372,8 +372,9 @@ class UI {
     }
 
     static fillScreen(...elems: HTMLElement[]): void {
-        document.body.innerHTML = '';
-        elems.forEach(elem => document.body.appendChild(elem));
+        const gameview = document.getElementById('gameview');
+        gameview.innerHTML = '';
+        elems.forEach(elem => gameview.appendChild(elem));
     }
 
     static announce(text: string): void {
