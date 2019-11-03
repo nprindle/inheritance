@@ -11,6 +11,7 @@ class Floor {
 
     roomCount: number;
     rooms: Array<Array<Room>>;
+    entranceRoom: Room;
 
     div: HTMLElement;
 
@@ -31,8 +32,8 @@ class Floor {
             y: Random.intLessThan(this.height)
         });
         let entranceRoom = new Room(this, entranceCoords, new EmptyRoomEvent(RoomType.Entrance));
-        entranceRoom.hasPlayer = true;
         entranceRoom.visited = true;
+        this.entranceRoom = entranceRoom;
 
         this.rooms[entranceCoords.y][entranceCoords.x] = entranceRoom;
         let assignableRooms = [];

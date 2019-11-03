@@ -13,17 +13,14 @@ class Room {
     exits: Room[];
     distanceFromEntrance: number;
     visited: boolean;
-    // TODO: invert this dependency, use coordinates instead
-    hasPlayer: boolean;
     roomEvent: RoomEvent;
 
-    constructor(containerFloor: Floor, coordinates: Coordinates, roomEvent: RoomEvent, entrance?: Room, hasPlayer?: boolean) {
+    constructor(containerFloor: Floor, coordinates: Coordinates, roomEvent: RoomEvent, entrance?: Room) {
         this.containerFloor = containerFloor;
         this.coordinates = coordinates;
         this.roomEvent = roomEvent;
         this.exits = entrance ? [entrance] : [];
         this.distanceFromEntrance = entrance ? entrance.distanceFromEntrance + 1 : 0;
-        this.hasPlayer = hasPlayer || false;
         this.visited = false;
     }
 
@@ -32,10 +29,9 @@ class Room {
     }
 
     enter(): void {
+        Game.currentRun.movePlayer(this.coordinates);
         Room.roomsEntered++;
-        this.exits.forEach(e => e.hasPlayer = false);
         this.visited = true;
-        this.hasPlayer = true;
         this.roomEvent = this.roomEvent.onRoomEnter(this, Room.roomsEntered);
     }
 
