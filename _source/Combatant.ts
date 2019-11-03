@@ -207,10 +207,8 @@ abstract class Combatant {
     }
 
     private statusBookkeeping(): void {
-        console.log('bookkeeping...');
         this.statuses = this.statuses.filter(status => status.isValid());
         this.statuses = this.statuses.sort((a, b) => a.getSortingNumber() - b.getSortingNumber());
-        console.log(this.statuses);
     }
 
 }
