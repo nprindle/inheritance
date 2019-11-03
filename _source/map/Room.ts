@@ -1,3 +1,4 @@
+/// <reference path="../Coordinates.ts" />
 /// <reference path="Floor.ts" />
 /// <reference path="RoomEvent.ts" />
 
@@ -6,22 +7,20 @@ class Room {
     // track of the total number here
     private static roomsEntered: number = 0;
 
+    // TODO: can this be decoupled?
     containerFloor: Floor;
-    coordinates: [number, number];
+    coordinates: Coordinates;
     exits: Room[];
     distanceFromEntrance: number;
     visited: boolean;
-    // TODO: invert this dependency, use coordinates instead
-    hasPlayer: boolean;
     roomEvent: RoomEvent;
 
-    constructor(containerFloor: Floor, coordinates: [number, number], roomEvent: RoomEvent, entrance?: Room, hasPlayer?: boolean) {
+    constructor(containerFloor: Floor, coordinates: Coordinates, roomEvent: RoomEvent, entrance?: Room) {
         this.containerFloor = containerFloor;
         this.coordinates = coordinates;
         this.roomEvent = roomEvent;
         this.exits = entrance ? [entrance] : [];
         this.distanceFromEntrance = entrance ? entrance.distanceFromEntrance + 1 : 0;
-        this.hasPlayer = hasPlayer || false;
         this.visited = false;
     }
 
@@ -30,10 +29,9 @@ class Room {
     }
 
     enter(): void {
+        Game.currentRun.movePlayer(this.coordinates);
         Room.roomsEntered++;
-        this.exits.forEach(e => e.hasPlayer = false);
         this.visited = true;
-        this.hasPlayer = true;
         this.roomEvent = this.roomEvent.onRoomEnter(this, Room.roomsEntered);
     }
 
@@ -42,28 +40,26 @@ class Room {
     }
 
     // Get the coordinates of all exits from this room
-    getExitCoordinates(): [number, number][] {
+    getExitCoordinates(): Coordinates[] {
         return this.exits.map(e => e.coordinates);
     }
 
     // Note: includes coordinates off the map as blocked
-    getBlockedCoordinates(): [number, number][] {
-        let offsets = [[1, 0], [0, 1], [-1, 0], [0, -1]] as [number, number][];
-        let exitCoords: [number, number][] = this.exits.map(e => e.coordinates);
-        let surrounding: [number, number][] = offsets.map(o => {
-            return [this.coordinates[0] + o[0], this.coordinates[1] + o[1]];
-        });
-        return surrounding.filter(x => !exitCoords.some(c => c == x));
+    getBlockedCoordinates(): Coordinates[] {
+        let exitCoords = this.getExitCoordinates();
+        let surrounding = this.coordinates.surroundingCoords();
+        return surrounding.filter(x => !exitCoords.some(c => x.equals(c)));
     }
 
     // Returns offsets from this room that are not accessible from this room. An
-    // offset is one of [1, 0], [0, 1], [-1, 0], or [0, -1].
+    // offset is one of [1, 0], [0, 1], [-1, 0], or [0, -1], with [-1, -1]
+    // indicating "towards the top left".
     getBlockedOffsets(): [number, number][] {
         let offsets = [[1, 0], [0, 1], [-1, 0], [0, -1]] as [number, number][];
-        let exitCoords = this.exits.map(e => e.coordinates);
-        return offsets.filter(offset => {
-            let coord = [offset[0] + this.coordinates[0], offset[1] + this.coordinates[1]];
-            return !exitCoords.some(c => c == coord);
+        let exitCoords = this.getExitCoordinates();
+        return offsets.filter(o => {
+            let coord = this.coordinates.applyOffset(o);
+            return !exitCoords.some(c => coord.equals(c));
         });
     }
 

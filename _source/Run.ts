@@ -4,6 +4,7 @@
 class Run {
 
     player: Player;
+    playerCoordinates: Coordinates;
     seenEnemies: string[];
     seenModifiers: string[];
     seenTraits: string[];
@@ -12,6 +13,7 @@ class Run {
     constructor(player: Player) {
         this.player = player;
         this.player.setDeathFunc(() => Game.showGameOver(this));
+        this.playerCoordinates = new Coordinates( { x: 0, y: 0 } );
         this.numEvents = 0;
         this.seenEnemies = [];
         this.seenModifiers = [];
@@ -25,6 +27,7 @@ class Run {
     nextEvent(): void {
         this.numEvents++;
         let floor = new Floor(0, this);
+        this.playerCoordinates = floor.entranceRoom.coordinates;
         floor.redraw();
         // switch (this.numEvents % 2) {
         //     case 0:
@@ -57,6 +60,10 @@ class Run {
         let enemy = enemies.selectRandomUnseen(this.seenEnemies)!;
         let f = new Fight(this.player, enemy);
         f.setEndCallback(() => this.nextEvent());
+    }
+
+    movePlayer(coords: Coordinates): void {
+        this.playerCoordinates = coords;
     }
 
 }

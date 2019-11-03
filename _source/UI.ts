@@ -259,16 +259,21 @@ class UI {
     static renderRoom(room: Room) {
         const div: HTMLElement = UI.makeDiv("room");
         div.classList.add(room.getRoomType() + "-room");
-        let visible = room.hasPlayer || room.exits.some(e => e.hasPlayer);
+
+        let playerCoords = Game.currentRun.playerCoordinates;
+        let hasPlayer = room.coordinates.equals(playerCoords);
+        let exitHasPlayer = room.exits.some(e => e.coordinates.equals(playerCoords));
+        let visible = hasPlayer || exitHasPlayer;
+
         if (visible || room.visited) {
             div.classList.add("visible");
-            if (room.hasPlayer) {
+            if (hasPlayer) {
                 div.appendChild(UI.makeRoomIcon('player'));
             } else if (room.getRoomType() !== RoomType.Empty) {
                 div.appendChild(UI.makeRoomIcon(room.getRoomType()));
             }
         }
-        if (!room.hasPlayer && visible) {
+        if (!hasPlayer && visible) {
             div.onclick = function(e: MouseEvent) {
                 room.enter();
             };

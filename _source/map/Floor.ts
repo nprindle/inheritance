@@ -11,6 +11,7 @@ class Floor {
 
     roomCount: number;
     rooms: Array<Array<Room>>;
+    entranceRoom: Room;
 
     div: HTMLElement;
 
@@ -24,33 +25,35 @@ class Floor {
 
         this.roomCount = floorSettings.getNumRooms();
 
-        this.rooms = new Array<Array<Room>>(this.height);
-        for (let i = 0; i < this.rooms.length; i++) {
-            this.rooms[i] = new Array<Room>(this.width);
-        }
+        this.rooms = Arrays.generate(this.height, () => new Array<Room>(this.width));
 
-        let entranceCoords = [Random.intLessThan(this.height), Random.intLessThan(this.width)] as [number, number];
+        let entranceCoords = new Coordinates({
+            x: Random.intLessThan(this.width),
+            y: Random.intLessThan(this.height)
+        });
         let entranceRoom = new Room(this, entranceCoords, new EmptyRoomEvent(RoomType.Entrance));
-        entranceRoom.hasPlayer = true;
         entranceRoom.visited = true;
+        this.entranceRoom = entranceRoom;
 
-        this.rooms[entranceCoords[0]][entranceCoords[1]] = entranceRoom;
+        this.rooms[entranceCoords.y][entranceCoords.x] = entranceRoom;
         let assignableRooms = [];
         let maxRoomDistance = 0;
         for (let i = 0; i < this.roomCount - 1; i++) {
-            let roomIndex;
-            let newRoomIndex;
+            let roomCoords;
+            let newRoomCoords;
             do {
-                roomIndex = Random.intCoord(this.height, this.width);
-                if (this.rooms[roomIndex[0]][roomIndex[1]] !== undefined) {
+                roomCoords = Random.intCoord(this.height, this.width);
+                if (this.rooms[roomCoords.y][roomCoords.x] !== undefined) {
                     let newRoomOffset = Floor.randomDirectionOffset();
-                    newRoomIndex = [roomIndex[0] + newRoomOffset[0], roomIndex[1] + newRoomOffset[1]] as [number, number];
+                    newRoomCoords = roomCoords.applyOffset(newRoomOffset);
                 }
-            } while (!newRoomIndex || this.shouldGenNewRoom(newRoomIndex));
-            let entrance = this.rooms[roomIndex[0]][roomIndex[1]]
-            let newRoom = new Room(this, newRoomIndex, new EmptyRoomEvent(RoomType.Empty), entrance);
-            this.rooms[newRoomIndex[0]][newRoomIndex[1]] = newRoom;
-            this.rooms[roomIndex[0]][roomIndex[1]].exits.push(newRoom);
+            } while (!newRoomCoords || this.shouldGenNewRoom(newRoomCoords));
+
+            let entrance = this.rooms[roomCoords.y][roomCoords.x];
+            let newRoom = new Room(this, newRoomCoords, new EmptyRoomEvent(RoomType.Empty), entrance);
+            this.rooms[newRoomCoords.y][newRoomCoords.x] = newRoom;
+
+            this.rooms[roomCoords.y][roomCoords.x].exits.push(newRoom);
             assignableRooms.push(newRoom);
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
         }
@@ -87,13 +90,13 @@ class Floor {
         return [Math.cos(angle) << 0, Math.sin(angle) << 0];
     }
 
-    private shouldGenNewRoom(coord: [number, number]): boolean {
+    private shouldGenNewRoom(coord: Coordinates): boolean {
         if (!coord) {
             return false;
         }
-        let x = coord[0];
-        let y = coord[1];
-        return x <= -1 || x >= this.height || y <= -1 || y >= this.width || this.rooms[x][y] !== undefined;
+        let x = coord.x;
+        let y = coord.y;
+        return x <= -1 || x >= this.width || y <= -1 || y >= this.height || this.rooms[y][x] !== undefined;
     }
 
 }

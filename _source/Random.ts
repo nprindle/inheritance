@@ -24,8 +24,11 @@ class Random {
         return Random.intBetween(0, max);
     }
 
-    public static intCoord(width: number, height: number): [number, number] {
-        return [Random.intLessThan(width), Random.intLessThan(height)];
+    public static intCoord(width: number, height: number): Coordinates {
+        return new Coordinates({
+            x: Random.intLessThan(width),
+            y: Random.intLessThan(height)
+        });
     }
 
     public static fromArray<T>(arr: T[]): T {
