@@ -9,6 +9,7 @@ class Run {
     seenModifiers: string[];
     seenTraits: string[];
     numEvents: number;
+    currentFloor: Floor;
 
     constructor(player: Player) {
         this.player = player;
@@ -26,9 +27,9 @@ class Run {
 
     nextEvent(): void {
         this.numEvents++;
-        let floor = new Floor(0, this);
-        this.playerCoordinates = floor.entranceRoom.coordinates;
-        floor.redraw();
+        this.currentFloor = new Floor(0, this);
+        this.playerCoordinates = this.currentFloor.entranceRoom.coordinates;
+        this.currentFloor.redraw();
         // switch (this.numEvents % 2) {
         //     case 0:
         //         return this.offerModifier();
