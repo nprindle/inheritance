@@ -71,6 +71,13 @@ class Floor {
         UI.announce(floorSettings.name);
     }
 
+    reveal(): void {
+        this.rooms.forEach(arr => arr.forEach(room => {
+            room.visited = true;
+        }));
+        this.redraw();
+    }
+
     draw(): void {
         this.div = UI.makeDiv('map');
         document.body.appendChild(this.div);
