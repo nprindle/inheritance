@@ -13,6 +13,7 @@ abstract class Combatant {
     traitNames: [string, number][];
     statuses: AbstractStatus[];
     deathFunc: Function;
+    afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
     opponent: Combatant;
 
     constructor(name: string, health: number, energy: number, ...others: (Tool | Trait)[]) {
@@ -28,6 +29,7 @@ abstract class Combatant {
         let traits = <Trait[]> others.filter(x => x instanceof Trait);
         traits.forEach(trait => this.addTrait(trait));
         this.deathFunc = function() {};
+        this.afterToolFunc = function() {};
         this.statuses = [];
     };
 
@@ -127,6 +129,7 @@ abstract class Combatant {
         const tool: Tool = this.tools[index];
         this.statusCallback(StatusCallbacks.USE_TOOL);
         tool.use(this, target);
+        this.afterToolFunc();
     };
 
     die(): void {
@@ -138,6 +141,10 @@ abstract class Combatant {
 
     setDeathFunc(f: Function): void {
         this.deathFunc = f;
+    }
+
+    setAfterToolFunc(f: Function): void {
+        this.afterToolFunc = f;
     }
 
     addStatus(status: AbstractStatus): void {

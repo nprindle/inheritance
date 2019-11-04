@@ -10,7 +10,8 @@ class Fight {
     div: HTMLElement;
     enemyButtons: HTMLElement[];
     endCallback: Function;
-    inRoom: Room
+    inRoom: Room;
+    readyToEnd: boolean;
 
     constructor(p: Player, e: Enemy, inRoom?: Room) {
         this.player = p;
@@ -22,10 +23,13 @@ class Fight {
         }
         this.endCallback = () => {};
         this.playersTurn = true;
+        this.readyToEnd = false;
         this.enemyButtons = [];
         UI.setRedrawFunction(() => { this.redraw(); });
         // this.player.setDeathFunc(() => { this.end(); });
-        this.enemy.setDeathFunc(() => { this.end(); });
+        this.enemy.setDeathFunc(() => { this.enemyDied() });
+        this.player.setAfterToolFunc(() => { this.checkEnd()});
+        this.enemy.setAfterToolFunc(() => { this.checkEnd()});
         this.div = document.createElement('div');
         this.player.startTurn();
         this.draw();
@@ -86,6 +90,16 @@ class Fight {
         let etb = this.endTurnButton();
         this.div.appendChild(etb);
         this.enemyButtons.push(etb);
+    }
+
+    enemyDied(): void {
+        this.readyToEnd = true;
+    }
+
+    checkEnd(): void {
+        if (this.readyToEnd) {
+            this.end();
+        }
     }
 
     end(): void {
