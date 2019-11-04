@@ -263,9 +263,8 @@ class UI {
         let playerCoords = Game.currentRun.playerCoordinates;
         let hasPlayer = room.coordinates.equals(playerCoords);
         let exitHasPlayer = room.exits.some(e => e.coordinates.equals(playerCoords));
-        let visible = hasPlayer || exitHasPlayer;
 
-        if (visible || room.visited) {
+        if (room.seen || room.visited) {
             div.classList.add("visible");
             room.getBlockedSides().forEach(side => div.classList.add(`blocked-${side}`));
             if (hasPlayer) {
@@ -274,7 +273,7 @@ class UI {
                 div.appendChild(UI.makeRoomIcon(room.getRoomType()));
             }
         }
-        if (!hasPlayer && visible) {
+        if (exitHasPlayer) {
             div.onclick = function(e: MouseEvent) {
                 room.enter();
             };

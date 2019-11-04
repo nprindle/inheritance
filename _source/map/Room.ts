@@ -13,6 +13,7 @@ class Room {
     exits: Room[];
     distanceFromEntrance: number;
     visited: boolean;
+    seen: boolean;
     roomEvent: RoomEvent;
 
     constructor(containerFloor: Floor, coordinates: Coordinates, roomEvent: RoomEvent, entrance?: Room) {
@@ -22,6 +23,7 @@ class Room {
         this.exits = entrance ? [entrance] : [];
         this.distanceFromEntrance = entrance ? entrance.distanceFromEntrance + 1 : 0;
         this.visited = false;
+        this.seen = false;
     }
 
     continueFloor(): void {
@@ -32,6 +34,7 @@ class Room {
         Game.currentRun.movePlayer(this.coordinates);
         Room.roomsEntered++;
         this.visited = true;
+        this.exits.forEach(room => room.seen = true);
         this.roomEvent = this.roomEvent.onRoomEnter(this, Room.roomsEntered);
     }
 
