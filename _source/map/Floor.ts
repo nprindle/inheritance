@@ -73,7 +73,7 @@ class Floor {
 
     reveal(): void {
         this.rooms.forEach(arr => arr.forEach(room => {
-            room.visited = true;
+            room.seen = true;
         }));
         this.redraw();
     }
