@@ -47,6 +47,9 @@ class Fight {
             this.enemy.endTurn();
             this.player.startTurn();
         }
+        if (this.checkEnd()) {
+            return;
+        }
         this.playersTurn = !this.playersTurn;
         this.enemyButtons = [];
         UI.redraw();
@@ -96,10 +99,12 @@ class Fight {
         this.readyToEnd = true;
     }
 
-    checkEnd(): void {
+    checkEnd(): boolean {
         if (this.readyToEnd) {
             this.end();
+            return true;
         }
+        return false;
     }
 
     end(): void {
