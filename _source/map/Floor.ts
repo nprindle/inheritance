@@ -32,7 +32,6 @@ class Floor {
             y: Random.intLessThan(this.height)
         });
         let entranceRoom = new Room(this, entranceCoords, new EmptyRoomEvent(RoomType.Entrance));
-        entranceRoom.visited = true;
         this.entranceRoom = entranceRoom;
 
         this.rooms[entranceCoords.y][entranceCoords.x] = entranceRoom;
@@ -68,6 +67,7 @@ class Floor {
         for (let i = 0; i < events.length && i < assignableRooms.length; i++) {
             assignableRooms[i].roomEvent = events[i];
         }
+        entranceRoom.enter();
         UI.announce(floorSettings.name);
     }
 
