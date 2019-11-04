@@ -283,7 +283,6 @@ class UI {
         } else {
             div.classList.add("unvisited");
         }
-        div.appendChild(document.createTextNode(room.distanceFromEntrance.toString()));
         return div;
     }
 
