@@ -304,20 +304,36 @@ button.endturn:active {
     0% {
         opacity: 0;
     }
-
     25% {
         opacity: 1;
     }
-
     50% {
         opacity: 1;
     }
-
     75% {
         opacity: 1;
     }
-
     0% {
         opacity: 0;
     }
+}
+
+.room {
+    border: 3px solid transparent;
+}
+
+.blocked-left {
+    border-left: 3px solid black;
+}
+
+.blocked-right {
+    border-right: 3px solid black;
+}
+
+.blocked-up {
+    border-top: 3px solid black;
+}
+
+.blocked-down {
+    border-bottom: 3px solid black;
 }

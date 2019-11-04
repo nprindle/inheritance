@@ -63,6 +63,16 @@ class Room {
         });
     }
 
+    getBlockedSides(): string[] {
+        const sides = {
+            '0-1': 'up',
+            '01': 'down',
+            '-10': 'left',
+            '10': 'right'
+        }
+        return this.getBlockedOffsets().map(c => sides[`${c[0]}${c[1]}`]);
+    }
+
     clearEvent(): void {
         this.roomEvent = new EmptyRoomEvent(RoomType.Empty);
     }

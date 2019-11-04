@@ -267,6 +267,7 @@ class UI {
 
         if (visible || room.visited) {
             div.classList.add("visible");
+            room.getBlockedSides().forEach(side => div.classList.add(`blocked-${side}`));
             if (hasPlayer) {
                 div.appendChild(UI.makeRoomIcon('player'));
             } else if (room.getRoomType() !== RoomType.Empty) {
