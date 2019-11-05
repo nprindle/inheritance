@@ -30,12 +30,8 @@ class Run {
         this.currentFloor = new Floor(0, this);
         this.playerCoordinates = this.currentFloor.entranceRoom.coordinates;
         this.currentFloor.redraw();
-        // switch (this.numEvents % 2) {
-        //     case 0:
-        //         return this.offerModifier();
-        //     case 1:
-        //         return this.startFight();
-        // }
+        UI.announce(this.currentFloor.floorName);
+        this.currentFloor.entranceRoom.enter();
     }
 
     nextModifier(...tagSets: ModifierTags[][]): Modifier {
