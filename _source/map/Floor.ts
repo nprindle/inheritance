@@ -6,6 +6,8 @@
 /// <reference path="../Random.ts" />
 
 class Floor {
+    floorName: string;
+
     width: number;
     height: number;
 
@@ -20,6 +22,7 @@ class Floor {
     constructor(level: number, currentRun: Run) {
         this.currentRun = currentRun
         let floorSettings = floors[level];
+        this.floorName = floorSettings.name;
         this.width = floorSettings.getWidth();
         this.height = floorSettings.getHeight();
 
@@ -67,8 +70,6 @@ class Floor {
         for (let i = 0; i < events.length && i < assignableRooms.length; i++) {
             assignableRooms[i].roomEvent = events[i];
         }
-        entranceRoom.enter();
-        UI.announce(floorSettings.name);
     }
 
     reveal(): void {
