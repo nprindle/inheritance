@@ -265,7 +265,10 @@ class UI {
 
         if (room.seen || room.visited) {
             div.classList.add("visible");
-            room.getBlockedSides().forEach(side => div.classList.add(`blocked-${side}`));
+            room.getBlockedDirections().forEach(d => {
+                let className = `blocked-${Direction[d].toLowerCase()}`;
+                div.classList.add(className);
+            });
             if (hasPlayer) {
                 div.appendChild(UI.makeRoomIcon('player'));
             } else if (room.getRoomType() !== RoomType.Empty) {
