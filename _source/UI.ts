@@ -243,8 +243,7 @@ class UI {
         for (let i = 0; i < floor.height; i++) {
             const row: HTMLElement = UI.makeDiv("map-row");
             for (let j = 0; j < floor.width; j++) {
-                let currentRoom = floor.rooms[i][j]
-                let visible = false;
+                let currentRoom = floor.rooms[i][j];
                 if (currentRoom) {
                     row.appendChild(UI.renderRoom(currentRoom));
                 } else {
