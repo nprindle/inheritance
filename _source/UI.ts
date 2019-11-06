@@ -359,10 +359,6 @@ class UI {
 
         if (room.seen || room.visited) {
             div.classList.add("visible");
-            room.getBlockedDirections().forEach(d => {
-                let className = `blocked-${Direction[d].toLowerCase()}`;
-                div.classList.add(className);
-            });
             if (hasPlayer) {
                 div.appendChild(UI.makeRoomIcon(RoomIcon.PLAYER));
             } else if (room.getIcon() !== RoomIcon.NONE) {
@@ -379,7 +375,30 @@ class UI {
         } else {
             div.classList.add("unvisited");
         }
+        let shadows = room.getBlockedDirections().map(d => UI.directionToBoxShadow(d, 4, 'black'));
+        div.style['box-shadow'] = shadows.join(', ');
+
+        // Apply invisible element in order to exploit it for it's ::before and
+        // ::after
+        const cornerDiv: HTMLElement = UI.makeDiv("room-corners");
+        div.appendChild(cornerDiv);
+
         return div;
+    }
+
+    // Convert a direction to the string representing the value of a box shadow
+    // CSS property of a given width in pixels to make a border on that side
+    static directionToBoxShadow(dir: Direction, width: number, color: string): string {
+        switch (dir) {
+            case Direction.Right:
+                return `inset -${width}px 0px 0px 0px ${color}`;
+            case Direction.Up:
+                return `inset 0px ${width}px 0px 0px ${color}`;
+            case Direction.Left:
+                return `inset ${width}px 0px 0px 0px ${color}`;
+            case Direction.Down:
+                return `inset 0px -${width}px 0px 0px ${color}`;
+        }
     }
 
     static renderMainTitle(): HTMLElement {

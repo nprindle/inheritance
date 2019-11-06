@@ -98,6 +98,10 @@ class Floor {
         document.body.removeChild(this.div);
     }
 
+    getRoomAt(coords: Coordinates): Room | undefined {
+        return this.rooms[coords.y] && this.rooms[coords.y][coords.x];
+    }
+
     private shouldGenNewRoom(coord: Coordinates): boolean {
         if (!coord) {
             return false;
