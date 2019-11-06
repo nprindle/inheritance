@@ -13,6 +13,10 @@ class Player extends Combatant {
         this.currency += x;
     }
 
+    payCurrency(x: number): void {
+        this.currency = Math.max(0, this.currency - x);
+    }
+
     clone(): Player {
         let p = new Player(this.name, this.health, this.energy, ...this.tools.map(x => x.clone()));
         p.statuses = this.statuses.map(x => x.clone());
