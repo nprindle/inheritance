@@ -2,13 +2,6 @@
 
 # The Prototype Inheritance
 
-## Stuff in the Game
-
-* [Tools](_tools.md)
-* [Modifiers](_modifiers.md)
-* [Characters](_characters.md)
-* [Enemies](_enemies.md)
-
 ## Useful Links
 
 * [Tool Making Guide](_source/tools/README.md)
