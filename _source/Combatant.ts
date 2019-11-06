@@ -168,6 +168,7 @@ abstract class Combatant {
     }
 
     addTrait(trait: Trait): void {
+        trait.apply(this);
         this.traits.push(trait);
         let name = trait.name;
         for (let i = 0; i < this.traitNames.length; i++) {
@@ -182,6 +183,7 @@ abstract class Combatant {
 
     removeTrait(index: number): void {
         let trait = this.traits[index];
+        trait.remove(this);
         this.traits.splice(index, 1);
         //remove effects of the trait...
         trait.removeEffects(this);
