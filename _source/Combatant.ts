@@ -213,6 +213,28 @@ abstract class Combatant {
         return result;
     }
 
+    increaseMaxHealth(amount: number): void {
+        this.maxHealth += amount;
+        this.health += amount;
+    }
+
+    decreaseMaxHealth(amount: number): void {
+        this.maxHealth -= amount;
+        this.maxHealth = Math.max(1, this.maxHealth);
+        this.health = Math.min(this.health, this.maxHealth);
+    }
+
+    increaseMaxEnergy(amount: number): void {
+        this.maxEnergy += amount;
+        this.energy += amount;
+    }
+
+    decreaseMaxEnergy(amount: number): void {
+        this.maxEnergy -= amount;
+        this.maxEnergy = Math.max(1, this.maxEnergy);
+        this.energy = Math.min(this.energy, this.maxEnergy);
+    }
+
     private statusBookkeeping(): void {
         this.statuses = this.statuses.filter(status => status.isValid());
         this.statuses = this.statuses.sort((a, b) => a.getSortingNumber() - b.getSortingNumber());
