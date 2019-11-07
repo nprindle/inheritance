@@ -10,6 +10,6 @@ enemies.add('slimemoulder',
         modifiers.get('vampiric')!.apply(tools.get('mycelium')!),
         tools.get('sporecloud')!,
         tools.get('mitosisreflex')!,
-        traits.get('tough')
+        traits.get('tough')!
     ),
 EnemyTags.level2);
