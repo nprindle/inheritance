@@ -135,8 +135,12 @@ abstract class Combatant {
     die(): void {
         this.statusCallback(StatusCallbacks.DIE);
         if (this.health <= 0) { //this check is necessary because the callbacks might heal the combatant
-            this.deathFunc.call(this);
+            this.actuallyDie();
         }
+    }
+
+    actuallyDie(): void {
+        this.deathFunc.call(this);
     }
 
     setDeathFunc(f: Function): void {
