@@ -140,6 +140,7 @@ abstract class Combatant {
     }
 
     actuallyDie(): void {
+        this.health = 0; //to make sure the AI accounts for this
         this.deathFunc.call(this);
     }
 
