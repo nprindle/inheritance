@@ -5,7 +5,8 @@ enum StatusCallbacks {
     END_TURN = 'endTurn',
     USE_TOOL = 'useTool',
     TAKE_DAMAGE = 'takeDamage',
-    DIE = 'die'
+    DIE = 'die',
+    //there's no callback for runOut since that shouldn't be called over all functions
 }
 
 enum StatusFolds {
@@ -58,6 +59,11 @@ abstract class AbstractStatus {
 
     }
 
+    //Called whenever the affected loses this status.
+    runsOut(affected: Combatant, other: Combatant): void {
+
+    }
+
     //These functions are used for reducing over certain values - damage taken, amount healed, etc.
 
     damageTakenFold(acc: number): number {
@@ -106,7 +112,7 @@ abstract class AbstractStatus {
     }
 
     toString(): string {
-      return `${this.amount} ${Strings.capitalize(this.getName())}`
+        return `${this.amount} ${Strings.capitalize(this.getName())}`
     }
 
 }

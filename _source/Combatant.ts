@@ -168,6 +168,8 @@ abstract class Combatant {
     }
 
     removeStatus(remove: AbstractStatus): void {
+        //call the runOut callback on all the ones that run out...
+        this.statuses.filter(status => status.sameKind(remove)).forEach(status => status.runsOut(this, this.opponent));
         this.statuses = this.statuses.filter(status => !status.sameKind(remove));
     }
 
@@ -242,6 +244,8 @@ abstract class Combatant {
     }
 
     private statusBookkeeping(): void {
+        //handle callbacks on statuses that need to be removed
+        this.statuses.filter(status => !status.isValid()).forEach(x => x.runsOut(this, this.opponent));
         this.statuses = this.statuses.filter(status => status.isValid());
         this.statuses = this.statuses.sort((a, b) => a.getSortingNumber() - b.getSortingNumber());
     }
