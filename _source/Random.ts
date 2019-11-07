@@ -59,4 +59,10 @@ class Random {
         return arr;
     }
 
+    // Selects a random enum key from a numeric enum.
+    public static fromNumericEnum<T extends Record<number, U>, U>(e: T): T[keyof T] {
+        let keys = Object.keys(e).map(n => Number(n)).filter(n => !isNaN(n)) as unknown as T[keyof T][];
+        return Random.fromArray(keys);
+    }
+
 }

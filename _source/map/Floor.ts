@@ -46,7 +46,8 @@ class Floor {
             do {
                 roomCoords = Random.intCoord(this.height, this.width);
                 if (this.rooms[roomCoords.y][roomCoords.x] !== undefined) {
-                    let newRoomOffset = Floor.randomDirectionOffset();
+                    let dir = Random.fromNumericEnum(Direction);
+                    let newRoomOffset = Directions.getOffset(dir);
                     newRoomCoords = roomCoords.applyOffset(newRoomOffset);
                 }
             } while (!newRoomCoords || this.shouldGenNewRoom(newRoomCoords));
@@ -91,11 +92,6 @@ class Floor {
 
     end(): void {
         document.body.removeChild(this.div);
-    }
-
-    private static randomDirectionOffset(): [number, number] {
-        let angle = Random.intLessThan(4) * Math.PI / 2;
-        return [Math.cos(angle) << 0, Math.sin(angle) << 0];
     }
 
     private shouldGenNewRoom(coord: Coordinates): boolean {
