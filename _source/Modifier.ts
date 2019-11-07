@@ -53,7 +53,7 @@ class Modifier {
         }
     }
 
-    apply(t: Tool): void {
+    apply(t: Tool): Tool {
         t.addModifierString(this.name);
         t.cost.scale(this.costMultiplier);
         t.cost.addCost(this.costAdd);
@@ -62,6 +62,7 @@ class Modifier {
         for (let i = 0; i < this.effects.length; i++) {
             t.effects.push(this.effects[i].clone());
         }
+        return t;
     }
 
     describe(): string {
