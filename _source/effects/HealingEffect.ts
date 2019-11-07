@@ -9,10 +9,17 @@ class HealingEffect extends AbstractEffect {
     }
 
     effect(user: Combatant, target: Combatant): void {
-        user.heal(this.amount);
+        if (this.amount === -1) {
+            user.heal(user.maxHealth);
+        } else {
+            user.heal(this.amount);
+        }
     }
 
     toString(): string {
+        if (this.amount === -1) {
+            return `recover all health`;
+        }
         return `recover ${this.amount} health`;
     }
 
