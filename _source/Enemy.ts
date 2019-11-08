@@ -20,9 +20,9 @@ class Enemy extends Combatant {
     }
 
     clone(): Enemy {
-        let copy = new Enemy(this.name, this.health, this.energy, this.utilityFunction, ...this.tools.map(x => x.clone()));
+        let others: (Tool | Trait)[] = [...this.tools, ...this.traits];
+        let copy = new Enemy(this.name, this.health, this.energy, this.utilityFunction, ...others.map(x => x.clone()));
         copy.statuses = this.statuses.map(x => x.clone());
-        copy.traits = this.traits.map(x => x.clone());
         copy.utilityFunction = this.utilityFunction;
         return copy;
     }
