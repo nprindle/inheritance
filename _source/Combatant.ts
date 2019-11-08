@@ -96,8 +96,25 @@ abstract class Combatant {
     }
 
     canAfford(cost: Cost): boolean {
-        return this.health > cost.healthCost && this.energy >= cost.energyCost;
-    };
+        return this.health > cost.healthCost && this.energy >= cost.energyCost
+            && this.getBatteryAmount() >= cost.batteryCost;
+    }
+
+
+    //not great, but my weird dependency decisions necessitate this
+    getBatteryAmount(): number {
+        return this.statuses.filter(status => status.getName() === 'battery').reduce((acc, val) => acc + val.amount, 0);
+    }
+
+    payBatteryAmount(amount: number): void {
+        for (let i = 0; i < this.statuses.length; i++) {
+            if (this.statuses[i].getName() === 'battery') {
+                this.statuses[i].amount -= amount;
+                break;
+            }
+        }
+        this.statusBookkeeping();
+    }
 
     gainEnergy(amount: number): void {
         this.energy += this.statusFold(StatusFolds.ENERGY_GAINED, amount);
@@ -110,6 +127,7 @@ abstract class Combatant {
     pay(cost: Cost): void {
         this.directDamage(cost.healthCost);
         this.energy -= cost.energyCost;
+        this.payBatteryAmount(cost.batteryCost);
     };
 
     validMoves(): number[] {
