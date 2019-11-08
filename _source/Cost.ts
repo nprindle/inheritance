@@ -1,15 +1,18 @@
 enum CostTypes {
     Health,
-    Energy
+    Energy,
+    Battery
 }
 
 class Cost {
     energyCost: number;
     healthCost: number;
+    batteryCost: number;
 
     constructor(...costs: [number, CostTypes][]) {
         this.energyCost = 0;
         this.healthCost = 0;
+        this.batteryCost = 0;
         for (let i = 0; i < costs.length; i++) {
             this.addTuple(costs[i]);
         }
@@ -27,6 +30,9 @@ class Cost {
             case CostTypes.Energy:
                 this.energyCost += cost[0];
                 break;
+            case CostTypes.Battery:
+                    this.batteryCost += cost[0];
+                    break;
         }
     }
 
@@ -37,6 +43,9 @@ class Cost {
         }
         if (this.healthCost > 0) {
             acc.push(`${this.healthCost} Health`);
+        }
+        if (this.batteryCost > 0) {
+            acc.push(`${this.batteryCost} Battery`);
         }
         if (acc.length === 0) {
             return 'Free';
@@ -51,6 +60,9 @@ class Cost {
         }
         if (this.healthCost > 0) {
             acc.push(`+${this.healthCost} Health Cost`);
+        }
+        if (this.batteryCost > 0) {
+            acc.push(`+${this.batteryCost} Battery Cost`);
         }
         return acc.join(', ');
     }
