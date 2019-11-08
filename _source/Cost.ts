@@ -19,7 +19,7 @@ class Cost {
     }
 
     magnitude(): number {
-        return this.energyCost + this.healthCost;
+        return this.energyCost + this.healthCost + this.batteryCost;
     }
 
     addTuple(cost: [number, CostTypes]): void {
@@ -31,8 +31,8 @@ class Cost {
                 this.energyCost += cost[0];
                 break;
             case CostTypes.Battery:
-                    this.batteryCost += cost[0];
-                    break;
+                this.batteryCost += cost[0];
+                break;
         }
     }
 
@@ -70,11 +70,13 @@ class Cost {
     scale(i: number): void {
         this.healthCost *= i;
         this.energyCost *= i;
+        this.batteryCost *= i;
     }
 
     addCost(c: Cost): void {
         this.healthCost += c.healthCost;
         this.energyCost += c.energyCost;
+        this.batteryCost += c.energyCost;
     }
 
     clone(): Cost {
