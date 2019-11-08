@@ -76,7 +76,7 @@ class Cost {
     addCost(c: Cost): void {
         this.healthCost += c.healthCost;
         this.energyCost += c.energyCost;
-        this.batteryCost += c.energyCost;
+        this.batteryCost += c.batteryCost;
     }
 
     clone(): Cost {
