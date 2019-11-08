@@ -8,4 +8,5 @@ _source/modifiers.ts
 _source/statuses.ts
 _source/tools.ts
 _source/traits.ts
+_source/predicates.ts
 _source/NoteResources.ts

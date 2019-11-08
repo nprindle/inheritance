@@ -7,7 +7,8 @@ enum ModifierTypes {
     MultAdd,
     AddEnergyCost,
     Effect,
-    UsesPerTurn
+    UsesPerTurn,
+    EnergyToHealth
 }
 
 class Modifier {
@@ -18,6 +19,7 @@ class Modifier {
     costAdd: Cost;
     multiplierAdd: number;
     usesPerTurn: number;
+    transferEnergyToHealth: boolean;
 
     constructor(name: string, ...args: ([ModifierTypes, number] | AbstractEffect)[]) {
         this.name = name;
@@ -25,6 +27,7 @@ class Modifier {
         this.costMultiplier = 1;
         this.multiplierAdd = 0;
         this.usesPerTurn = Infinity;
+        this.transferEnergyToHealth = false;
         this.costAdd = new Cost();
         for (let i = 0; i < args.length; i++) {
             let curr = args[i];
@@ -50,18 +53,26 @@ class Modifier {
             case ModifierTypes.UsesPerTurn:
                 this.usesPerTurn = t[1];
                 break;
+            case ModifierTypes.EnergyToHealth:
+                this.transferEnergyToHealth = true;
+                break;
         }
     }
 
-    apply(t: Tool): void {
+    apply(t: Tool): Tool {
         t.addModifierString(this.name);
         t.cost.scale(this.costMultiplier);
         t.cost.addCost(this.costAdd);
         t.multiplier += this.multiplierAdd;
         t.usesPerTurn = Math.min(this.usesPerTurn, t.usesPerTurn);
+        if (this.transferEnergyToHealth) {
+            t.cost.healthCost += t.cost.energyCost;
+            t.cost.energyCost = 0;
+        }
         for (let i = 0; i < this.effects.length; i++) {
             t.effects.push(this.effects[i].clone());
         }
+        return t;
     }
 
     describe(): string {
@@ -77,6 +88,9 @@ class Modifier {
         }
         if (this.usesPerTurn < Infinity) {
             acc.push(`limited to ${this.usesPerTurn} use(s) per turn`);
+        }
+        if (this.transferEnergyToHealth) {
+            acc.push('costs health instead of energy');
         }
         if (this.effects.length > 0) {
             let effectStrings = this.effects.map(x => x.toString());

@@ -54,26 +54,14 @@ class Room {
         return surrounding.filter(x => !exitCoords.some(c => x.equals(c)));
     }
 
-    // Returns offsets from this room that are not accessible from this room. An
-    // offset is one of [1, 0], [0, 1], [-1, 0], or [0, -1], with [-1, -1]
-    // indicating "towards the top left".
-    getBlockedOffsets(): [number, number][] {
-        let offsets = [[1, 0], [0, 1], [-1, 0], [0, -1]] as [number, number][];
+    getBlockedDirections(): Direction[] {
+        let directions = Directions.values();
         let exitCoords = this.getExitCoordinates();
-        return offsets.filter(o => {
-            let coord = this.coordinates.applyOffset(o);
+        return directions.filter(d => {
+            let offset = Directions.getOffset(d);
+            let coord = this.coordinates.applyOffset(offset);
             return !exitCoords.some(c => coord.equals(c));
         });
-    }
-
-    getBlockedSides(): string[] {
-        const sides = {
-            '0-1': 'up',
-            '01': 'down',
-            '-10': 'left',
-            '10': 'right'
-        }
-        return this.getBlockedOffsets().map(c => sides[`${c[0]}${c[1]}`]);
     }
 
     clearEvent(): void {

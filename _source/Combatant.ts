@@ -168,6 +168,7 @@ abstract class Combatant {
     }
 
     addTrait(trait: Trait): void {
+        trait.apply(this);
         this.traits.push(trait);
         let name = trait.name;
         for (let i = 0; i < this.traitNames.length; i++) {
@@ -182,6 +183,7 @@ abstract class Combatant {
 
     removeTrait(index: number): void {
         let trait = this.traits[index];
+        trait.remove(this);
         this.traits.splice(index, 1);
         //remove effects of the trait...
         trait.removeEffects(this);
@@ -211,6 +213,28 @@ abstract class Combatant {
         const result: number = foldingCallbacks.reduce((acc, x) => x(acc), value);
         this.statusBookkeeping();
         return result;
+    }
+
+    increaseMaxHealth(amount: number): void {
+        this.maxHealth += amount;
+        this.health += amount;
+    }
+
+    decreaseMaxHealth(amount: number): void {
+        this.maxHealth -= amount;
+        this.maxHealth = Math.max(1, this.maxHealth);
+        this.health = Math.min(this.health, this.maxHealth);
+    }
+
+    increaseMaxEnergy(amount: number): void {
+        this.maxEnergy += amount;
+        this.energy += amount;
+    }
+
+    decreaseMaxEnergy(amount: number): void {
+        this.maxEnergy -= amount;
+        this.maxEnergy = Math.max(1, this.maxEnergy);
+        this.energy = Math.min(this.energy, this.maxEnergy);
     }
 
     private statusBookkeeping(): void {
