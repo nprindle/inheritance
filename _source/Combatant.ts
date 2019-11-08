@@ -16,17 +16,15 @@ abstract class Combatant {
     afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
     opponent: Combatant;
 
-    constructor(name: string, health: number, energy: number, ...others: (Tool | Trait)[]) {
+    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[]) {
         this.name = name;
         this.health = health;
         this.maxHealth = health;
         this.energy = energy;
         this.maxEnergy = energy;
-        //TODO: Ask Prindle if this is typesafe.
-        this.tools = <Tool[]> others.filter(x => x instanceof Tool);
+        this.tools = tools;
         this.traits = [];
         this.traitNames = [];
-        let traits = <Trait[]> others.filter(x => x instanceof Trait);
         traits.forEach(trait => this.addTrait(trait));
         this.deathFunc = function() {};
         this.afterToolFunc = function() {};

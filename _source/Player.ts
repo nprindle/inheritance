@@ -1,11 +1,11 @@
 ///<reference path="./Combatant.ts" />
 
 class Player extends Combatant {
-    
+
     currency: number;
 
-    constructor(name: string, health: number, energy: number, ...others: (Tool | Trait)[]) {
-        super(name, health, energy, ...others);
+    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[]) {
+        super(name, health, energy, tools, traits);
         this.currency = 0;
     }
 
@@ -18,8 +18,7 @@ class Player extends Combatant {
     }
 
     clone(): Player {
-        let others: (Tool | Trait)[] = [...this.tools, ...this.traits];
-        let p = new Player(this.name, this.health, this.energy, ...others.map(x => x.clone()));
+        let p = new Player(this.name, this.health, this.energy, this.tools.map(x => x.clone()), this.traits.map(x => x.clone()));
         p.statuses = this.statuses.map(x => x.clone());
         p.currency = this.currency;
         return p;

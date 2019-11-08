@@ -7,9 +7,13 @@
 
 enemies.add('slimemoulder',
     new Enemy('Slime Moulder', 16, 2, AiUtilityFunctions.aggressiveUtility,
-        modifiers.get('vampiric')!.apply(tools.get('mycelium')!),
-        tools.get('sporecloud')!,
-        tools.get('mitosisreflex')!,
-        traits.get('tough')!
+        [
+            modifiers.get('vampiric')!.apply(tools.get('mycelium')!),
+            tools.get('sporecloud')!,
+            tools.get('mitosisreflex')!,
+        ],
+        [
+            traits.get('tough')!
+        ]
     ),
 EnemyTags.level2);
