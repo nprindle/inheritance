@@ -6,6 +6,11 @@ class NotePool {
         NotePool.notes.push(newNote);
     }
 
+    static loadCharacterNote(title: string, content: string, characterName: string) {
+        let newNote = new Note(title, content, NotePool.notes.length, false, characterName);
+        NotePool.notes.push(newNote);
+    }
+
     static reloadAllNotes() {
         NotePool.notes = [];
         loadAllNoteResources(); // defined in NoteResources.ts
@@ -16,9 +21,10 @@ class NotePool {
     }
 
     // returns a random previously-locked note, setting it to unlocked in the process
-    // returns undefined if all notes have already been unlocked
-    static unlockNewNote(): Note | undefined {
-        let lockedNotes = NotePool.notes.filter((element: Note) => (element.unlocked == false));
+    // returns null if all notes have already been unlocked
+    // Character notes are not included
+    static unlockNewNote(): Note | null {
+        let lockedNotes = NotePool.notes.filter((element: Note) => (element.unlocked == false)).filter((element: Note) => (element.character == undefined));
         if (lockedNotes.length == 0) {
             return undefined;
         } else {
@@ -59,5 +65,22 @@ class NotePool {
         NotePool.notes.filter(note => (note.title == title)).forEach(note => {
             note.unlocked = true;
         });
+    }
+
+    // unlocks the note associated with this character if it hasn't already been unlocked
+    // if it wasn't unlocked, returns the newly unlocked note (or the first one if there are multiple)
+    // if the note for this character doesn't exist or was already unlocked
+    static unlockCharacterNote(playerCharacter : Player): Note | null {
+        // find any notes associated with thic character
+        let characterNotes = NotePool.notes.filter((element: Note) => (element.character == playerCharacter.name)).filter((element: Note) => (!element.unlocked));
+        if (characterNotes.length == 0) {
+            return  null; // either this character has no associated note or it has already been unlocked
+        }
+        // there should usually be only one note per character, but if there are multiple we unlock all and return the first one.
+        characterNotes.forEach(function(note: Note) {
+            note.unlocked = true;
+        });
+        
+        return characterNotes[0];
     }
 }

@@ -56,16 +56,37 @@ function generateNoteResources() {
     let file = fs.readFileSync(txtfile, 'utf-8');
     let lines = file.split("\n");
 
+    // check whether this is a character note
+    if (lines[0].includes("Character:")) {
 
-    let title = lines.shift(); //get title (first line of txt file)
-    title = title.replace(/\r?\n|\r/g, ""); // remove any new-lines from the title
-    title = escapeString(title); // escape special characters in title
+      let characterName = lines.shift(); // the character is assigned on the first line of the file
+      characterName = characterName.replace("Character:", "").replace(/\r?\n|\r/g, ""); // format character name
 
-    let content = escapeString(lines.join("\n")); // remaining lines make up the body
 
-    let instruction = "  NotePool.loadNote(\"" + title + "\", \"" + content + "\");";
 
-    codeLines.push(instruction);
+      let title = lines.shift(); //get title (second line of txt file)
+      title = title.replace(/\r?\n|\r/g, ""); // remove any new-lines from the title
+      title = escapeString(title); // escape special characters in title
+
+      let content = escapeString(lines.join("\n")); // remaining lines make up the body
+
+      let instruction = "  NotePool.loadCharacterNote(\"" + title + "\", \"" + content + "\", \"" + characterName + "\");";
+
+      codeLines.push(instruction);
+    } else {
+      let title = lines.shift(); //get title (first line of txt file)
+      title = title.replace(/\r?\n|\r/g, ""); // remove any new-lines from the title
+      title = escapeString(title); // escape special characters in title
+
+      let content = escapeString(lines.join("\n")); // remaining lines make up the body
+
+      let instruction = "  NotePool.loadNote(\"" + title + "\", \"" + content + "\");";
+
+      codeLines.push(instruction);
+    }
+
+
+    
   });
   codeLines.push("}");
 
