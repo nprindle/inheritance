@@ -216,11 +216,51 @@ class UI {
         return mainDiv;
     }
 
-    static renderShopMenu(shop: Shop, exitCallback: Function) {
+    static renderShopMenu(shop: Shop, player: Player, exitCallback: Function): HTMLElement {
         const div: HTMLElement = UI.makeDiv(); //TODO CSS class
         div.appendChild(UI.makeHeader("Shop"));
-        // TODO button to return
+        div.appendChild(UI.makePara("Scrip: " + player.currency));
+
+
+        //TODO disable options the player cannot afford
+
+        const modifiersPane: HTMLElement = UI.makeDiv(); //TODO CSS class
+        shop.getModifierListings().forEach(([modifier, price]: [Modifier, number]) => {
+            
+            modifiersPane.appendChild(this.renderShopModifierListing(modifier, price, () => {
+                shop.sellModifier(modifier, player);
+            }));
+        });
+        div.appendChild(modifiersPane);
+
+        const traitsPane: HTMLElement = UI.makeDiv(); //TODO CSS class
+        shop.getTraitListings().forEach(([trait, price]: [Trait, number]) => {
+            traitsPane.appendChild(this.renderShopTraitListing(trait, price, () => {
+                shop.sellTrait(trait, player);
+                // refresh this screen after inventory is changed
+                UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
+            }));
+        });
+        div.appendChild(traitsPane);
+        
+
         div.appendChild(UI.makeButton("Exit shop", exitCallback));
+        return div;
+    }
+
+    static renderShopModifierListing(modifier: Modifier, price:number, purchaseCallback: Function): HTMLElement {
+        const div: HTMLElement = UI.makeDiv(); //TODO CSS class
+        div.appendChild(this.makePara(modifier.name));
+        div.appendChild(this.makePara(modifier.describe()));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback));
+        return div;
+    }
+
+    static renderShopTraitListing(trait: Trait, price: number, purchaseCallback: Function) {
+        const div: HTMLElement = UI.makeDiv(); //TODO CSS class
+        div.appendChild(this.makePara(trait.name));
+        div.appendChild(this.makePara(trait.describe()));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback));
         return div;
     }
 

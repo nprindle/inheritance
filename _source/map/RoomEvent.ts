@@ -128,7 +128,7 @@ class ShopRoomEvent extends RoomEvent {
     }
 
     onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
-        UI.fillScreen(UI.renderShopMenu(this.shop, () => {
+        UI.fillScreen(UI.renderShopMenu(this.shop, Game.currentRun.player, () => {
             room.containerFloor.redraw();
         }))
         return this;
