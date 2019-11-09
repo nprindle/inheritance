@@ -216,6 +216,14 @@ class UI {
         return mainDiv;
     }
 
+    static renderShopMenu(shop: Shop, exitCallback: Function) {
+        const div: HTMLElement = UI.makeDiv(); //TODO CSS class
+        div.appendChild(UI.makeHeader("Shop"));
+        // TODO button to return
+        div.appendChild(UI.makeButton("Exit shop", exitCallback));
+        return div;
+    }
+
     static renderTrait(t: Trait, p: Player, exitCallback: Function, refusable: boolean = true) {
         const mainDiv: HTMLElement = UI.makeDiv('offer');
         const div: HTMLElement = UI.makeDiv('trait');
