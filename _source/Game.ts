@@ -37,13 +37,13 @@ class Game {
         UI.fillScreen(
             UI.renderCredits([
                 new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
-                new CreditsEntry('Pranay Rapolu', 'Programming', 'Music'),
                 new CreditsEntry('Grace Rarer', 'Programming'),
+                new CreditsEntry('Pranay Rapolu', 'Music'),
                 new CreditsEntry('Prindle', 'Programming'),
                 new CreditsEntry('Mitchell Philipp', 'Programming'),
+                new CreditsEntry('Prince Bull', 'Art'),
                 new CreditsEntry('Seong Ryoo', 'Art'),
-                new CreditsEntry('Logo is based on the font "This Boring Party" by Tom7.'),
-                new CreditsEntry('Map icons use various Tombats fonts by Tom7.')
+                new CreditsEntry('Finn Schiesser', 'Logo'),
             ], () => Game.showTitle())
         );
     }
