@@ -110,6 +110,9 @@ class UI {
         div.appendChild(UI.makePara(name, 'name'));
         div.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
         div.appendChild(UI.makePara(`Energy: ${c.energy} / ${c.maxEnergy}`, 'energy'));
+        if (c instanceof Player) {
+            div.appendChild(UI.makePara(`Scrip: ${c.currency}`));
+        }
         if (statuses.length > 0) {
             const statusPara: HTMLElement = UI.makePara('');
             const statusSpans: HTMLElement[] = statuses.map(status => {
