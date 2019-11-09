@@ -23,7 +23,9 @@ class Game {
     static newRun(character: Player): void {
         // if the player character is being used for the first time, unlock its lore note
         let charNote = NotePool.unlockCharacterNote(character);
-        if(charNote) {
+        if (charNote) {
+            // Save unlocked notes to LocalStorage
+            Save.saveNotes();
             // show the unlocked note, and then start the run when the player closes that note
             UI.fillScreen(UI.renderNote((() => Game.newRun(character)), charNote));
             return;

@@ -13,7 +13,7 @@ class NotePool {
 
     static reloadAllNotes() {
         NotePool.notes = [];
-        loadAllNoteResources(); // defined in NoteResources.ts
+        NoteResources.loadAllNoteResources();
     }
 
     static getUnlockedNotes(): Note[] {
@@ -26,7 +26,7 @@ class NotePool {
     static unlockNewNote(): Note | null {
         let lockedNotes = NotePool.notes.filter((element: Note) => (element.unlocked == false)).filter((element: Note) => (element.character == undefined));
         if (lockedNotes.length == 0) {
-            return undefined;
+            return null;
         } else {
             let next: Note = Random.fromArray(lockedNotes);
             next.unlocked = true;
@@ -48,7 +48,6 @@ class NotePool {
     // sets which notes are unlocked
     // use this for deserializing saved games
     static setUnlockedNotes(unlockedIDs: number[]) {
-        
         NotePool.notes.forEach(note => {
             let currentID: number = note.id;
             // each note is unlocked only if its ID is contained in the list of unlocked note IDs
@@ -74,13 +73,13 @@ class NotePool {
         // find any notes associated with thic character
         let characterNotes = NotePool.notes.filter((element: Note) => (element.character == playerCharacter.name)).filter((element: Note) => (!element.unlocked));
         if (characterNotes.length == 0) {
-            return  null; // either this character has no associated note or it has already been unlocked
+            return null; // either this character has no associated note or it has already been unlocked
         }
         // there should usually be only one note per character, but if there are multiple we unlock all and return the first one.
         characterNotes.forEach(function(note: Note) {
             note.unlocked = true;
         });
-        
+
         return characterNotes[0];
     }
 }
