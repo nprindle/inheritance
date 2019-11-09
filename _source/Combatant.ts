@@ -16,17 +16,15 @@ abstract class Combatant {
     afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
     opponent: Combatant;
 
-    constructor(name: string, health: number, energy: number, ...others: (Tool | Trait)[]) {
+    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[]) {
         this.name = name;
         this.health = health;
         this.maxHealth = health;
         this.energy = energy;
         this.maxEnergy = energy;
-        //TODO: Ask Prindle if this is typesafe.
-        this.tools = <Tool[]> others.filter(x => x instanceof Tool);
+        this.tools = tools;
         this.traits = [];
         this.traitNames = [];
-        let traits = <Trait[]> others.filter(x => x instanceof Trait);
         traits.forEach(trait => this.addTrait(trait));
         this.deathFunc = function() {};
         this.afterToolFunc = function() {};
@@ -96,8 +94,25 @@ abstract class Combatant {
     }
 
     canAfford(cost: Cost): boolean {
-        return this.health > cost.healthCost && this.energy >= cost.energyCost;
-    };
+        return this.health > cost.healthCost && this.energy >= cost.energyCost
+            && this.getBatteryAmount() >= cost.batteryCost;
+    }
+
+
+    //not great, but my weird dependency decisions necessitate this
+    getBatteryAmount(): number {
+        return this.statuses.filter(status => status.getName() === 'battery').reduce((acc, val) => acc + val.amount, 0);
+    }
+
+    payBatteryAmount(amount: number): void {
+        for (let i = 0; i < this.statuses.length; i++) {
+            if (this.statuses[i].getName() === 'battery') {
+                this.statuses[i].amount -= amount;
+                break;
+            }
+        }
+        this.statusBookkeeping();
+    }
 
     gainEnergy(amount: number): void {
         this.energy += this.statusFold(StatusFolds.ENERGY_GAINED, amount);
@@ -110,6 +125,7 @@ abstract class Combatant {
     pay(cost: Cost): void {
         this.directDamage(cost.healthCost);
         this.energy -= cost.energyCost;
+        this.payBatteryAmount(cost.batteryCost);
     };
 
     validMoves(): number[] {

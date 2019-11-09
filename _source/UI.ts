@@ -108,8 +108,14 @@ class UI {
           name = `${name} (${c.traitNames.map(tuple => Strings.powerTuple(tuple)).join(', ')})`;
         }
         div.appendChild(UI.makePara(name, 'name'));
-        div.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
-        div.appendChild(UI.makePara(`Energy: ${c.energy} / ${c.maxEnergy}`, 'energy'));
+        //health, energy, etc.
+        const statsDiv = UI.makeDiv('stats');
+        statsDiv.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
+        statsDiv.appendChild(UI.makePara(`Energy: ${c.energy} / ${c.maxEnergy}`, 'energy'));
+        if (c instanceof Player) {
+            statsDiv.appendChild(UI.makePara(`Scrip: ${c.currency}`));
+        }
+        div.appendChild(statsDiv);
         if (statuses.length > 0) {
             const statusPara: HTMLElement = UI.makePara('');
             const statusSpans: HTMLElement[] = statuses.map(status => {
@@ -337,8 +343,7 @@ class UI {
     }
 
     static renderMainTitle(): HTMLElement {
-        //return UI.makeHeader('The Prototype Inheritance', 'titletext');
-        return UI.makeImg('assets/temp_logo.png', 'logo');
+        return UI.makeImg('assets/final_logo.png', 'logo');
     }
 
     static renderTitleScreen(options: [string, Function][]): HTMLElement {

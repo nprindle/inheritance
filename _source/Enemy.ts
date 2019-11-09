@@ -5,11 +5,12 @@ class Enemy extends Combatant {
 
     lootTraits: Trait[];
     lootModifiers: Modifier[];
+    lootMoney: number;
 
     utilityFunction: (Enemy, Player) => number;
 
-    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (Enemy, Human) => number, ...others: (Tool | Trait)[]) {
-        super(name, health, energy, ...others);
+    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (Enemy, Human) => number, tools: Tool[], traits: Trait[]) {
+        super(name, health, energy, tools, traits);
         if (defaultUtilityFunction == undefined) {
             this.utilityFunction = AiUtilityFunctions.cautiousUtility;
         } else {
@@ -17,12 +18,12 @@ class Enemy extends Combatant {
         }
         this.lootTraits = [];
         this.lootModifiers = [];
+        this.lootMoney = 0;
     }
 
     clone(): Enemy {
-        let copy = new Enemy(this.name, this.health, this.energy, this.utilityFunction, ...this.tools.map(x => x.clone()));
+        let copy = new Enemy(this.name, this.health, this.energy, this.utilityFunction, this.tools.map(x => x.clone()), this.traits.map(x => x.clone()));
         copy.statuses = this.statuses.map(x => x.clone());
-        copy.traits = this.traits.map(x => x.clone());
         copy.utilityFunction = this.utilityFunction;
         return copy;
     }
@@ -36,6 +37,10 @@ class Enemy extends Combatant {
         let tool: Tool = Random.fromArray(this.tools);
         m.apply(tool);
         this.lootModifiers.push(m);
+    }
+
+    setLootMoney(x: number): void {
+        this.lootMoney = x;
     }
 
 }
