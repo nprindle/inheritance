@@ -78,10 +78,12 @@ html {
 
 .tool .multiplier {
     position: absolute;
-    top: 0px;
+    top: -16px;
     right: 5px;
     font-weight: bold;
     margin: 0;
+    opacity: 0.5;
+    font-size: 32px;
 }
 
 .tooltip-container {
