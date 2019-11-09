@@ -13,7 +13,7 @@ class NotePool {
 
     static reloadAllNotes() {
         NotePool.notes = [];
-        loadAllNoteResources(); // defined in NoteResources.ts
+        NoteResources.loadAllNoteResources();
     }
 
     static getUnlockedNotes(): Note[] {
@@ -48,7 +48,6 @@ class NotePool {
     // sets which notes are unlocked
     // use this for deserializing saved games
     static setUnlockedNotes(unlockedIDs: number[]) {
-        
         NotePool.notes.forEach(note => {
             let currentID: number = note.id;
             // each note is unlocked only if its ID is contained in the list of unlocked note IDs
@@ -80,7 +79,7 @@ class NotePool {
         characterNotes.forEach(function(note: Note) {
             note.unlocked = true;
         });
-        
+
         return characterNotes[0];
     }
 }
