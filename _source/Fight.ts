@@ -97,6 +97,7 @@ class Fight {
 
     enemyDied(): void {
         this.readyToEnd = true;
+        this.player.giveCurrency(this.enemy.lootMoney);
     }
 
     checkEnd(): boolean {

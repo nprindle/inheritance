@@ -5,6 +5,7 @@ class Enemy extends Combatant {
 
     lootTraits: Trait[];
     lootModifiers: Modifier[];
+    lootMoney: number;
 
     utilityFunction: (Enemy, Player) => number;
 
@@ -17,6 +18,7 @@ class Enemy extends Combatant {
         }
         this.lootTraits = [];
         this.lootModifiers = [];
+        this.lootMoney = 0;
     }
 
     clone(): Enemy {
@@ -35,6 +37,10 @@ class Enemy extends Combatant {
         let tool: Tool = Random.fromArray(this.tools);
         m.apply(tool);
         this.lootModifiers.push(m);
+    }
+
+    setLootMoney(x: number): void {
+        this.lootMoney = x;
     }
 
 }

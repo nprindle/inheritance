@@ -7,6 +7,21 @@ abstract class RoomEventPool {
     abstract getEvents(): RoomEvent[];
 }
 
+function enemyTagToLootMoney(tag: EnemyTags): number {
+    switch (tag) {
+        case EnemyTags.level1:
+            return 1;
+        case EnemyTags.level2:
+            return 2;
+        case EnemyTags.level3:
+            return 3;
+        case EnemyTags.boss:
+            return 4;
+        default:
+            return 0;
+    }
+}
+
 class EnemyEventPool extends RoomEventPool {
 
     tags: EnemyTags[];
@@ -19,8 +34,15 @@ class EnemyEventPool extends RoomEventPool {
     }
 
     getEvents(): RoomEvent[] {
-        const enemies =  Arrays.generate(Random.tupleInt(this.num), () => Game.currentRun.nextEnemy(this.tags));
-        return enemies.map(enemy => new EnemyRoomEvent(enemy));
+        const num: number = Random.tupleInt(this.num);
+        const result: Enemy[] = [];
+        for (let i = 0; i < num; i++) {
+            const tag: EnemyTags = Random.fromArray(this.tags);
+            const enemy = Game.currentRun.nextEnemy([tag]);
+            enemy.setLootMoney(enemyTagToLootMoney(tag));
+            result.push(enemy);
+        }
+        return result.map(enemy => new EnemyRoomEvent(enemy));
     }
 
 }
@@ -73,11 +95,16 @@ class EliteEnemyEventPool extends RoomEventPool {
     }
 
     getEvents(): RoomEvent[] {
-        //generate compliant enemies
-        const enemies =  Arrays.generate(Random.tupleInt(this.num), () => Game.currentRun.nextEnemy(this.tags));
-        //give them each an elite trait
-        enemies.forEach(enemy => enemy.addLootTrait(Game.currentRun.nextTrait([TraitTags.elite])));
-        return enemies.map(enemy => new EnemyRoomEvent(enemy));
+        const num: number = Random.tupleInt(this.num);
+        const result: Enemy[] = [];
+        for (let i = 0; i < num; i++) {
+            const tag: EnemyTags = Random.fromArray(this.tags);
+            const enemy = Game.currentRun.nextEnemy([tag]);
+            enemy.addLootTrait(Game.currentRun.nextTrait([TraitTags.elite]));
+            enemy.setLootMoney(2 * enemyTagToLootMoney(tag));
+            result.push(enemy);
+        }
+        return result.map(enemy => new EnemyRoomEvent(enemy));
     }
 
 }
