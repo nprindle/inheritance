@@ -16,6 +16,18 @@ html {
     flex-direction: column;
 }
 
+.player>.stats,
+.enemy>.stats {
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+}
+
+.stats>p {
+    margin-right: 50px;
+    margin-left: 8px;
+}
+
 .player>.name,
 .enemy>.name {
     font-weight: bold;
