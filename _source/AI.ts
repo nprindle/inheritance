@@ -115,4 +115,3 @@ class AI {
         console.log("Sim utility finding: " + this.bestSequenceScore);
     }
 }
-

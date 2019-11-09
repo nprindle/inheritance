@@ -15,8 +15,9 @@ abstract class Combatant {
     deathFunc: Function;
     afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
     opponent: Combatant;
+    imageSrc?: string;
 
-    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[]) {
+    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[], image?: string) {
         this.name = name;
         this.health = health;
         this.maxHealth = health;
@@ -29,6 +30,7 @@ abstract class Combatant {
         this.deathFunc = function() {};
         this.afterToolFunc = function() {};
         this.statuses = [];
+        this.imageSrc = image;
     };
 
     abstract clone(): Combatant;

@@ -99,13 +99,17 @@ class UI {
             which = 'enemy';
         }
         const div: HTMLElement = UI.makeDiv(which);
+        if (c.imageSrc) {
+            console.log(c.imageSrc);
+            div.appendChild(UI.makeImg(c.imageSrc, 'profile'));
+        }
         const statuses: AbstractStatus[] = c.statuses.filter(status => status.isValid());
         for (let i = 0; i < statuses.length; i++) {
             div.classList.add(`status-${Strings.cssSanitize(c.statuses[i].getName())}`);
         }
         let name = c.name;
         if (c.traits.length > 0) {
-          name = `${name} (${c.traitNames.map(tuple => Strings.powerTuple(tuple)).join(', ')})`;
+            name = `${name} (${c.traitNames.map(tuple => Strings.powerTuple(tuple)).join(', ')})`;
         }
         div.appendChild(UI.makePara(name, 'name'));
         //health, energy, etc.
