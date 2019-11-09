@@ -295,8 +295,7 @@ class UI {
     }
 
     static renderMainTitle(): HTMLElement {
-        //return UI.makeHeader('The Prototype Inheritance', 'titletext');
-        return UI.makeImg('assets/temp_logo.png', 'logo');
+        return UI.makeImg('assets/final_logo.png', 'logo');
     }
 
     static renderTitleScreen(options: [string, Function][]): HTMLElement {

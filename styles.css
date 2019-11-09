@@ -188,6 +188,10 @@ button.endturn:active {
     flex-wrap: wrap;
 }
 
+.titlescreen>.buttons {
+    flex-direction: row;
+}
+
 .notetitle {
     font-family: monospace;
 }
@@ -220,6 +224,7 @@ button.endturn:active {
     animation: bgscroll infinite linear 36s;
     display: block;
     margin: 25px;
+    max-width: 30%;
 }
 
 @keyframes bgscroll {
