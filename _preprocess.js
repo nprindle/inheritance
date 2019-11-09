@@ -20,7 +20,7 @@ function escapeString(str) {
         // we probably want our notes to use real tabs, not spaces, so that they display correctly in the browser
         // we're programmers, so our text editors are usually configured to replace tabs with 2 or 4 spaces, which is wrong for this case
         str = str.replace(/    /g, "\t"); // replace 4 consecutive spaces with a tab
-        str = str.replace(/    /g, "\t"); // replace 2 consecutive spaces with a tab
+        str = str.replace(/  /g, "\t"); // replace 2 consecutive spaces with a tab
 
         // replace tabs with 4 non-breaking spaces because our UI HTML builder doesn't render tabs
         fakeTab = "\u00A0".repeat(4);
