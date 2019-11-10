@@ -4,8 +4,8 @@ class Player extends Combatant {
 
     currency: number;
 
-    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[]) {
-        super(name, health, energy, tools, traits);
+    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[], image?: string) {
+        super(name, health, energy, tools, traits, image);
         this.currency = 0;
     }
 
@@ -18,7 +18,7 @@ class Player extends Combatant {
     }
 
     clone(): Player {
-        let p = new Player(this.name, this.health, this.energy, this.tools.map(x => x.clone()), this.traits.map(x => x.clone()));
+        let p = new Player(this.name, this.health, this.energy, this.tools.map(x => x.clone()), this.traits.map(x => x.clone()), this.imageSrc);
         p.statuses = this.statuses.map(x => x.clone());
         p.currency = this.currency;
         return p;

@@ -9,8 +9,8 @@ class Enemy extends Combatant {
 
     utilityFunction: (Enemy, Player) => number;
 
-    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (Enemy, Human) => number, tools: Tool[], traits: Trait[]) {
-        super(name, health, energy, tools, traits);
+    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (Enemy, Human) => number, tools: Tool[], traits: Trait[], image?: string) {
+        super(name, health, energy, tools, traits, image);
         if (defaultUtilityFunction == undefined) {
             this.utilityFunction = AiUtilityFunctions.cautiousUtility;
         } else {
@@ -22,7 +22,7 @@ class Enemy extends Combatant {
     }
 
     clone(): Enemy {
-        let copy = new Enemy(this.name, this.health, this.energy, this.utilityFunction, this.tools.map(x => x.clone()), this.traits.map(x => x.clone()));
+        let copy = new Enemy(this.name, this.health, this.energy, this.utilityFunction, this.tools.map(x => x.clone()), this.traits.map(x => x.clone()), this.imageSrc);
         copy.statuses = this.statuses.map(x => x.clone());
         copy.utilityFunction = this.utilityFunction;
         return copy;

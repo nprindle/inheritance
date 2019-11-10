@@ -16,6 +16,14 @@ html {
     flex-direction: column;
 }
 
+.player>.profile,
+.enemy>.profile {
+    position: absolute;
+    max-width: 25%;
+    z-index: -99;
+    opacity: 0.25;
+}
+
 .player>.stats,
 .enemy>.stats {
     display: flex;
@@ -89,7 +97,6 @@ html {
 .tooltip-container {
     text-decoration: underline;
     position: relative;
-    background-color: white;
 }
 
 .tooltip-container .tooltip {

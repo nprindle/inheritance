@@ -13,13 +13,16 @@
 /// <reference path="Game.ts" />
 
 window.onload = function() {
-    // load notes
+    // Load note data
     NotePool.reloadAllNotes();
+    // Try to load any unlocked notes if present
+    Save.loadNotes();
     // unlock these notes at the start of the game (all other notes default to locked)
     NotePool.unlockSpecificNote("I am a title");
     NotePool.unlockSpecificNote("Title Goes Here");
     NotePool.unlockSpecificNote("This file contains \"quotes\"");
-    
+    // Save unlocked notes to LocalStorage
+    Save.saveNotes();
 
     Game.showTitle();
 }
