@@ -14,7 +14,6 @@ lib.cleanSourceWith {
       baseName = baseNameOf (toString name);
       # File extensions to be ignored
       ignoreExts = [
-        # Config files
         ".nix"
       ];
     in
