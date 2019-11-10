@@ -233,15 +233,24 @@ class UI {
         const modifiersPane: HTMLElement = UI.makeDiv(); //TODO CSS class
         shop.getModifierListings().forEach(([modifier, price]: [Modifier, number]) => {
             
-            modifiersPane.appendChild(this.renderShopModifierListing(modifier, price, () => {
-                shop.sellModifier(modifier, player);
+            modifiersPane.appendChild(this.renderShopModifierListing(modifier, price, Shop.playerCanAffordModifier(modifier, player), () => {
+                // make sure player can afford purchase
+                if (Shop.playerCanAffordModifier(modifier, player)) {
+                    UI.fillScreen(UI.renderModifier(modifier, player, (taken) => {
+                        if (taken) {
+                            shop.sellModifier(modifier, player);
+                        }
+                        // go back to the shop screen
+                        UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
+                    }));
+                }
             }));
         });
         div.appendChild(modifiersPane);
 
         const traitsPane: HTMLElement = UI.makeDiv(); //TODO CSS class
         shop.getTraitListings().forEach(([trait, price]: [Trait, number]) => {
-            traitsPane.appendChild(this.renderShopTraitListing(trait, price, () => {
+            traitsPane.appendChild(this.renderShopTraitListing(trait, price, Shop.playerCanAffordTrait(trait, player), () => {
                 shop.sellTrait(trait, player);
                 // refresh this screen after inventory is changed
                 UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
@@ -254,19 +263,19 @@ class UI {
         return div;
     }
 
-    static renderShopModifierListing(modifier: Modifier, price:number, purchaseCallback: Function): HTMLElement {
+    static renderShopModifierListing(modifier: Modifier, price:number, enabled: boolean, purchaseCallback: Function): HTMLElement {
         const div: HTMLElement = UI.makeDiv(); //TODO CSS class
         div.appendChild(this.makePara(modifier.name));
         div.appendChild(this.makePara(modifier.describe()));
-        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback, !enabled));
         return div;
     }
 
-    static renderShopTraitListing(trait: Trait, price: number, purchaseCallback: Function) {
+    static renderShopTraitListing(trait: Trait, price: number, enabled: boolean, purchaseCallback: Function) {
         const div: HTMLElement = UI.makeDiv(); //TODO CSS class
         div.appendChild(this.makePara(trait.name));
         div.appendChild(this.makePara(trait.describe()));
-        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback, !enabled));
         return div;
     }
 
