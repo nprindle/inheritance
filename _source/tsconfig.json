@@ -6,8 +6,6 @@
     "experimentalDecorators": true
   },
   "include": [
-    "app.ts",
-    "*.ts",
-    "effects/*.ts"
+    "**/*.ts"
   ]
 }
