@@ -82,7 +82,7 @@ class ItemPool<T extends { clone: () => T }, E> {
         // after cleaning. Otherwise, if none of the tags matched, they won't match
         // after cleaning, either.
         if (unseenMatching.length == 0) {
-            filterInPlace(seen, (k) => this.items[k].hasTags(...tags));
+            Arrays.filterInPlace(seen, (k) => this.items[k].hasTags(...tags));
             return tagsMatch;
         }
         return unseenMatching;
