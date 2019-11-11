@@ -1,6 +1,7 @@
 enum SoundEffects {
     Noise = 'noise.ogg',
-    Modifier = 'Modifier.ogg'
+    Modifier = 'Modifier.ogg',
+    Trait = "Trait.ogg"
 }
 
 class SoundManager {

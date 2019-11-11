@@ -234,8 +234,9 @@ class UI {
         div.appendChild(UI.makePara(`${t.name} Potion`, 'name'));
         div.appendChild(UI.makePara(t.describe(), 'desc'));
         div.appendChild(UI.makeButton('Drink', function() {
-          p.addTrait(t);
-          exitCallback(true);
+            SoundManager.playSoundEffect(SoundEffects.Trait);
+            p.addTrait(t);
+            exitCallback(true);
         }))
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function() {
