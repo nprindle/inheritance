@@ -16,7 +16,7 @@ class BatteryStatus extends AbstractStatus {
         return false;
     }
 
-    runOut(affected: Combatant, other: Combatant): void {
+    runsOut(affected: Combatant, other: Combatant): void {
         affected.actuallyDie();
     }
 
