@@ -6,7 +6,7 @@ enum StatusCallbacks {
     USE_TOOL = 'useTool',
     TAKE_DAMAGE = 'takeDamage',
     DIE = 'die',
-    //there's no callback for runOut since that shouldn't be called over all functions
+    //there's no callback for runsOut since that shouldn't be called over all functions
 }
 
 enum StatusFolds {
