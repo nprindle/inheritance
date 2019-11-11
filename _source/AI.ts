@@ -5,7 +5,7 @@ class AI {
     humanCopy: Player; // copy of the human-controlled combatant
     bestSequence: number[]; // the highest-utlity sequence that has been found
     bestSequenceScore: number; // the utility score of the best sequence
-    scoreFunction: (Enemy, Player) => number // the utility function used to assign scores to possible outcomes
+    scoreFunction: (e: Enemy, p: Player) => number // the utility function used to assign scores to possible outcomes
 
     constructor(aiCombatant: Enemy, humanCombatant: Player) {
         // TODO use the clone() method the actual enemy and player combatants
@@ -19,7 +19,7 @@ class AI {
         // check bot for status effects that change utility function
         // if more than one status implements an overriding utility function, use the one last in the sorted list of statuses
         let statuses = this.botCopy.statuses;
-        let preferenceOverride: (bot: Enemy, human: Player) => number;
+        let preferenceOverride: ((bot: Enemy, human: Player) => number) | undefined = undefined;
         statuses.forEach(function(status){
             if(status.overridenUtilityFunction != undefined) {
                 preferenceOverride = status.overridenUtilityFunction;

@@ -9,14 +9,17 @@ class EnergizedStatus extends AbstractStatus {
         super(amount, StatusValidators.POSITIVE);
     }
 
+    @override(AbstractStatus)
     startTurn(affected: Combatant, other: Combatant) {
         affected.energy += this.amount; //otherwise it can get eaten by energy debt
     }
 
+    @override(AbstractStatus)
     endTurn(affected: Combatant, other: Combatant) {
         this.amount = 0;
     }
 
+    @override(AbstractStatus)
     add(other: AbstractStatus): boolean {
         if (other instanceof EnergizedStatus) {
             this.amount += other.amount;
@@ -25,26 +28,32 @@ class EnergizedStatus extends AbstractStatus {
         return false;
     }
 
+    @override(AbstractStatus)
     sameKind(other: AbstractStatus): boolean {
         return other instanceof EnergizedStatus;
     }
 
+    @override(AbstractStatus)
     clone(): EnergizedStatus {
         return new EnergizedStatus(this.amount);
     }
 
+    @override(AbstractStatus)
     getName(): string {
         return 'energized';
     }
 
+    @override(AbstractStatus)
     getDescription(): string {
         return `Start with ${this.amount} extra damage this turn.`;
     }
 
+    @override(AbstractStatus)
     getSortingNumber(): number {
         return 9;
     }
 
+    @override(AbstractStatus)
     getUtility(): number {
         return 2 * this.amount;
     }
