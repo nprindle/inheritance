@@ -175,6 +175,7 @@ button.endturn:active {
 .credits,
 .journal,
 .note,
+.settings,
 .charselect {
     display: flex;
     flex-direction: column;
@@ -182,6 +183,12 @@ button.endturn:active {
     align-content: center;
     justify-content: space-between;
     margin: 0;
+}
+
+.settings p {
+    font-size: 18px;
+    display: flex;
+    align-content: center;
 }
 
 .titlescreen>.buttons,
@@ -218,7 +225,8 @@ button.endturn:active {
 .credits button,
 .journal button,
 .note button,
-.charselect button {
+.charselect button,
+.settings button {
     font-size: 24px;
     padding: 5px;
     border-width: 2px;
