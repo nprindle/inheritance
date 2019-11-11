@@ -8,7 +8,7 @@ class DefenseStatus extends AbstractStatus {
 
     @override(AbstractStatus)
     damageTakenFold(acc: number): number {
-        return Math.max(0, acc + this.amount);
+        return Math.max(0, acc - this.amount);
     }
 
     @override(AbstractStatus)
