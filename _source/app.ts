@@ -1,4 +1,5 @@
 /// <reference path="util.ts" />
+/// <reference path="Settings.ts" />
 /// <reference path="UI.ts" />
 /// <reference path="SoundManager.ts" />
 /// <reference path="Player.ts" />
@@ -16,6 +17,8 @@
 window.onload = function() {
     //initialize sound manager
     SoundManager.init();
+    // Load any cached settings
+    Save.loadSettings();
     // Load note data
     NotePool.reloadAllNotes();
     // Try to load any unlocked notes if present

@@ -388,9 +388,11 @@ class UI {
     static renderSettings(exit: Function): HTMLElement {
         const div = UI.makeDiv('settings');
         div.appendChild(UI.makeHeader('Settings'));
-        div.appendChild(UI.makeSlider('Volume', 0, 100, 100, (t) => {
-            SoundManager.setVolume(parseInt(t.value) / 100);
+        let volume = Settings.getVolumePercent();
+        div.appendChild(UI.makeSlider('Volume', 0, 100, volume, t => {
+            Settings.setVolumePercent(parseInt(t.value));
             SoundManager.playSoundEffect(SoundEffects.Noise);
+            Save.saveSettings();
         }));
         div.appendChild(UI.makeButton('Back', exit));
         return div;

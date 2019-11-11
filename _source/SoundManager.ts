@@ -26,6 +26,8 @@ class SoundManager {
         });
     }
 
+    // Set the absolute volume (not as a percentage). Note: this does not change
+    // the game settings; use Settings.setVolumePercent for that.
     static setVolume(volume: number): void {
         Object.keys(SoundEffects).forEach(key => {
             this.audioElems[SoundEffects[key]].volume = volume;
