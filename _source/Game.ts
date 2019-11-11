@@ -6,7 +6,7 @@ class Game {
         UI.fillScreen(
             UI.renderTitleScreen([
                 ['New Game', () => Game.showCharSelect()],
-                ['Settings', () => {}], //TODO: settings
+                ['Settings', () => Game.showSettings()],
                 ['Journal', () => Game.showJournal()],
                 ['Credits', () => Game.showCredits()],
             ])
@@ -48,6 +48,10 @@ class Game {
                 new CreditsEntry('Finn Schiesser', 'Logo'),
             ], () => Game.showTitle())
         );
+    }
+
+    static showSettings(inGame: boolean = false): void {
+        UI.fillScreen(UI.renderSettings(Game.showTitle));
     }
 
     static showJournal(): void {

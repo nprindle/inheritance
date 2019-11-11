@@ -82,6 +82,20 @@ class UI {
         return span;
     }
 
+    static makeSlider(label: string, min: number, max: number, value: number, changeCallback: Function): HTMLElement {
+        const input = document.createElement('input');
+        input.type = 'range';
+        input.min = `${min}`;
+        input.max = `${max}`;
+        input.value = `${value}`;
+        input.onchange = function (this: GlobalEventHandlers, ev: Event) {
+            changeCallback(this);
+        }
+        const para = UI.makePara(`${label}: `);
+        para.appendChild(input);
+        return para;
+    }
+
     static fakeClick(elem: HTMLElement): void {
         //TODO: structure this more reasonably
         elem.classList.remove('fakeclick');
@@ -368,6 +382,17 @@ class UI {
 
         div.appendChild(noteBodyContainer);
         div.appendChild(UI.makeButton("Close", exit));
+        return div;
+    }
+
+    static renderSettings(exit: Function): HTMLElement {
+        const div = UI.makeDiv('settings');
+        div.appendChild(UI.makeHeader('Settings'));
+        div.appendChild(UI.makeSlider('Volume', 0, 100, 100, (t) => {
+            SoundManager.setVolume(parseInt(t.value) / 100);
+            SoundManager.playSoundEffect(SoundEffects.Noise);
+        }));
+        div.appendChild(UI.makeButton('Back', exit));
         return div;
     }
 

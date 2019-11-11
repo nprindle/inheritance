@@ -22,6 +22,12 @@ class SoundManager {
         });
     }
 
+    static setVolume(volume: number): void {
+        Object.keys(SoundEffects).forEach(key => {
+            this.audioElems[SoundEffects[key]].volume = volume;
+        });
+    }
+
     static playSoundEffect(sfx: SoundEffects): void {
         this.audioElems[sfx].currentTime = 0;
         this.audioElems[sfx].play();
