@@ -123,7 +123,7 @@ const modifiers = new ItemPool<Modifier, ModifierTags>();
 const characters = new ItemPool<Player, string>(true);
 
 enum EnemyTags {
-    level1, level2, level3, boss
+    goldfish, level1, level2, level3, boss
 }
 
 const enemies = new ItemPool<Enemy, EnemyTags>();

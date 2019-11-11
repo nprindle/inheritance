@@ -4,9 +4,8 @@
 /// <reference path="../AiUtilityFunctions.ts" />
 
 enemies.add('goldfish',
-    new Enemy('Goldfish', 10, 10, AiUtilityFunctions.cautiousUtility,
-        [tools.get('splash')!,
-        tools.get('wrench')!],
-        [],
+    new Enemy('Goldfish', 100, 1, AiUtilityFunctions.cautiousUtility,
+        [tools.get('splash')!],
+        [traits.get('golden')!],
         'assets/goldfish.png'),
-EnemyTags.level1);
+EnemyTags.goldfish);
