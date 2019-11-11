@@ -1,3 +1,4 @@
+/// <reference path="SoundManager.ts" />
 /// <reference path="map/Floor.ts" />
 
 class UI {
@@ -199,6 +200,7 @@ class UI {
             div.appendChild(UI.makePara(`usable ${t.usesPerTurn} time(s) per turn`));
         }
         div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
+            SoundManager.playSoundEffect(SoundEffects.Modifier);
             m.apply(t);
             callback(true);
         }, false, 'apply'));
