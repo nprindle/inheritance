@@ -6,18 +6,22 @@ enum SoundEffects {
 
 class SoundManager {
 
-    //TODO: make indexing better
-    static audioElems: Record<string, HTMLAudioElement>;
+    static audioElems: Record<SoundEffects, HTMLAudioElement>;
 
     static init(): void {
-        this.audioElems = {};
+        let newAudioElement = () => document.createElement('audio');
+        this.audioElems = {
+            'noise.ogg': newAudioElement(),
+            'Modifier.ogg': newAudioElement(),
+            'Trait.ogg': newAudioElement(),
+        };
         let container: HTMLElement = document.getElementById('audio');
         Object.keys(SoundEffects).forEach(key => {
-            let filename: string = `assets/sfx/${SoundEffects[key]}`;
-            let audio: HTMLAudioElement = document.createElement('audio');
+            let filename: string = SoundEffects[key];
+            let filepath: string = `assets/sfx/${filename}`;
+            let audio = this.audioElems[filename];
             audio.preload = 'auto';
-            audio.src = filename;
-            this.audioElems[SoundEffects[key]] = audio;
+            audio.src = filepath;
             container.appendChild(audio);
         });
     }
