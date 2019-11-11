@@ -1,5 +1,6 @@
 enum SoundEffects {
     Noise = 'noise.ogg',
+    Modifier = 'modifier.ogg'
 }
 
 class SoundManager {
@@ -13,6 +14,7 @@ class SoundManager {
         Object.keys(SoundEffects).forEach(key => {
             let filename: string = `assets/sfx/${SoundEffects[key]}`;
             let audio: HTMLAudioElement = document.createElement('audio');
+            audio.preload = 'auto';
             audio.src = filename;
             this.audioElems[SoundEffects[key]] = audio;
             container.appendChild(audio);
