@@ -55,7 +55,6 @@ class Shop {
             // make sure that this shop can sell the specified item
             if (this.modifiersForSale.indexOf(listing) != -1) {
                 this.modifiersForSale.splice(this.modifiersForSale.indexOf(listing), 1); // remove item from shop inventory
-                this.modifiersForSale.splice(this.modifiersForSale.indexOf(listing), 1); // remove item from shop inventory
                 // we don't need to apply the modifier here because it is done by the Offer Modifier screen
                 player.payCurrency(listing.price);
             }
