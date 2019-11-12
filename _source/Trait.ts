@@ -29,6 +29,35 @@ class GiveHealth extends TraitMod {
 
 }
 
+class ExtraScrip extends TraitMod {
+    amount: number;
+
+    constructor(n: number) {
+        super();
+        this.amount = n;
+    }
+
+    apply(c: Combatant): void {
+        if (c instanceof Enemy) {
+            c.lootMoney += this.amount;
+        } else if (c instanceof Player) {
+            c.extraScrip += this.amount;
+        }
+    }
+
+    remove(c: Combatant): void {
+        if (c instanceof Enemy) {
+            c.lootMoney -= this.amount;
+        } else if (c instanceof Player) {
+            c.extraScrip -= this.amount;
+        }
+    }
+
+    toString(): string {
+        return `gain ${this.amount} extra scrip from all sources`;
+    }
+}
+
 class Trait {
 
     name: string;
