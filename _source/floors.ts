@@ -111,19 +111,19 @@ class EliteEnemyEventPool extends RoomEventPool {
 
 class ShopEventPool extends RoomEventPool {
     num: [number, number];
-    traitTags: TraitTags[];
-    modifierTags: ModifierTags[];
+    modifierCounts: [ModifierTags, number][];
+    traitCounts: [TraitTags, number][];
 
-    constructor(min: number, max: number, traitTags: TraitTags[], modifierTags: ModifierTags[]) {
+    constructor(min: number, max: number, modifierCounts: [ModifierTags, number][], traitCounts: [TraitTags, number][]) {
         super();
         this.num = [min, max];
-        this.modifierTags = modifierTags;
-        this.traitTags = traitTags;
+        this.modifierCounts = modifierCounts;
+        this.traitCounts = traitCounts;
     }
 
     getEvents(): RoomEvent[] {
         //generate compliant enemies
-        const shops = Arrays.generate(Random.tupleInt(this.num), () => new Shop(this.modifierTags, this.traitTags));
+        const shops = Arrays.generate(Random.tupleInt(this.num), () => new Shop(this.modifierCounts, this.traitCounts));
         return shops.map(shop => new ShopRoomEvent(shop));
     }
 }
@@ -166,6 +166,6 @@ const floors: FloorConfig[] = [
         new TraitEventPool(1, 2, [TraitTags.standard]),
         new ModifierEventPool(2, 4, []),
         new EliteEnemyEventPool(1, 1, [EnemyTags.level1]),
-        new ShopEventPool(1, 3, [], [])
+        new ShopEventPool(1, 3, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
     ])
 ];

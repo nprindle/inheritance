@@ -253,14 +253,16 @@ class UI {
         const itemsPane: HTMLElement = UI.makeDiv("shoplistscontainer");
         const modifiersPane: HTMLElement = UI.makeDiv("shoplist");
         modifiersPane.appendChild(UI.makeHeader("Tool Modifiers"));
-        shop.getModifierListings().forEach(([modifier, price]: [Modifier, number]) => {
-            
-            modifiersPane.appendChild(this.renderShopModifierListing(modifier, price, Shop.playerCanAffordModifier(modifier, player), () => {
+        shop.getModifierListings().forEach((listing: ShopModifierListing) => {
+            let modifier = listing.modifier;
+            let price = listing.price;
+            let canAffordItem = (price <= player.currency);
+            modifiersPane.appendChild(this.renderShopModifierListing(modifier, price, canAffordItem, () => {
                 // make sure player can afford purchase
-                if (Shop.playerCanAffordModifier(modifier, player)) {
+                if (canAffordItem) {
                     UI.fillScreen(UI.renderModifier(modifier, player, (taken) => {
                         if (taken) {
-                            shop.sellModifier(modifier, player);
+                            shop.sellModifier(listing, player);
                         }
                         // go back to the shop screen
                         UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
@@ -272,9 +274,12 @@ class UI {
 
         const traitsPane: HTMLElement = UI.makeDiv("shoplist");
         traitsPane.appendChild(UI.makeHeader("Character Traits"));
-        shop.getTraitListings().forEach(([trait, price]: [Trait, number]) => {
-            traitsPane.appendChild(this.renderShopTraitListing(trait, price, Shop.playerCanAffordTrait(trait, player), () => {
-                shop.sellTrait(trait, player);
+        shop.getTraitListings().forEach((listing: ShopTraitListing) => {
+            let trait = listing.trait;
+            let price = listing.price;
+            let canAffordItem = (price <= player.currency);
+            traitsPane.appendChild(this.renderShopTraitListing(trait, price, canAffordItem, () => {
+                shop.sellTrait(listing, player);
                 // refresh this screen after inventory is changed
                 UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
             }));
