@@ -1,3 +1,4 @@
+/// <reference path="SoundManager.ts" />
 /// <reference path="map/Floor.ts" />
 
 class UI {
@@ -79,6 +80,20 @@ class UI {
         const tooltip = UI.makeElem('span', desc, 'tooltip');
         span.appendChild(tooltip);
         return span;
+    }
+
+    static makeSlider(label: string, min: number, max: number, value: number, changeCallback: Function): HTMLElement {
+        const input = document.createElement('input');
+        input.type = 'range';
+        input.min = `${min}`;
+        input.max = `${max}`;
+        input.value = `${value}`;
+        input.onchange = function (this: GlobalEventHandlers, ev: Event) {
+            changeCallback(this);
+        }
+        const para = UI.makePara(`${label}: `);
+        para.appendChild(input);
+        return para;
     }
 
     static fakeClick(elem: HTMLElement): void {
@@ -199,6 +214,7 @@ class UI {
             div.appendChild(UI.makePara(`usable ${t.usesPerTurn} time(s) per turn`));
         }
         div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
+            SoundManager.playSoundEffect(SoundEffects.Modifier);
             m.apply(t);
             callback(true);
         }, false, 'apply'));
@@ -292,8 +308,9 @@ class UI {
         div.appendChild(UI.makePara(`${t.name} Potion`, 'name'));
         div.appendChild(UI.makePara(t.describe(), 'desc'));
         div.appendChild(UI.makeButton('Drink', function() {
-          p.addTrait(t);
-          exitCallback(true);
+            SoundManager.playSoundEffect(SoundEffects.Trait);
+            p.addTrait(t);
+            exitCallback(true);
         }))
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function() {
@@ -425,6 +442,17 @@ class UI {
 
         div.appendChild(noteBodyContainer);
         div.appendChild(UI.makeButton("Close", exit));
+        return div;
+    }
+
+    static renderSettings(exit: Function): HTMLElement {
+        const div = UI.makeDiv('settings');
+        div.appendChild(UI.makeHeader('Settings'));
+        div.appendChild(UI.makeSlider('Volume', 0, 100, 100, (t) => {
+            SoundManager.setVolume(parseInt(t.value) / 100);
+            SoundManager.playSoundEffect(SoundEffects.Noise);
+        }));
+        div.appendChild(UI.makeButton('Back', exit));
         return div;
     }
 

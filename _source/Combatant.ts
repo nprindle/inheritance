@@ -14,7 +14,7 @@ abstract class Combatant {
     statuses: AbstractStatus[];
     deathFunc: Function;
     afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
-    opponent: Combatant;
+    opponent?: Combatant;
     imageSrc?: string;
 
     constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[], image?: string) {
@@ -188,7 +188,9 @@ abstract class Combatant {
 
     removeStatus(remove: AbstractStatus): void {
         //call the runOut callback on all the ones that run out...
-        this.statuses.filter(status => status.sameKind(remove)).forEach(status => status.runsOut(this, this.opponent));
+        this.statuses.filter(status => status.sameKind(remove)).forEach(status => {
+            status.runsOut(this, this.opponent);
+        });
         this.statuses = this.statuses.filter(status => !status.sameKind(remove));
     }
 

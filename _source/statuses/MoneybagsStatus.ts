@@ -1,27 +1,33 @@
 /// <reference path="../AbstractStatus.ts" />
-/// <reference path="../AiUtilityFunctions.ts" />
 /// <reference path="../Enemy.ts" />
 /// <reference path="../Player.ts" />
 
-class EnergizedStatus extends AbstractStatus {
+class MoneybagsStatus extends AbstractStatus {
+
+    damageTaken: number;
 
     constructor(amount: number) {
         super(amount, StatusValidators.POSITIVE);
+        this.damageTaken = 0;
     }
 
     @override(AbstractStatus)
-    startTurn(affected: Combatant, other: Combatant) {
-        affected.energy += this.amount; //otherwise it can get eaten by energy debt
+    damageTakenFold(acc: number): number {
+        this.damageTaken += acc;
+        return acc;
     }
 
     @override(AbstractStatus)
-    endTurn(affected: Combatant, other: Combatant) {
-        this.amount = 0;
+    takeDamage(affected: Combatant, other: Combatant): void {
+        if (other instanceof Player) {
+            other.giveCurrency(Math.floor(this.damageTaken / this.amount));
+        }
+        this.damageTaken = this.damageTaken % this.amount;
     }
 
     @override(AbstractStatus)
     add(other: AbstractStatus): boolean {
-        if (other instanceof EnergizedStatus) {
+        if (other instanceof MoneybagsStatus) {
             this.amount += other.amount;
             return true;
         }
@@ -30,32 +36,32 @@ class EnergizedStatus extends AbstractStatus {
 
     @override(AbstractStatus)
     sameKind(other: AbstractStatus): boolean {
-        return other instanceof EnergizedStatus;
+        return other instanceof MoneybagsStatus;
     }
 
     @override(AbstractStatus)
-    clone(): EnergizedStatus {
-        return new EnergizedStatus(this.amount);
+    clone(): MoneybagsStatus {
+        return new MoneybagsStatus(this.amount);
     }
 
     @override(AbstractStatus)
     getName(): string {
-        return 'energized';
+        return 'moneybags';
     }
 
     @override(AbstractStatus)
     getDescription(): string {
-        return `Start with ${this.amount} extra damage this turn.`;
+        return `Give your opponent 1 Scrip for every ${this.amount} damage you take.`;
     }
 
     @override(AbstractStatus)
     getSortingNumber(): number {
-        return 9;
+        return 900;
     }
 
     @override(AbstractStatus)
     getUtility(): number {
-        return 2 * this.amount;
+        return 0;
     }
 
 }

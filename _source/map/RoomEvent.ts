@@ -69,6 +69,9 @@ class EnemyRoomEvent extends RoomEvent {
         } else {
             room.containerFloor.redraw();
         }
+        if (!this.recoveryTime || this.recoveryTime === Infinity) {
+            return new EmptyRoomEvent(RoomType.Empty);
+        }
         return this;
     }
 }
