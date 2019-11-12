@@ -223,7 +223,6 @@ abstract class Combatant {
                 if (current[1] === 0) {
                     this.traitNames.splice(i, 1);
                 }
-                console.log(this.traitNames, this.traits);
                 return;
             }
         }
