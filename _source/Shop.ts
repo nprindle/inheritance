@@ -28,7 +28,7 @@ class Shop {
             let tag: TraitTags = tuple[0];
             let count: number = tuple[1];
             let price = Shop.calculateTraitPrice(tag);
-            if (tag) {
+            if (tag !== null && tag !== undefined) {
                 let newTraits: ShopTraitListing[] = Arrays.generate(count, () => (new ShopTraitListing(Game.currentRun.nextTrait([tag]), price)));
                 newTraits.forEach((listing: ShopTraitListing) => this.traitsForSale.push(listing));
             } else {
@@ -80,7 +80,7 @@ class Shop {
         // TODO change based on tag once modifier tags are added
         return 3;
     }
-    
+
     static calculateTraitPrice(tag: TraitTags) {
         if (tag === TraitTags.elite) {
             return 5;
