@@ -214,6 +214,43 @@ button.endturn:active {
     text-align: justify;
 }
 
+
+.shop {
+    margin-left: 20px;
+}
+
+.shoplistscontainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.shoplist {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.shopitem {
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+}
+
+.shop button {
+    font-size: 24px;
+    margin: 20px;
+}
+
+.shopitem button {
+    margin: 10px;
+    font-size: 16px;
+}
+
+.shopitem p {
+    margin-left: 10px;
+}
+
+
+
 .titlescreen button,
 .credits button,
 .journal button,
