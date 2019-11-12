@@ -166,6 +166,6 @@ const floors: FloorConfig[] = [
         new TraitEventPool(1, 2, [TraitTags.standard]),
         new ModifierEventPool(2, 4, []),
         new EliteEnemyEventPool(1, 1, [EnemyTags.level1]),
-        new ShopEventPool(7, 10, [], []) //TODO make this a more reasonable number after testing
+        new ShopEventPool(1, 3, [], [])
     ])
 ];
