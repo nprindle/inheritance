@@ -119,3 +119,22 @@ class TraitRoomEvent extends RoomEvent {
     }
 
 }
+
+class ShopRoomEvent extends RoomEvent {
+
+    roomType = RoomType.Shop;
+    private shop;
+
+    constructor(shop: Shop) {
+        super();
+        this.shop = shop;
+    }
+
+    onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
+        UI.fillScreen(UI.renderShopMenu(this.shop, Game.currentRun.player, () => {
+            room.containerFloor.redraw();
+        }))
+        return this;
+    }
+
+}

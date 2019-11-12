@@ -242,6 +242,71 @@ class UI {
         return mainDiv;
     }
 
+    static renderShopMenu(shop: Shop, player: Player, exitCallback: Function): HTMLElement {
+        const div: HTMLElement = UI.makeDiv("shop");
+        div.appendChild(UI.makeHeader("Shop"));
+        div.appendChild(UI.makePara("You have " + player.currency + " scrip."));
+        
+
+
+
+        const itemsPane: HTMLElement = UI.makeDiv("shoplistscontainer");
+        const modifiersPane: HTMLElement = UI.makeDiv("shoplist");
+        modifiersPane.appendChild(UI.makeHeader("Tool Modifiers"));
+        shop.getModifierListings().forEach((listing: ShopModifierListing) => {
+            let modifier = listing.modifier;
+            let price = listing.price;
+            let canAffordItem = (price <= player.currency);
+            modifiersPane.appendChild(this.renderShopModifierListing(modifier, price, canAffordItem, () => {
+                // make sure player can afford purchase
+                if (canAffordItem) {
+                    UI.fillScreen(UI.renderModifier(modifier, player, (taken) => {
+                        if (taken) {
+                            shop.sellModifier(listing, player);
+                        }
+                        // go back to the shop screen
+                        UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
+                    }));
+                }
+            }));
+        });
+        itemsPane.appendChild(modifiersPane);
+
+        const traitsPane: HTMLElement = UI.makeDiv("shoplist");
+        traitsPane.appendChild(UI.makeHeader("Character Traits"));
+        shop.getTraitListings().forEach((listing: ShopTraitListing) => {
+            let trait = listing.trait;
+            let price = listing.price;
+            let canAffordItem = (price <= player.currency);
+            traitsPane.appendChild(this.renderShopTraitListing(trait, price, canAffordItem, () => {
+                shop.sellTrait(listing, player);
+                // refresh this screen after inventory is changed
+                UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
+            }));
+        });
+        itemsPane.appendChild(traitsPane);
+        
+        div.appendChild(itemsPane);
+        div.appendChild(UI.makeButton("Exit shop", exitCallback));
+        return div;
+    }
+
+    static renderShopModifierListing(modifier: Modifier, price:number, enabled: boolean, purchaseCallback: Function): HTMLElement {
+        const div: HTMLElement = UI.makeDiv("shopitem");
+        div.appendChild(this.makePara(modifier.name));
+        div.appendChild(this.makePara(modifier.describe()));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback, !enabled));
+        return div;
+    }
+
+    static renderShopTraitListing(trait: Trait, price: number, enabled: boolean, purchaseCallback: Function) {
+        const div: HTMLElement = UI.makeDiv("shopitem");
+        div.appendChild(this.makePara(trait.name));
+        div.appendChild(this.makePara(trait.describe()));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback, !enabled));
+        return div;
+    }
+
     static renderTrait(t: Trait, p: Player, exitCallback: Function, refusable: boolean = true) {
         const mainDiv: HTMLElement = UI.makeDiv('offer');
         const div: HTMLElement = UI.makeDiv('trait');
