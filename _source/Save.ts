@@ -1,8 +1,9 @@
 class Save {
     static isSupported: boolean = window.localStorage !== undefined && window.localStorage !== null;
 
-    // The name of the key to use to store note data in LocalStorage
+    // The names of the keys to use in LocalStorage
     private static lsNoteKey = 'unlocked_notes';
+    private static lsSettingsKey = 'settings';
 
     // Saves the current state of the notes to local storage, if it is
     // available. Returns true if the store succeeded. The return value usually
@@ -54,10 +55,40 @@ class Save {
     }
 
     static saveSettings(): boolean {
+        if (Save.isSupported) {
+            let obj = Settings.dumpToObject();
+            let json = JSON.stringify(obj);
+            window.localStorage.setItem(Save.lsSettingsKey, json);
+            return true
+        }
         return false;
     }
 
     static loadSettings(): boolean {
+        if (Save.isSupported) {
+            try {
+                let contents = window.localStorage.getItem(Save.lsSettingsKey);
+                if (contents === null) {
+                    return true;
+                }
+                let obj: any = JSON.parse(contents);
+                // We can't inspect the keys yet; we rely on
+                // Settings.loadFromObject for that
+                if (isSettingsOptions(obj)) {
+                    Settings.loadFromObject(obj);
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (e) {
+                // Failed JSON parsing throws a SyntaxError
+                if (e instanceof SyntaxError) {
+                    return false;
+                } else {
+                    throw e;
+                }
+            }
+        }
         return false;
     }
 
