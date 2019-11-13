@@ -6,7 +6,7 @@
 /// <reference path="../AiUtilityFunctions.ts" />
 
 enemies.add('slimemoulder',
-    new Enemy('Slime Moulder', 16, 2, AiUtilityFunctions.aggressiveUtility,
+    new Enemy('Slime Moulder', 16, 2, AiUtilityFunctions.cautiousUtility,
         [
             tools.get('mycelium')!,
             tools.get('sporecloud')!,
