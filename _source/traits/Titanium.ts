@@ -2,6 +2,6 @@
 /// <reference path="../Trait.ts" />
 /// <reference path="../statuses.ts" />
 traits.add('titanium',
-    new Trait('Titanium', new DefenseStatus(3)),
+    new Trait('Titanium', new DefenseStatus(2)),
     TraitTags.elite
 );
