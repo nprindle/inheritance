@@ -164,7 +164,15 @@ const floors: FloorConfig[] = [
     new FloorConfig("The Foyer", [12, 15], [
         new EnemyEventPool(2, 4, [EnemyTags.level1]),
         new TraitEventPool(1, 2, [TraitTags.standard]),
-        new ModifierEventPool(2, 4, []),
+        new ModifierEventPool(1, 2, []),
+        new EliteEnemyEventPool(1, 1, [EnemyTags.level1]),
+        new ShopEventPool(1, 3, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
+    ]),
+    new FloorConfig("The Lounge", [12, 15], [
+        new EnemyEventPool(1, 2, [EnemyTags.level1]),
+        new EnemyEventPool(1, 2, [EnemyTags.level2]),
+        new TraitEventPool(1, 2, [TraitTags.standard]),
+        new ModifierEventPool(1, 2, []),
         new EliteEnemyEventPool(1, 1, [EnemyTags.level1]),
         new ShopEventPool(1, 3, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
     ])

@@ -18,13 +18,26 @@ abstract class RoomEvent {
 class EmptyRoomEvent extends RoomEvent {
     roomType = RoomType.Empty;
 
-    constructor(roomType: RoomType.Empty | RoomType.Entrance | RoomType.Exit) {
+    constructor(roomType: RoomType.Empty | RoomType.Entrance) {
         super();
         this.roomType = roomType;
     }
 
     onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
         room.containerFloor.redraw();
+        return this;
+    }
+}
+
+class ExitRoomEvent extends RoomEvent {
+    roomType = RoomType.Exit;
+
+    constructor() {
+        super();
+    }
+
+    onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
+        Game.currentRun.nextFloor(); //TODO: make this optional
         return this;
     }
 }

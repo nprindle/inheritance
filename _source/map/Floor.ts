@@ -21,7 +21,7 @@ class Floor {
 
     constructor(level: number, currentRun: Run) {
         this.currentRun = currentRun
-        let floorSettings = floors[level];
+        let floorSettings: FloorConfig = floors[level];
         this.floorName = floorSettings.name;
         this.width = floorSettings.getWidth();
         this.height = floorSettings.getHeight();
@@ -63,7 +63,7 @@ class Floor {
         let minExitDistance = Math.ceil(maxRoomDistance * 3.0 / 4);
         let potentialExits = Arrays.flatten(this.rooms).filter(x => x.distanceFromEntrance >= minExitDistance);
         let exitRoom = Random.fromArray(potentialExits);
-        exitRoom.roomEvent = new EmptyRoomEvent(RoomType.Exit);
+        exitRoom.roomEvent = new ExitRoomEvent();
 
         assignableRooms = assignableRooms.filter(room => room !== exitRoom);
         assignableRooms = Random.shuffle(assignableRooms);
