@@ -9,5 +9,6 @@ characters.addSorted('clone', new Player('The Clone', 10, 10,
         tools.get('thermocouple')!,
         tools.get('energizer')!,
     ],
-    []
+    [],
+    'assets/The_Clone.png'
 ), 1);

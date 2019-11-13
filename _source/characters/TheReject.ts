@@ -9,5 +9,5 @@ characters.addSorted('reject', new Player('The Reject', 10, 6,
         tools.get('rawhideskin')!,
         tools.get('geneburst')!
     ],
-    []
+    [], 'assets/The_Reject_Done.png'
 ), 5);
