@@ -4,5 +4,5 @@
 /// <reference path="../AiUtilityFunctions.ts" />
 
 enemies.add('greasertron',
-    new Enemy('Greaser-Tron', 10, 6, AiUtilityFunctions.aggressiveUtility, [tools.get('lighter')!, tools.get('switchblade')!, tools.get('comb')!], []),
+    new Enemy('Greaser-Tron', 10, 6, AiUtilityFunctions.cautiousUtility, [tools.get('lighter')!, tools.get('switchblade')!, tools.get('comb')!], []),
 EnemyTags.level1);
