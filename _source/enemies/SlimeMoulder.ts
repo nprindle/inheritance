@@ -6,14 +6,12 @@
 /// <reference path="../AiUtilityFunctions.ts" />
 
 enemies.add('slimemoulder',
-    new Enemy('Slime Moulder', 16, 2, AiUtilityFunctions.cautiousUtility,
+    new Enemy('Slime Moulder', 20, 2, AiUtilityFunctions.cautiousUtility,
         [
             tools.get('mycelium')!,
             tools.get('sporecloud')!,
             tools.get('mitosisreflex')!,
         ],
-        [
-            traits.get('tough')!
-        ]
+        []
     ),
 EnemyTags.level2);
