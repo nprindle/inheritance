@@ -42,6 +42,10 @@ class Room {
         return this.roomEvent.roomType;
     }
 
+    getIcon(): RoomIcon {
+        return this.roomEvent.roomIcon;
+    }
+
     // Get the coordinates of all exits from this room
     getExitCoordinates(): Coordinates[] {
         return this.exits.map(e => e.coordinates);

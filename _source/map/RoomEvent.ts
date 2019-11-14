@@ -1,7 +1,21 @@
 /// <reference path="Floor.ts" />
 
+enum RoomIcon {
+    ENEMY = "temp_enemy.png",
+    EXIT = "temp_exit.png",
+    MODIFIER = "temp_modifier.png",
+    SHOP = "temp_shop.png",
+    TRAIT = "temp_trait.png",
+    NONE = "",
+    TOOL = "temp_tool.png",
+    PLAYER = "temp_player.png",
+    BOSS = "temp_enemy.png",
+    GOLDFISH = "temp_money.png"
+}
+
 abstract class RoomEvent {
     abstract roomType: RoomType;
+    abstract roomIcon: RoomIcon;
 
     // Upon entering each room, this will trigger some event for the room, such
     // as picking up a tool or starting a fight. After the event, a new event is
@@ -17,6 +31,7 @@ abstract class RoomEvent {
 
 class EmptyRoomEvent extends RoomEvent {
     roomType = RoomType.Empty;
+    roomIcon = RoomIcon.NONE;
 
     constructor(roomType: RoomType.Empty | RoomType.Entrance) {
         super();
@@ -31,6 +46,7 @@ class EmptyRoomEvent extends RoomEvent {
 
 class ExitRoomEvent extends RoomEvent {
     roomType = RoomType.Exit;
+    roomIcon = RoomIcon.EXIT;
 
     constructor() {
         super();
@@ -44,6 +60,7 @@ class ExitRoomEvent extends RoomEvent {
 
 class ToolRoomEvent extends RoomEvent {
     roomType = RoomType.Tool;
+    roomIcon = RoomIcon.TOOL;
 
     constructor(private tool: Tool) {
         super();
@@ -58,6 +75,7 @@ class ToolRoomEvent extends RoomEvent {
 
 class EnemyRoomEvent extends RoomEvent {
     roomType = RoomType.Enemy;
+    roomIcon = RoomIcon.ENEMY;
 
     // The last roomsEntered count when the enemy was defeated
     private lastEntered: number = 0;
@@ -92,6 +110,7 @@ class EnemyRoomEvent extends RoomEvent {
 class ModifierRoomEvent extends RoomEvent {
 
     roomType = RoomType.Modifier;
+    roomIcon = RoomIcon.MODIFIER;
     private modifier: Modifier;
 
     constructor(m: Modifier) {
@@ -114,6 +133,7 @@ class ModifierRoomEvent extends RoomEvent {
 class TraitRoomEvent extends RoomEvent {
 
     roomType = RoomType.Trait;
+    roomIcon = RoomIcon.TRAIT;
     private trait: Trait;
 
     constructor(t: Trait) {
@@ -136,6 +156,7 @@ class TraitRoomEvent extends RoomEvent {
 class ShopRoomEvent extends RoomEvent {
 
     roomType = RoomType.Shop;
+    roomIcon = RoomIcon.SHOP;
     private shop;
 
     constructor(shop: Shop) {
