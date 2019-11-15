@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('sneezy',
     new Trait('Sneezy', new PoisonStatus(3)),
-    TraitTags.curse
+    TraitTags.curse, TraitTags.randomable
 );

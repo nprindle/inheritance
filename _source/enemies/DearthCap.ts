@@ -5,13 +5,12 @@
 /// <reference path="../Enemy.ts" />
 /// <reference path="../AiUtilityFunctions.ts" />
 
-enemies.add('slimemoulder',
-    new Enemy('Slime Moulder', 20, 2, AiUtilityFunctions.cautiousUtility,
+enemies.add('dearthcap',
+    new Enemy('Dearth Cap', 20, 4, AiUtilityFunctions.cautiousUtility,
         [
             tools.get('mycelium')!,
-            tools.get('sporecloud')!,
-            tools.get('mitosisreflex')!,
+            tools.get('parasiticspores')!
         ],
         []
     ),
-EnemyTags.level2);
+EnemyTags.level3);

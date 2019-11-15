@@ -2,5 +2,5 @@
 /// <reference path="../Trait.ts" />
 traits.add('healthy',
     new Trait('Healthy', new GiveHealth(5)),
-    TraitTags.standard
+    TraitTags.standard, TraitTags.randomable
 );

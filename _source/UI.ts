@@ -72,7 +72,7 @@ class UI {
     }
 
     static makeRoomIcon(str: string): HTMLElement {
-        return UI.makeImg(`assets/temp_${str}.png`, 'room-icon');
+        return UI.makeImg(`assets/${str}`, 'room-icon');
     }
 
     static makeTooltip(name: string, desc: string): HTMLElement {
@@ -246,7 +246,7 @@ class UI {
         const div: HTMLElement = UI.makeDiv("shop");
         div.appendChild(UI.makeHeader("Shop"));
         div.appendChild(UI.makePara("You have " + player.currency + " scrip."));
-        
+
 
 
 
@@ -285,7 +285,7 @@ class UI {
             }));
         });
         itemsPane.appendChild(traitsPane);
-        
+
         div.appendChild(itemsPane);
         div.appendChild(UI.makeButton("Exit shop", exitCallback));
         return div;
@@ -362,9 +362,9 @@ class UI {
                 div.classList.add(className);
             });
             if (hasPlayer) {
-                div.appendChild(UI.makeRoomIcon('player'));
-            } else if (room.getRoomType() !== RoomType.Empty) {
-                div.appendChild(UI.makeRoomIcon(room.getRoomType()));
+                div.appendChild(UI.makeRoomIcon(RoomIcon.PLAYER));
+            } else if (room.getIcon() !== RoomIcon.NONE) {
+                div.appendChild(UI.makeRoomIcon(room.getIcon()));
             }
         }
         if (exitHasPlayer) {

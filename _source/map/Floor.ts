@@ -60,12 +60,16 @@ class Floor {
             assignableRooms.push(newRoom);
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
         }
-        let minExitDistance = Math.ceil(maxRoomDistance * 3.0 / 4);
-        let potentialExits = Arrays.flatten(this.rooms).filter(x => x.distanceFromEntrance >= minExitDistance);
-        let exitRoom = Random.fromArray(potentialExits);
-        exitRoom.roomEvent = new ExitRoomEvent();
+        //only add exit if the floor supports it
+        if (floorSettings.modifiers.indexOf(FloorModifiers.NO_EXIT) === -1) {
+            let potentialExits = Arrays.flatten(this.rooms)
+                .filter(room => !room.hasFurtherNeighbors())
+                .sort((a, b) => b.distanceFromEntrance - a.distanceFromEntrance);
+            let exitRoom = potentialExits[0];
+            exitRoom.roomEvent = new ExitRoomEvent();
+            assignableRooms = assignableRooms.filter(room => room !== exitRoom);
+        }
 
-        assignableRooms = assignableRooms.filter(room => room !== exitRoom);
         assignableRooms = Random.shuffle(assignableRooms);
         let events = floorSettings.getEvents();
         for (let i = 0; i < events.length && i < assignableRooms.length; i++) {

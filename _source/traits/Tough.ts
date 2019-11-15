@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('tough',
     new Trait('Tough', new ShieldStatus(5)),
-    TraitTags.standard
+    TraitTags.standard, TraitTags.randomable
 );

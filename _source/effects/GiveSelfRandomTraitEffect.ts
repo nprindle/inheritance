@@ -8,7 +8,7 @@ class GiveSelfRandomTraitEffect extends AbstractEffect {
     }
 
     effect(user: Combatant, target: Combatant): void {
-        const trait: Trait = traits.getRandom();
+        const trait: Trait = traits.selectRandomUnseen([], [TraitTags.randomable]);
         user.addTrait(trait);
         trait.startFight(user);
     }

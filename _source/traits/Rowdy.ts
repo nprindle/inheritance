@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('rowdy',
     new Trait('Rowdy', new ConfusionStatus(1), new StrengthStatus(1)),
-    TraitTags.standard
+    TraitTags.standard, TraitTags.randomable
 );
