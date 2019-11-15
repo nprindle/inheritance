@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('sunburned',
     new Trait('Sunburned', new BurnStatus(1)),
-    TraitTags.curse
+    TraitTags.curse, TraitTags.randomable
 );

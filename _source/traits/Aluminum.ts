@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('aluminum',
     new Trait('Aluminum', new DefenseStatus(1)),
-    TraitTags.standard
+    TraitTags.standard, TraitTags.randomable
 );

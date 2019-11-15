@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('hasty',
     new Trait('Hasty', new EnergizedStatus(2), new EnergyDebtStatus(2)),
-    TraitTags.standard    
+    TraitTags.standard, TraitTags.randomable   
 );

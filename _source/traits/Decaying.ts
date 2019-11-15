@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('decaying',
     new Trait('Decaying', new RotStatus(1)),
-    TraitTags.curse
+    TraitTags.curse, TraitTags.randomable
 );
