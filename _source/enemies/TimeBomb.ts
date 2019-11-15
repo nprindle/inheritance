@@ -4,5 +4,5 @@
 /// <reference path="../AiUtilityFunctions.ts" />
 
 enemies.add('timebomb',
-    new Enemy('Time Bomb', 40, 1, AiUtilityFunctions.defensiveUtility, [tools.get('reinforce')!, tools.get('detox')!, tools.get('armingkey')!], []),
+    new Enemy('Tim Bomb', 40, 1, AiUtilityFunctions.defensiveUtility, [tools.get('reinforce')!, tools.get('detox')!, tools.get('armingkey')!], []),
 EnemyTags.level1);
