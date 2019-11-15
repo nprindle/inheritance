@@ -7,7 +7,8 @@ characters.addSorted('reject', new Player('The Reject', 10, 6,
         tools.get('mutagens')!,
         tools.get('boneclaws')!,
         tools.get('rawhideskin')!,
-        tools.get('geneburst')!
+        tools.get('geneburst')!,
+        tools.get('toxicblood')!
     ],
     [], 'assets/The_Reject_Done.png'
 ), 5);
