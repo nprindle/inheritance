@@ -143,8 +143,9 @@ button:active {
 
 button.endturn {
     position: fixed;
-    top: 16px;
-    right: 16px;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
 }
 
 button.endturn:active {
