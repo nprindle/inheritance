@@ -221,7 +221,6 @@ button.endturn:active {
     text-align: justify;
 }
 
-
 .shop {
     margin-left: 20px;
 }
@@ -256,8 +255,6 @@ button.endturn:active {
     margin-left: 10px;
 }
 
-
-
 .titlescreen button,
 .credits button,
 .journal button,
@@ -272,7 +269,7 @@ button.endturn:active {
 }
 
 .logo {
-    background: url(assets/titletexturebig.png) repeat;
+    background: url(assets/titletexture_newlogo2.png) repeat;
     animation: bgscroll infinite linear 36s;
     display: block;
     margin: 25px;
