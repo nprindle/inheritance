@@ -14,7 +14,7 @@ class UserLacksStatusPredicate extends AbstractCombatPredicate {
     }
 
     toString(): string {
-        return `if you don't have ${this.kind.getName()} status`;
+        return `you don't have ${this.kind.getName()} status`;
     }
 
 }
