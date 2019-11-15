@@ -20,7 +20,7 @@ class CombinationEffect extends AbstractEffect { //combine multiple effects
         for (let i = 0; i < this.effects.length; i++) {
             acc.push(this.effects[i].toString());
         }
-        return acc.join(' ');
+        return acc.join(' and ');
     }
 
     clone(): CombinationEffect {
