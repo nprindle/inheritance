@@ -13,8 +13,10 @@ class CountDownStatus extends AbstractStatus {
 
     @override(AbstractStatus)
     add(other: AbstractStatus): boolean {
+        // countdowns should not stack.
         if (other instanceof CountDownStatus) {
             this.amount += other.amount;
+            this.damage += other.damage;
             return true;
         }
         return false;
@@ -64,7 +66,7 @@ class CountDownStatus extends AbstractStatus {
     @override(AbstractStatus)
     getUtility(): number {
         if (this.amount > 0) {
-            return 100 / this.amount;
+            return 100 - this.amount;
         }
     }
 }

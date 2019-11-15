@@ -23,7 +23,11 @@ class PredicateEffect extends AbstractEffect { //does nothing
     }
 
     toString(): string {
-        return 'do nothing';
+        if(this.otherwise != undefined) {
+            return `if ${this.predicate}, ${this.next}, otherwise ${this.otherwise}`;
+        } else {
+            return `if ${this.predicate}, ${this.next}`;
+        }
     }
 
     clone(): PredicateEffect {
