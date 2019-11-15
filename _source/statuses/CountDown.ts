@@ -40,7 +40,7 @@ class CountDownStatus extends AbstractStatus {
 
     @override(AbstractStatus)
     sameKind(other: AbstractStatus): boolean {
-        return other instanceof BatteryStatus;
+        return other instanceof CountDownStatus;
     }
 
     @override(AbstractStatus)
