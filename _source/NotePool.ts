@@ -30,6 +30,7 @@ class NotePool {
         } else {
             let next: Note = Random.fromArray(lockedNotes);
             next.unlocked = true;
+            Save.saveNotes();
             return next;
         }
     }
@@ -57,6 +58,7 @@ class NotePool {
                 note.unlocked = false;
             }
         });
+        Save.saveNotes();
     }
 
     // unlock a specific note by title
@@ -64,6 +66,7 @@ class NotePool {
         NotePool.notes.filter(note => (note.title == title)).forEach(note => {
             note.unlocked = true;
         });
+        Save.saveNotes();
     }
 
     // unlocks the note associated with this character if it hasn't already been unlocked
@@ -80,6 +83,7 @@ class NotePool {
             note.unlocked = true;
         });
 
+        Save.saveNotes();
         return characterNotes[0];
     }
 }
