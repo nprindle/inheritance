@@ -111,10 +111,14 @@ class Fight {
     end(): void {
         this.player.endFight();
         this.enemy.endFight();
-        if (this.inRoom) {
-            this.inRoom.continueFloor();
+        if (this.enemy.isFinalBoss) {
+            Game.showVictory(Game.currentRun);
         } else {
-            this.endCallback();
+            if (this.inRoom) {
+                this.inRoom.continueFloor();
+            } else {
+                this.endCallback();
+            }
         }
     }
 

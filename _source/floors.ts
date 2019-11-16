@@ -44,6 +44,9 @@ class EnemyEventPool extends RoomEventPool {
             const tag: EnemyTags = Random.fromArray(this.tags);
             const enemy = Game.currentRun.nextEnemy([tag]);
             enemy.setLootMoney(enemyTagToLootMoney(tag));
+            if (tag === EnemyTags.boss) {
+                enemy.isFinalBoss = true;
+            }
             const event = new EnemyRoomEvent(enemy);
             //special icons for special lads
             if (tag === EnemyTags.goldfish) {

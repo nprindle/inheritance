@@ -70,5 +70,14 @@ class Game {
             ]),
         );
     }
+    
+    static showVictory(run: Run): void {
+        UI.fillScreen(
+            UI.makeHeader('Victory!'),
+            UI.renderOptions([
+                ['Back to Title Screen', () => Game.showTitle()]
+            ]),
+        );
+    }
 
 }

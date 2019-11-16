@@ -6,6 +6,7 @@ class Enemy extends Combatant {
     lootTraits: Trait[];
     lootModifiers: Modifier[];
     lootMoney: number;
+    isFinalBoss: boolean; //if this is true, game ends when this guy guys
 
     utilityFunction: (Enemy, Player) => number;
 
@@ -19,6 +20,7 @@ class Enemy extends Combatant {
         this.lootTraits = [];
         this.lootModifiers = [];
         this.lootMoney = 0;
+        this.isFinalBoss = false;
     }
 
     clone(): Enemy {
