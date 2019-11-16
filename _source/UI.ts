@@ -450,6 +450,13 @@ class UI {
         return div;
     }
 
+    static renderScripReward(exit: Function, reward: number) {
+        const div: HTMLElement = UI.makeDiv('note');
+        div.appendChild(UI.makeHeader(`You found ${reward} scrip!`));
+        div.appendChild(UI.makeButton("Continue", exit));
+        return div;
+    }
+
     static renderSettings(exit: Function): HTMLElement {
         const div = UI.makeDiv('settings');
         div.appendChild(UI.makeHeader('Settings'));

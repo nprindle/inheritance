@@ -6,5 +6,6 @@ enum RoomType {
     Tool = "tool",
     Modifier = "modifier",
     Trait = "trait",
-    Shop = "shop"
+    Shop = "shop",
+    Collectible = "Collectible"
 }
