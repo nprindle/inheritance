@@ -207,6 +207,10 @@ button.endturn:active {
     flex-direction: row;
 }
 
+.gamejournalbutton {
+    font-size: 32px;
+}
+
 .notetitle {
     font-family: monospace;
 }
