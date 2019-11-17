@@ -3,22 +3,32 @@
 
 class GiveSelfRandomTraitEffect extends AbstractEffect {
 
-    constructor() {
+    tags: TraitTags[];
+
+    constructor(...tags: TraitTags[]) {
         super();
+        if (tags.length === 0) {
+            tags = [TraitTags.randomable];
+        }
+        this.tags = tags;
     }
 
     effect(user: Combatant, target: Combatant): void {
-        const trait: Trait = traits.selectRandomUnseen([], [TraitTags.randomable]);
+        const trait: Trait = traits.selectRandomUnseen([], this.tags);
         user.addTrait(trait);
         trait.startFight(user);
     }
 
     toString(): string {
-        return `gain a random trait`;
+        if (this.tags.indexOf(TraitTags.coupdegracereward) !== -1) {
+            return `gain Cunning`;
+        } else {
+            return `gain a random trait`;
+        }
     }
 
     clone(): GiveSelfRandomTraitEffect {
-        return new GiveSelfRandomTraitEffect();
+        return new GiveSelfRandomTraitEffect(...this.tags);
     }
 
 }

@@ -129,7 +129,7 @@ enum EnemyTags {
 const enemies = new ItemPool<Enemy, EnemyTags>();
 
 enum TraitTags {
-    standard, elite, curse, randomable
+    standard, elite, curse, randomable, coupdegracereward
 }
 
 const traits = new ItemPool<Trait, TraitTags>();
