@@ -150,8 +150,8 @@ button.endturn {
 
 button.endturn:active {
     position: fixed;
-    top: 17px;
-    right: 15px;
+    top: 21px;
+    right: 19px;
     left: auto;
 }
 
