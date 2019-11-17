@@ -243,7 +243,7 @@ abstract class Combatant {
 
     statusFold(fold: StatusFolds, value: number): number {
         const foldingCallbacks: Function[] = this.statuses.map(x => <Function> x[fold].bind(x));
-        const result: number = foldingCallbacks.reduce((acc, x) => x(acc), value);
+        const result: number = foldingCallbacks.reduce((acc, x) => x(acc, this), value);
         this.statusBookkeeping();
         return result;
     }

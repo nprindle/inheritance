@@ -66,19 +66,19 @@ abstract class AbstractStatus {
 
     //These functions are used for reducing over certain values - damage taken, amount healed, etc.
 
-    damageTakenFold(acc: number): number {
+    damageTakenFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
-    damageDealtFold(acc: number): number {
+    damageDealtFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
-    amountHealedFold(acc: number): number {
+    amountHealedFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
-    energyGainedFold(acc: number): number {
+    energyGainedFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
