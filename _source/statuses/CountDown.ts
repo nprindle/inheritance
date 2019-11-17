@@ -64,8 +64,6 @@ class CountDownStatus extends AbstractStatus {
 
     @override(AbstractStatus)
     getUtility(): number {
-        if (this.amount > 0) {
-            return 100 - this.amount;
-        }
+        return 100 - this.amount;
     }
 }
