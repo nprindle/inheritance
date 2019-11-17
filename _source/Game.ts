@@ -61,12 +61,10 @@ class Game {
     }
 
     static showJournal(): void {
-        UI.fillScreen(UI.renderJournal(Game.showNote, Game.showTitle, NotePool.getUnlockedNotes()));
+        UI.fillScreen(UI.renderJournal(Game.showTitle, NotePool.getUnlockedNotes()));
     }
 
-    static showNote(note: Note) {
-        UI.fillScreen(UI.renderNote(Game.showJournal, note));
-    }
+
 
     static showGameOver(run: Run): void {
         UI.fillScreen(
