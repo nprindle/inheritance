@@ -136,9 +136,24 @@ class ShopEventPool extends RoomEventPool {
     }
 
     getEvents(): RoomEvent[] {
-        //generate compliant enemies
         const shops = Arrays.generate(Random.tupleInt(this.num), () => new Shop(this.modifierCounts, this.traitCounts));
         return shops.map(shop => new ShopRoomEvent(shop));
+    }
+}
+
+class CollectibleEventPool extends RoomEventPool {
+    
+    num: [number, number];
+    scripRewardRange: [number, number];
+
+    constructor(min: number, max: number, scripRewardRange: [number, number]) {
+        super();
+        this.num = [min, max];
+        this.scripRewardRange = scripRewardRange;
+    }
+
+    getEvents(): RoomEvent[] {
+        return Arrays.generate(Random.tupleInt(this.num), () => new CollectibleRoomEvent(this.scripRewardRange));
     }
 }
 
@@ -183,6 +198,7 @@ const floors: FloorConfig[] = [
         new TraitEventPool(1, 2, [TraitTags.standard]),
         new ModifierEventPool(1, 2, []),
         new ShopEventPool(1, 1, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
+        new CollectibleEventPool(1, 1, [1, 3]),
     ]),
     new FloorConfig("The Lounge", [14, 17], [
         new EnemyEventPool(2, 4, [EnemyTags.level2]),
@@ -190,6 +206,7 @@ const floors: FloorConfig[] = [
         new ModifierEventPool(1, 2, []),
         new EliteEnemyEventPool(1, 1, [EnemyTags.level1]),
         new ShopEventPool(1, 1, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
+        new CollectibleEventPool(1, 1, [2, 5]),
     ]),
     new FloorConfig("The Library", [18, 20], [
         new EnemyEventPool(2, 4, [EnemyTags.level3]),
@@ -197,6 +214,7 @@ const floors: FloorConfig[] = [
         new ModifierEventPool(1, 2, []),
         new EliteEnemyEventPool(1, 1, [EnemyTags.level2]),
         new ShopEventPool(1, 1, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
+        new CollectibleEventPool(1, 1, [2, 5]),
     ]),
     new FloorConfig("The Attic", [4, 5], [
         new EnemyEventPool(1, 1, [EnemyTags.boss]),

@@ -92,4 +92,11 @@ class Save {
         return false;
     }
 
+    // clears local storage data if local storage is available
+    static clearLocalStorage() {
+        if (this.isSupported) {
+            window.localStorage.clear();
+        }
+    }
+
 }
