@@ -7,7 +7,9 @@
 
 characters.addSorted('catburglar', new Player('The Catburglar', 10, 10,
     [
-        tools.get('wrench')!
+        tools.get('claws')!,
+        tools.get('holoarmor')!,
+        tools.get('coupdegrace')!
     ],
     [traits.get('counterfeiting')!], 'assets/The_Catburgurlar.png'
 ), 1);
