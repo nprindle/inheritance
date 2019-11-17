@@ -388,21 +388,50 @@ button.endturn:active {
 }
 
 .room {
-    border: 3px solid transparent;
+    border-color: transparent;
 }
 
-.blocked-left {
-    border-left: 3px solid black;
+.room::before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    top: 0;
+    left: 0;
+    border-top: 4px solid black;
+    border-right: 4px solid transparent;
 }
 
-.blocked-right {
-    border-right: 3px solid black;
+.room::after {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    top: 0;
+    right: 0;
+    border-top: 4px solid black;
+    border-left: 4px solid transparent;
 }
 
-.blocked-up {
-    border-top: 3px solid black;
+.room-corners::before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    bottom: 0;
+    left: 0;
+    border-left: 4px solid black;
+    border-top: 4px solid transparent;
 }
 
-.blocked-down {
-    border-bottom: 3px solid black;
+.room-corners::after {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    bottom: 0;
+    right: 0;
+    border-right: 4px solid black;
+    border-top: 4px solid transparent;
 }
+
