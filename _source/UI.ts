@@ -378,8 +378,12 @@ class UI {
         } else {
             div.classList.add("unvisited");
         }
-        let shadows = room.getBlockedDirections().map(d => UI.directionToBoxShadow(d, 4, 'black'));
-        div.style['box-shadow'] = shadows.join(', ');
+
+        const boxShadowAttributes = ['-moz-box-shadow', '-webkit-box-shadow', 'box-shadow'];
+        const shadows = room.getBlockedDirections().map(d => UI.directionToBoxShadow(d, 4, 'black')).join(', ');
+        for (let attr of boxShadowAttributes) {
+            div.style[attr] = shadows;
+        }
 
         // Apply invisible element in order to exploit it for its ::before and
         // ::after
