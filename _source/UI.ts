@@ -439,13 +439,11 @@ class UI {
     static renderJournal(exit: Function, unlockedNotes: Note[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('journal');
         div.appendChild(UI.makeHeader('Unlocked Files'));
-        function noteExitFunction() {
-            UI.fillScreen(div);
+
+        function noteDisplayFunction(note:Note) {
+            UI.fillScreen(UI.renderNote(() => UI.fillScreen(div), note));
         }
-        function callback(note:Note) {
-            UI.fillScreen(UI.renderNote(noteExitFunction, note));
-        }
-        const noteTuples: [string, Function][] = unlockedNotes.map(note => <[string, Function]> [note.title, () => callback(note)]);
+        const noteTuples: [string, Function][] = unlockedNotes.map(note => <[string, Function]> [note.title, () => noteDisplayFunction(note)]);
         div.appendChild(UI.renderOptions(noteTuples.concat([['Close Journal', exit]])));
         return div;
     }
