@@ -2,6 +2,16 @@
 /// <reference path="Fight.ts" />
 /// <reference path="floors.ts" />
 
+enum RunStatistics {
+    DAMAGE_TAKEN,
+    DAMAGE_DEALT,
+    MODIFIERS_TAKEN,
+    TRAITS_GAINED,
+    SCRIP_EARNED,
+    ENEMIES_FOUGHT,
+    SCRIP_SPENT
+}
+
 class Run {
 
     player: Player;
@@ -11,24 +21,51 @@ class Run {
     seenTraits: string[];
     floorNumber: number;
     currentFloor: Floor;
+    statistics: Record<RunStatistics, number>;
 
     constructor(player: Player) {
         this.player = player;
+        player.specialDamageFunction = x => this.addStatistic(RunStatistics.DAMAGE_TAKEN, x);
         this.player.setDeathFunc(() => Game.showGameOver(this));
         this.playerCoordinates = new Coordinates( { x: 0, y: 0 } );
         this.floorNumber = 0;
         this.seenEnemies = [];
         this.seenModifiers = [];
         this.seenTraits = [];
+        this.statistics = [0, 0, 0, 0, 0, 0, 0];
     }
 
     start(): void {
         this.nextFloor();
     }
 
+    addStatistic(statistic: RunStatistics, change: number): void {
+        this.statistics[statistic] += change;
+    }
+
+    statisticString(statistic: RunStatistics): string {
+        const amount: number = this.statistics[statistic];
+        switch (statistic) {
+            case RunStatistics.DAMAGE_DEALT:
+                return `You dealt ${amount} damage.`;
+            case RunStatistics.DAMAGE_TAKEN:
+                return `You took ${amount} damage.`;
+            case RunStatistics.ENEMIES_FOUGHT:
+                return `You fought ${amount} enemies.`;
+            case RunStatistics.MODIFIERS_TAKEN:
+                return `You took ${amount} modifiers.`;
+            case RunStatistics.TRAITS_GAINED:
+                return `You gained ${amount} traits.`;
+            case RunStatistics.SCRIP_EARNED:
+                return `You gathered ${amount} scrip.`;
+            case RunStatistics.SCRIP_SPENT:
+                return `You spent ${amount} scrip.`;
+        }
+    }
+
     nextFloor(): void {
         if (this.floorNumber >= floors.length) {
-            this.floorNumber %= floors.length; //TODO: make getting to the end win the game
+            this.floorNumber %= floors.length;
         }
         this.currentFloor = new Floor(this.floorNumber, this);
         this.playerCoordinates = this.currentFloor.entranceRoom.coordinates;

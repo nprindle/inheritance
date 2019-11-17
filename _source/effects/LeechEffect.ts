@@ -11,7 +11,11 @@ class LeechEffect extends AbstractEffect {
     effect(user: Combatant, target: Combatant): void {
         let oldHealth: number = target.health;
         target.wound(user.statusFold(StatusFolds.DAMAGE_DEALT, this.damage));
-        user.heal(oldHealth - target.health);
+        let healAmount: number = oldHealth - target.health;
+        user.heal(healAmount);
+        if (user instanceof Player) {
+            Game.currentRun.addStatistic(RunStatistics.DAMAGE_DEALT, healAmount);
+        }
     }
 
     toString(): string {

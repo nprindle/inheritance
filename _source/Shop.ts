@@ -71,6 +71,7 @@ class Shop {
                 this.traitsForSale.splice(this.traitsForSale.indexOf(listing), 1); // remove item from shop inventory
                 player.addTrait(listing.trait);
                 player.payCurrency(listing.price);
+                Game.currentRun.addStatistic(RunStatistics.TRAITS_GAINED, 1);
             }
         }
     }

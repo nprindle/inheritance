@@ -12,11 +12,17 @@ class Player extends Combatant {
     }
 
     giveCurrency(x: number): void {
-        this.currency += Math.max(x + this.extraScrip, 0);
+        x = Math.max(x + this.extraScrip, 0);
+        this.currency += x;
+        Game.currentRun.addStatistic(RunStatistics.SCRIP_EARNED, x);
     }
 
     payCurrency(x: number): void {
-        this.currency = Math.max(0, this.currency - x);
+        if (x > this.currency) {
+            x = this.currency;
+        }
+        this.currency -= x;
+        Game.currentRun.addStatistic(RunStatistics.SCRIP_SPENT, x);
     }
 
     clone(): Player {

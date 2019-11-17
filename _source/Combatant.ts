@@ -16,6 +16,7 @@ abstract class Combatant {
     afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
     opponent?: Combatant;
     imageSrc?: string;
+    specialDamageFunction: (x: number) => any;
 
     constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[], image?: string) {
         this.name = name;
@@ -31,6 +32,7 @@ abstract class Combatant {
         this.afterToolFunc = function() {};
         this.statuses = [];
         this.imageSrc = image;
+        this.specialDamageFunction = x => {};
     };
 
     abstract clone(): Combatant;
@@ -68,8 +70,12 @@ abstract class Combatant {
         if (damage === 0) {
             return;
         }
+        if (damage > this.health) {
+            damage = this.health;
+        }
         this.health -= damage;
         this.statusCallback(StatusCallbacks.TAKE_DAMAGE);
+        this.specialDamageFunction(damage);
         if (this.health <= 0) {
             this.health = 0;
             this.die();

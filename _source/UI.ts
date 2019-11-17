@@ -216,6 +216,7 @@ class UI {
         div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
             SoundManager.playSoundEffect(SoundEffects.Modifier);
             m.apply(t);
+            Game.currentRun.addStatistic(RunStatistics.MODIFIERS_TAKEN, 1);
             callback(true);
         }, false, 'apply'));
         return div;
@@ -315,6 +316,7 @@ class UI {
         div.appendChild(UI.makeButton('Drink', function() {
             SoundManager.playSoundEffect(SoundEffects.Trait);
             p.addTrait(t);
+            Game.currentRun.addStatistic(RunStatistics.TRAITS_GAINED, 1);
             exitCallback(true);
         }))
         if (refusable) {
@@ -468,6 +470,13 @@ class UI {
         div.appendChild(UI.makeHeader('Choose Your Character'));
         const tuples: [string, Function][] = chars.map(char => <[string, Function]> [char.name, () => callback(char)]);
         div.appendChild(UI.renderOptions(tuples.concat([['Back to Title', exit]])));
+        return div;
+    }
+
+    static renderRun(run: Run): HTMLElement{
+        const div = UI.makeDiv('run-stats');
+        const descs: string[] = Object.keys(RunStatistics).map(stat => run.statisticString(RunStatistics[stat])).filter(x => !!x);
+        descs.forEach(desc => div.appendChild(UI.makePara(desc)));
         return div;
     }
 

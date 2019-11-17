@@ -14,6 +14,7 @@ class Fight {
     readyToEnd: boolean;
 
     constructor(p: Player, e: Enemy, inRoom?: Room) {
+        Game.currentRun.addStatistic(RunStatistics.ENEMIES_FOUGHT, 1);
         this.player = p;
         this.enemy = e;
         p.startFight(e);

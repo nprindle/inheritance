@@ -65,6 +65,7 @@ class Game {
     static showGameOver(run: Run): void {
         UI.fillScreen(
             UI.makeHeader('Game Over'),
+            UI.renderRun(run),
             UI.renderOptions([
                 ['Back to Title Screen', () => Game.showTitle()]
             ]),
@@ -74,6 +75,7 @@ class Game {
     static showVictory(run: Run): void {
         UI.fillScreen(
             UI.makeHeader('Victory!'),
+            UI.renderRun(run),
             UI.renderOptions([
                 ['Back to Title Screen', () => Game.showTitle()]
             ]),
