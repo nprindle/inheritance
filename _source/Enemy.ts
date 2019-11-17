@@ -8,9 +8,9 @@ class Enemy extends Combatant {
     lootMoney: number;
     isFinalBoss: boolean; //if this is true, game ends when this guy guys
 
-    utilityFunction: (Enemy, Player) => number;
+    utilityFunction: (e: Enemy, p: Player) => number;
 
-    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (Enemy, Human) => number, tools: Tool[], traits: Trait[], image?: string) {
+    constructor(name: string, health: number, energy: number, defaultUtilityFunction: (e: Enemy, p: Player) => number, tools: Tool[], traits: Trait[], image?: string) {
         super(name, health, energy, tools, traits, image);
         if (defaultUtilityFunction == undefined) {
             this.utilityFunction = AiUtilityFunctions.cautiousUtility;
