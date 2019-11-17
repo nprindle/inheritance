@@ -4,7 +4,7 @@
 /// <reference path="../statuses.ts" />
 tools.add('coupdegrace',
     new Tool('Coup de Grace', new Cost([1, CostTypes.Energy]),
-    new DamageEffect(2),
+        new DamageEffect(2),
         new PredicateEffect(
             new TargetDeadPredicate(),
             new GiveSelfRandomTraitEffect(TraitTags.coupdegracereward)
