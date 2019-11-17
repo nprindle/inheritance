@@ -422,11 +422,16 @@ class UI {
     static renderGameView(floor: Floor, player: Player): HTMLElement {
         const div = UI.makeDiv();
         const container = UI.makeDiv('game');
-        div.append(container);
         container.appendChild(UI.renderFloor(floor));
         container.appendChild(UI.renderCombatantSidebar(player));
-        let journalHTML = UI.renderJournal(() => UI.fillScreen(div), NotePool.getUnlockedNotes());
-        div.appendChild(UI.makeButton("Journal", () => UI.fillScreen(journalHTML), false, 'gamejournalbutton'));
+        let menuButton = UI.makeButton('Main Menu', () => Game.showTitle(), false, 'main-menu');
+        container.appendChild(menuButton);
+        div.append(container);
+
+        let journalHTML = UI.renderJournal(() => Game.resumeRun(), NotePool.getUnlockedNotes());
+
+        let journalButton = UI.makeButton("Journal", () => UI.fillScreen(journalHTML), false, 'gamejournalbutton');
+        div.appendChild(journalButton);
 
         return div;
     }
@@ -462,7 +467,7 @@ class UI {
         return div;
     }
 
-    static renderJournal(exit: Function, unlockedNotes: Note[]): HTMLElement {
+    static renderJournal(exit: () => void, unlockedNotes: Note[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('journal');
         div.appendChild(UI.makeHeader('Unlocked Files'));
 
