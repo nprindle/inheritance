@@ -378,7 +378,7 @@ class UI {
         let shadows = room.getBlockedDirections().map(d => UI.directionToBoxShadow(d, 4, 'black'));
         div.style['box-shadow'] = shadows.join(', ');
 
-        // Apply invisible element in order to exploit it for it's ::before and
+        // Apply invisible element in order to exploit it for its ::before and
         // ::after
         const cornerDiv: HTMLElement = UI.makeDiv("room-corners");
         div.appendChild(cornerDiv);
