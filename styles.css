@@ -150,8 +150,22 @@ button.endturn {
 
 button.endturn:active {
     position: fixed;
-    top: 17px;
-    right: 15px;
+    top: 21px;
+    right: 19px;
+    left: auto;
+}
+
+button.main-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+}
+
+button.main-menu:active {
+    position: fixed;
+    top: 21px;
+    right: 19px;
     left: auto;
 }
 
