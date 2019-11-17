@@ -155,6 +155,20 @@ button.endturn:active {
     left: auto;
 }
 
+button.main-menu {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+}
+
+button.main-menu:active {
+    position: fixed;
+    top: 21px;
+    right: 19px;
+    left: auto;
+}
+
 .fakeclick {
     animation-duration: 0.5s;
     animation-name: fakeclick;

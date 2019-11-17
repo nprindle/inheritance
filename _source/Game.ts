@@ -3,14 +3,25 @@ class Game {
     static currentRun: Run;
 
     static showTitle(): void {
-        UI.fillScreen(
-            UI.renderTitleScreen([
+        let options;
+        // If we've started a run, we can resume it
+        if (Game.currentRun) {
+            options = [
+                ['New Game', () => Game.showCharSelect()],
+                ['Resume Play', () => Game.resumeRun()],
+                ['Settings', () => Game.showSettings()],
+                ['Journal', () => Game.showJournal()],
+                ['Credits', () => Game.showCredits()],
+            ];
+        } else {
+            options = [
                 ['New Game', () => Game.showCharSelect()],
                 ['Settings', () => Game.showSettings()],
                 ['Journal', () => Game.showJournal()],
                 ['Credits', () => Game.showCredits()],
-            ])
-        );
+            ];
+        }
+        UI.fillScreen(UI.renderTitleScreen(options));
     }
 
     static showCharSelect(): void {
@@ -33,6 +44,10 @@ class Game {
 
         Game.currentRun = new Run(character);
         Game.currentRun.start();
+    }
+
+    static resumeRun(): void {
+        UI.fillScreen(UI.renderGameView(Game.currentRun.currentFloor, Game.currentRun.player));
     }
 
     // clears local storage and restarts game
@@ -61,10 +76,8 @@ class Game {
     }
 
     static showJournal(): void {
-        UI.fillScreen(UI.renderJournal(Game.showTitle, NotePool.getUnlockedNotes()));
+        UI.fillScreen(UI.renderJournal(() => Game.showTitle(), NotePool.getUnlockedNotes()));
     }
-
-
 
     static showGameOver(run: Run): void {
         UI.fillScreen(
@@ -75,7 +88,7 @@ class Game {
             ]),
         );
     }
-    
+
     static showVictory(run: Run): void {
         UI.fillScreen(
             UI.makeHeader('Victory!'),
