@@ -23,7 +23,7 @@ class BatteryStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
-    endTurn(affected: Combatant): void {
+    endTurn(affected: Combatant, other: Combatant): void {
         this.amount--;
     }
 

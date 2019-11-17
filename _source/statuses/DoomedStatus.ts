@@ -18,7 +18,7 @@ class DoomedStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
-    endTurn(affected: Combatant): void {
+    endTurn(affected: Combatant, other: Combatant): void {
         this.amount--;
         if (this.amount === 0) {
             affected.actuallyDie();

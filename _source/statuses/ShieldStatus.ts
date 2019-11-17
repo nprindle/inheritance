@@ -9,7 +9,7 @@ class ShieldStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
-    damageTakenFold(acc: number): number {
+    damageTakenFold(acc: number, affected: Combatant): number {
         if (acc >= this.amount) {
           acc -= this.amount;
           this.amount = 0;

@@ -7,7 +7,7 @@ class StrengthStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
-    damageDealtFold(acc: number): number {
+    damageDealtFold(acc: number, affected: Combatant): number {
         return Math.max(1, acc + this.amount);
     }
 
