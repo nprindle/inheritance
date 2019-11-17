@@ -13,6 +13,9 @@ class GiveSelfStatusEffect extends AbstractEffect {
     }
 
     toString(): string {
+        if (this.status.amount < 0) {
+            return `lose ${Math.abs(this.status.amount)} ${Strings.capitalize(this.status.getName())}`;
+        }
         return `gain ${this.status.amount} ${Strings.capitalize(this.status.getName())}`;
     }
 
