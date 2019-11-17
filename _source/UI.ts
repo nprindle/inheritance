@@ -193,7 +193,10 @@ class UI {
     static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean, buttonArr?: HTMLElement[]) {
         const div: HTMLElement = UI.renderTool(t);
         if (t.usesPerTurn < Infinity) {
-            div.appendChild(UI.makePara(`(${t.usesLeft} use(s) left this turn)`));
+            div.appendChild(UI.makePara(`(${t.usesLeftThisTurn} use(s) left this turn)`));
+        }
+        if (t.usesPerFight < Infinity) {
+            div.appendChild(UI.makePara(`(${t.usesLeftThisFight} use(s) left this fight)`));
         }
         if (c && i !== undefined && target !== undefined) {
             let b = UI.makeButton('Use', function(e: MouseEvent) {

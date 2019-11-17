@@ -14,6 +14,6 @@ tools.add('bell',
         new CombinationEffect(
             new GiveSelfStatusEffect(new DefenseStatus(-1))
         )
-    ), new UsesMod(1)
+    ), new UsesPerTurnMod(1)
     )
 );
