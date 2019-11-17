@@ -10,7 +10,8 @@ enum RoomIcon {
     TOOL = "temp_tool.png",
     PLAYER = "temp_player.png",
     BOSS = "temp_enemy.png",
-    GOLDFISH = "temp_money.png"
+    GOLDFISH = "temp_money.png",
+    Collectible = "temp_collectible.png"
 }
 
 abstract class RoomEvent {
@@ -169,6 +170,33 @@ class ShopRoomEvent extends RoomEvent {
             room.containerFloor.redraw();
         }))
         return this;
+    }
+
+}
+
+class CollectibleRoomEvent extends RoomEvent {
+
+    roomType = RoomType.Collectible;
+    roomIcon = RoomIcon.Collectible;
+    scripRewardRange: [number, number];
+
+    constructor(scripRewardRange: [number, number]) {
+        super();
+        this.scripRewardRange = scripRewardRange;
+    }
+
+    onRoomEnter(room: Room, roomsEntered: number): RoomEvent {
+        // try to unlock new note
+        let note: Note = NotePool.unlockNewNote();
+        if (note) {
+            UI.fillScreen(UI.renderNote(() => room.containerFloor.redraw(), note));
+        } else {
+            // if the player has unlocked all notes in the game, give them a scrip reward instead
+            let reward: number = Random.tupleInt(this.scripRewardRange);
+            Game.currentRun.player.giveCurrency(reward);
+            UI.fillScreen(UI.renderScripReward(() => room.containerFloor.redraw(), reward));
+        }
+        return new EmptyRoomEvent(RoomType.Empty);
     }
 
 }

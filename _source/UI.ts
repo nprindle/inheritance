@@ -450,6 +450,13 @@ class UI {
         return div;
     }
 
+    static renderScripReward(exit: Function, reward: number) {
+        const div: HTMLElement = UI.makeDiv('note');
+        div.appendChild(UI.makeHeader(`You found ${reward} scrip!`));
+        div.appendChild(UI.makeButton("Continue", exit));
+        return div;
+    }
+
     static renderSettings(exit: Function): HTMLElement {
         const div = UI.makeDiv('settings');
         div.appendChild(UI.makeHeader('Settings'));
@@ -459,7 +466,21 @@ class UI {
             SoundManager.playSoundEffect(SoundEffects.Noise);
             Save.saveSettings();
         }));
+
+        div.appendChild(UI.makeButton("Reset Game", () => {
+            UI.fillScreen(UI.renderResetConfirm(() => UI.fillScreen(UI.renderSettings(exit))));
+        }))
+
         div.appendChild(UI.makeButton('Back', exit));
+        return div;
+    }
+
+    static renderResetConfirm(cancelExitCallback: Function): HTMLElement {
+        const div = UI.makeDiv('settings');
+        div.appendChild(UI.makeHeader('Are you sure you want to reset the game?'));
+        div.appendChild(UI.makePara("All progress will be lost, and settings will be restored to defaults."));
+        div.appendChild(UI.makeButton('Cancel', cancelExitCallback));
+        div.appendChild(UI.makeButton('Reset Game', () => Game.resetGame()));
         return div;
     }
 

@@ -35,6 +35,12 @@ class Game {
         Game.currentRun.start();
     }
 
+    // clears local storage and restarts game
+    static resetGame(): void {
+        Save.clearLocalStorage();
+        window.location.reload();
+    }
+
     static showCredits(): void {
         UI.fillScreen(
             UI.renderCredits([
