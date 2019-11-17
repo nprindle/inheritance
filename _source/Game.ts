@@ -80,6 +80,7 @@ class Game {
     }
 
     static showGameOver(run: Run): void {
+        this.currentRun = undefined;
         UI.fillScreen(
             UI.makeHeader('Game Over'),
             UI.renderRun(run),
@@ -90,6 +91,7 @@ class Game {
     }
 
     static showVictory(run: Run): void {
+        this.currentRun = undefined;
         UI.fillScreen(
             UI.makeHeader('Victory!'),
             UI.renderRun(run),
