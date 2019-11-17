@@ -4,7 +4,7 @@ class UserStatusPredicate extends AbstractCombatPredicate {
 
     kind: AbstractStatus;
 
-    constructor(threshold: number, kind: AbstractStatus) {
+    constructor(kind: AbstractStatus) {
         super();
         this.kind = kind;
     }
@@ -15,9 +15,9 @@ class UserStatusPredicate extends AbstractCombatPredicate {
 
     toString(): string {
         if (this.kind.amount === 1) {
-            return `if you have any ${this.kind.getName()}`;
+            return `you have any ${Strings.capitalize(this.kind.getName())}`;
         }
-        return `if you have at least ${this.kind.amount} ${this.kind.getName()}`;
+        return `you have at least ${this.kind.amount} ${Strings.capitalize(this.kind.getName())}`;
     }
 
 }
