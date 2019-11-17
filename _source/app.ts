@@ -23,8 +23,8 @@ window.onload = function() {
     NotePool.reloadAllNotes();
     // Try to load any unlocked notes if present
     Save.loadNotes();
-    // unlock these notes at the start of the game (all other notes default to locked)
-    NotePool.unlockSpecificNote("I am a title");
+    // unlock the tutorial at the start of the game.
+    NotePool.unlockSpecificNote("Tutorial");
     // Save unlocked notes to LocalStorage
     Save.saveNotes();
 

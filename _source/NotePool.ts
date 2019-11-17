@@ -67,6 +67,15 @@ class NotePool {
             note.unlocked = true;
         });
         Save.saveNotes();
+
+    }
+
+    static getNoteByTitle(title: String): Note {
+        let matchingNotes = NotePool.notes.filter(note => (note.title == title));
+        if (matchingNotes.length > 0) {
+            return matchingNotes[0];
+        }
+        return null;
     }
 
     // unlocks the note associated with this character if it hasn't already been unlocked

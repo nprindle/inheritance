@@ -394,9 +394,14 @@ class UI {
     }
 
     static renderGameView(floor: Floor, player: Player): HTMLElement {
-        const div = UI.makeDiv('game');
-        div.appendChild(UI.renderFloor(floor));
-        div.appendChild(UI.renderCombatantSidebar(player));
+        const div = UI.makeDiv();
+        const container = UI.makeDiv('game');
+        div.append(container);
+        container.appendChild(UI.renderFloor(floor));
+        container.appendChild(UI.renderCombatantSidebar(player));
+        let journalHTML = UI.renderJournal(() => UI.fillScreen(div), NotePool.getUnlockedNotes());
+        div.appendChild(UI.makeButton("Journal", () => UI.fillScreen(journalHTML), false, 'gamejournalbutton'));
+
         return div;
     }
 
@@ -431,9 +436,15 @@ class UI {
         return div;
     }
 
-    static renderJournal(callback: Function, exit: Function, unlockedNotes: Note[]): HTMLElement {
+    static renderJournal(exit: Function, unlockedNotes: Note[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('journal');
         div.appendChild(UI.makeHeader('Unlocked Files'));
+        function noteExitFunction() {
+            UI.fillScreen(div);
+        }
+        function callback(note:Note) {
+            UI.fillScreen(UI.renderNote(noteExitFunction, note));
+        }
         const noteTuples: [string, Function][] = unlockedNotes.map(note => <[string, Function]> [note.title, () => callback(note)]);
         div.appendChild(UI.renderOptions(noteTuples.concat([['Close Journal', exit]])));
         return div;
