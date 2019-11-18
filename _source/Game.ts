@@ -68,7 +68,7 @@ class Game {
                 new CreditsEntry('Prindle', 'Programming'),
                 new CreditsEntry('Mitchell Philipp', 'Programming'),
                 new CreditsEntry('Prince Bull', 'Art'),
-                new CreditsEntry('Seong Ryoo', 'Art'),
+                new CreditsEntry('Seong Ryoo', 'Art', 'Music'),
                 new CreditsEntry('Finn Schiesser', 'Logo'),
             ], () => Game.showTitle())
         );
