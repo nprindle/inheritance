@@ -4,7 +4,7 @@
 
 characters.addSorted('kid', new Player('The Granddaughter', 15, 10,
     [
-        tools.get('wrench')!,
+        tools.get('mallet')!,
         tools.get('veil')!,
         tools.get('lighter')!,
         tools.get('jacket')!,

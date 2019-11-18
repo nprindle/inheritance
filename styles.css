@@ -24,6 +24,10 @@ html {
     opacity: 0.25;
 }
 
+.arena .player .profile {
+    transform: scaleX(-1);
+}
+
 .player>.stats,
 .enemy>.stats {
     display: flex;
