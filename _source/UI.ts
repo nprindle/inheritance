@@ -485,11 +485,25 @@ class UI {
 
         const noteBodyContainer: HTMLElement = UI.makeDiv('notebodycontainer');
         let paragraphs: string[] = note.content.split("\n");
-        paragraphs.forEach(paragraph => noteBodyContainer.appendChild(UI.makePara(paragraph, 'notebody')));
+        paragraphs.forEach(paragraph => noteBodyContainer.appendChild(UI.renderNoteParagraph(paragraph)));
 
         div.appendChild(noteBodyContainer);
         div.appendChild(UI.makeButton("Close", exit));
         return div;
+    }
+
+    static renderNoteParagraph(text: string): HTMLElement {
+        const p = UI.makePara('', 'notebody');
+        const split = text.split(/[{}]/g);
+        split.map((str, i) => {
+            switch (i % 2) {
+                case 0:
+                    return document.createTextNode(str);
+                case 1:
+                    return UI.makeElem('span', str, 'blur');
+            }
+        }).forEach(elem => p.appendChild(elem));
+        return p;
     }
 
     static renderScripReward(exit: Function, reward: number) {

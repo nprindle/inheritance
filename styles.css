@@ -452,3 +452,8 @@ button.main-menu:active {
     border-right: 4px solid black;
     border-top: 4px solid transparent;
 }
+
+.blur {
+    filter: blur(5px);
+    font-weight: bolder;
+}
