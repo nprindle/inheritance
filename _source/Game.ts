@@ -28,8 +28,11 @@ class Game {
     }
 
     static showCharSelect(): void {
+        //TODO: This should only restrict to inFinalGame characters in the final build.
+        let charas: Player[] = characters.getAll();
+        charas = characters.selectAllUnseen([], [CharacterTags.inFinalGame]);
         UI.fillScreen(
-            UI.renderCharacterSelect(Game.newRun, Game.showTitle, ...characters.getAll())
+            UI.renderCharacterSelect(Game.newRun, Game.showTitle, ...charas)
         );
         console.log(characters.getAll());
     }
