@@ -2,6 +2,7 @@
 /// <reference path="map/RoomEvent.ts" />
 /// <reference path="ItemPool.ts" />
 /// <reference path="Random.ts" />
+/// <reference path="SoundManager.ts" />
 
 enum FloorModifiers {
     NO_EXIT
@@ -167,8 +168,11 @@ class FloorConfig {
 
     modifiers: FloorModifiers[];
 
-    constructor(name: string, numRooms: [number, number], eventPools: RoomEventPool[], ...modifiers: FloorModifiers[]) {
+    song: MusicTracks;
+
+    constructor(name: string, numRooms: [number, number], song: MusicTracks, eventPools: RoomEventPool[], ...modifiers: FloorModifiers[]) {
         this.name = name;
+        this.song = song;
         this.numRooms = numRooms;
         this.eventPools = eventPools;
         this.modifiers = modifiers;
@@ -193,14 +197,14 @@ class FloorConfig {
 }
 
 const floors: FloorConfig[] = [
-    new FloorConfig("The Foyer", [12, 15], [
+    new FloorConfig("The Foyer", [12, 15], MusicTracks.Foyer, [
         new EnemyEventPool(2, 4, [EnemyTags.level1]),
         new TraitEventPool(1, 2, [TraitTags.standard]),
         new ModifierEventPool(1, 2, []),
         new ShopEventPool(1, 1, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
         new CollectibleEventPool(1, 1, [1, 3]),
     ]),
-    new FloorConfig("The Lounge", [14, 17], [
+    new FloorConfig("The Lounge", [14, 17], MusicTracks.Foyer, [
         new EnemyEventPool(2, 4, [EnemyTags.level2]),
         new TraitEventPool(1, 2, [TraitTags.standard]),
         new ModifierEventPool(1, 2, []),
@@ -208,7 +212,7 @@ const floors: FloorConfig[] = [
         new ShopEventPool(1, 1, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
         new CollectibleEventPool(1, 1, [2, 5]),
     ]),
-    new FloorConfig("The Library", [18, 20], [
+    new FloorConfig("The Library", [18, 20], MusicTracks.Foyer, [
         new EnemyEventPool(2, 4, [EnemyTags.level3]),
         new TraitEventPool(1, 2, [TraitTags.standard]),
         new ModifierEventPool(1, 2, []),
@@ -216,7 +220,7 @@ const floors: FloorConfig[] = [
         new ShopEventPool(1, 1, [[null, 5]], [[TraitTags.elite, 2], [TraitTags.standard, 2], [TraitTags.curse, 1]]),
         new CollectibleEventPool(1, 1, [2, 5]),
     ]),
-    new FloorConfig("The Attic", [4, 5], [
+    new FloorConfig("The Attic", [4, 5], MusicTracks.Foyer, [
         new EnemyEventPool(1, 1, [EnemyTags.boss]),
     ], FloorModifiers.NO_EXIT),
 ];

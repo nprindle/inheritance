@@ -4,9 +4,11 @@
 /// <reference path="../UI.ts" />
 /// <reference path="../floors.ts" />
 /// <reference path="../Random.ts" />
+/// <reference path="../SoundManager.ts" />
 
 class Floor {
     floorName: string;
+    song: MusicTracks;
 
     width: number;
     height: number;
@@ -23,6 +25,7 @@ class Floor {
         this.currentRun = currentRun
         let floorSettings: FloorConfig = floors[level];
         this.floorName = floorSettings.name;
+        this.song = floorSettings.song;
         this.width = floorSettings.getWidth();
         this.height = floorSettings.getHeight();
 

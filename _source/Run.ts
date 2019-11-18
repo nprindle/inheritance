@@ -71,6 +71,7 @@ class Run {
         this.playerCoordinates = this.currentFloor.entranceRoom.coordinates;
         this.currentFloor.redraw();
         UI.announce(this.currentFloor.floorName);
+        SoundManager.playSong(this.currentFloor.song);
         this.currentFloor.entranceRoom.enter();
         this.floorNumber++;
     }
