@@ -11,4 +11,4 @@ characters.addSorted('kid', new Player('The Granddaughter', 15, 10,
         tools.get('thumbtack')!
     ],
     [], 'assets/thegranddaughter.png'
-), 0);
+), 0, CharacterTags.inFinalGame);

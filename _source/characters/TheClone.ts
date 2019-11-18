@@ -11,4 +11,4 @@ characters.addSorted('clone', new Player('The Clone', 10, 10,
     ],
     [],
     'assets/The_Clone.png'
-), 1);
+), 1, CharacterTags.inFinalGame);

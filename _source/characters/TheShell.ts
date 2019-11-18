@@ -13,4 +13,4 @@ characters.addSorted('shell', new Player('The Shell', 10, 4,
      [
          traits.get('voltaic')!
      ]
-), 4);
+), 4, CharacterTags.inFinalGame);

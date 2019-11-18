@@ -118,7 +118,12 @@ enum ModifierTags {
 }
 
 const modifiers = new ItemPool<Modifier, ModifierTags>();
-const characters = new ItemPool<Player, string>(true);
+
+enum CharacterTags {
+    inFinalGame
+}
+
+const characters = new ItemPool<Player, CharacterTags>(true);
 
 enum EnemyTags {
     goldfish, level1, level2, level3, boss

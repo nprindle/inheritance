@@ -12,4 +12,4 @@ characters.addSorted('catburglar', new Player('The Catburglar', 10, 10,
         tools.get('coupdegrace')!
     ],
     [traits.get('counterfeiting')!], 'assets/The_Catburgurlar.png'
-), 1);
+), 2, CharacterTags.inFinalGame);
