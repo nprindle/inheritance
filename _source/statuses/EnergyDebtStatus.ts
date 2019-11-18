@@ -10,7 +10,7 @@ class EnergyDebtStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
-    energyGainedFold(acc: number): number {
+    energyGainedFold(acc: number, affected: Combatant): number {
         if (acc >= this.amount) {
           acc -= this.amount;
           this.amount = 0;

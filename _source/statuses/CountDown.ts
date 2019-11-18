@@ -24,7 +24,6 @@ class CountDownStatus extends AbstractStatus {
 
     @override(AbstractStatus)
     runsOut(user: Combatant, target: Combatant): void {
-        
         target.wound(this.damage);
 
         // if the target is still alive, the dies
@@ -34,7 +33,7 @@ class CountDownStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
-    endTurn(affected: Combatant): void {
+    endTurn(affected: Combatant, other: Combatant): void {
         this.amount--;
     }
 
@@ -65,8 +64,6 @@ class CountDownStatus extends AbstractStatus {
 
     @override(AbstractStatus)
     getUtility(): number {
-        if (this.amount > 0) {
-            return 100 - this.amount;
-        }
+        return 100 - this.amount;
     }
 }

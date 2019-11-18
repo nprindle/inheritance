@@ -12,7 +12,7 @@ class MoneybagsStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
-    damageTakenFold(acc: number): number {
+    damageTakenFold(acc: number, affected: Combatant): number {
         this.damageTaken += acc;
         return acc;
     }

@@ -25,8 +25,6 @@ window.onload = function() {
     Save.loadNotes();
     // unlock the tutorial at the start of the game.
     NotePool.unlockSpecificNote("Tutorial");
-    // Save unlocked notes to LocalStorage
-    Save.saveNotes();
 
     //TODO: is there any better way to do this?
     

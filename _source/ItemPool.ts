@@ -82,7 +82,7 @@ class ItemPool<T extends { clone: () => T }, E> {
         // after cleaning. Otherwise, if none of the tags matched, they won't match
         // after cleaning, either.
         if (unseenMatching.length == 0) {
-            filterInPlace(seen, (k) => this.items[k].hasTags(...tags));
+            Arrays.filterInPlace(seen, (k) => this.items[k].hasTags(...tags));
             return tagsMatch;
         }
         return unseenMatching;
@@ -90,8 +90,7 @@ class ItemPool<T extends { clone: () => T }, E> {
 
     selectAllUnseen(seen: string[], tags: E[] = [], ...fallbacks: E[][]): T[] {
         let unseen = this.selectUnseenTags(seen, tags, ...fallbacks);
-        // Note: a cast is much faster than a map((x) => x!) here
-        return unseen.map(k => this.get(k)).filter((x) => x !== null) as T[];
+        return unseen.map(k => this.get(k)).filter((x): x is T => x !== null);
     }
 
     selectRandomUnseen(seen: string[], tags: E[] = [], ...fallbacks: E[][]): T | null {
@@ -102,13 +101,12 @@ class ItemPool<T extends { clone: () => T }, E> {
     }
 
     getAll(): T[] {
-        // Note: a cast is much faster than a mapped assertion here
         if (this.sorted) {
             return this.keys.map((x) => this.items[x])
             .sort((a, b) => a.sortingNumber - b.sortingNumber)
-            .map(x => x.get()).filter((x) => x !== null) as T[];
+            .map(x => x.get()).filter((x): x is T => x !== null);
         }
-        return this.keys.map((x) => this.get(x)).filter((x) => x !== null) as T[];
+        return this.keys.map((x) => this.get(x)).filter((x): x is T => x !== null);
     }
 
 }
