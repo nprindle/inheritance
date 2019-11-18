@@ -10,5 +10,5 @@ characters.addSorted('reject', new Player('The Reject', 10, 6,
         tools.get('geneburst')!,
         tools.get('toxicblood')!
     ],
-    [], 'assets/The_Reject_Done.png'
+    [], 'assets/The_Reject_-_Done.png'
 ), 5);
