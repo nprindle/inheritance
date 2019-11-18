@@ -1,9 +1,12 @@
+/// <reference path="SoundManager.ts" />
+
 class Game {
 
     static currentRun: Run;
 
     static showTitle(): void {
         let options;
+        SoundManager.playSong(MusicTracks.MainTheme);
         // If we've started a run, we can resume it
         if (Game.currentRun) {
             options = [

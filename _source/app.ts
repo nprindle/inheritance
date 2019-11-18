@@ -28,7 +28,10 @@ window.onload = function() {
     // Save unlocked notes to LocalStorage
     Save.saveNotes();
 
-    Game.showTitle();
+    //TODO: is there any better way to do this?
+    
+    const button: HTMLElement = UI.makeButton('Enter the Game', () => Game.showTitle());
+    UI.fillScreen(button);
 }
 
 if (window.innerHeight === 0) {
