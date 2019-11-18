@@ -125,7 +125,8 @@ class Tool {
         let t = new Tool(this.name, this.cost.clone(), ...effectsClones);
         t.usesPerTurn = this.usesPerTurn;
         t.usesPerFight = this.usesPerFight;
-        t.usesLeftThisFight = t.usesPerFight;
+        t.usesLeftThisTurn = this.usesLeftThisTurn;
+        t.usesLeftThisFight = this.usesLeftThisFight;
         t.multiplier = this.multiplier;
         let modifiers: [string, number][] = [];
         for (let i = 0; i < this.modifiers.length; i++) {

@@ -47,6 +47,22 @@ class AiUtilityFunctions {
         return this.bestValue;
     }
 
+    static friendlyUtility(bot: Enemy, human: Player): number {
+
+        // avoid letting anyone die
+        if (bot.health == 0 || human.health == 0) {
+            return AiUtilityFunctions.worstValue;
+        }
+
+        let botStatusPoints = AiUtilityFunctions.statusUtilityPoints(bot);
+        let humanStatusPoints = AiUtilityFunctions.statusUtilityPoints(human);
+        let statusPoints = botStatusPoints + humanStatusPoints;
+
+        let healthPoints = (bot.health + human.health);
+
+        return statusPoints + healthPoints;
+    }
+
     private static dead(combatant: Combatant): boolean  {
         return combatant.health == 0;
     }
