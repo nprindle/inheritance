@@ -100,11 +100,13 @@ class ItemPool<T extends { clone: () => T }, E> {
         return this.get(key);
     }
 
-    getAll(): T[] {
+    getAll(tags: E[] = []): T[] {
         if (this.sorted) {
             return this.keys.map((x) => this.items[x])
             .sort((a, b) => a.sortingNumber - b.sortingNumber)
-            .map(x => x.get()).filter((x): x is T => x !== null);
+            .filter(x => x.hasTags(...tags))
+            .map(x => x.get())
+            .filter((x): x is T => x !== null);
         }
         return this.keys.map((x) => this.get(x)).filter((x): x is T => x !== null);
     }
