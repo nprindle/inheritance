@@ -157,7 +157,7 @@ button.endturn:active {
 
 button.main-menu {
     position: fixed;
-    top: 20px;
+    bottom: 20px;
     right: 20px;
     font-size: 20px;
 }
@@ -452,4 +452,3 @@ button.main-menu:active {
     border-right: 4px solid black;
     border-top: 4px solid transparent;
 }
-
