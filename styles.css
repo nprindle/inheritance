@@ -200,6 +200,36 @@ button.main-menu:active {
     margin: 0;
 }
 
+.charselect .characters {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    justify-content: space-between;
+    margin: 0% 15%;
+    flex-wrap: wrap;
+    max-height: 50%;
+}
+
+.charselect .character {
+    max-height: 50%;
+    max-width: 25%;
+    margin: 0% 1%;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+}
+
+.charselect .profile {
+    max-width: 75%;
+    margin: 0% 1%;
+    align-self: center;
+}
+
+.charselect h2 {
+    text-align: center;
+}
+
 .settings p {
     font-size: 18px;
     display: flex;

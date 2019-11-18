@@ -59,7 +59,7 @@ class UI {
         return b;
     }
 
-    static makeImg(src: string, c?: string, id?: string): HTMLElement {
+    static makeImg(src: string, c?: string, id?: string): HTMLImageElement {
         const img: HTMLImageElement = document.createElement('img');
         img.src = src;
         if (c) {
@@ -542,9 +542,23 @@ class UI {
 
     static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('charselect');
-        div.appendChild(UI.makeHeader('Choose Your Character'));
-        const tuples: [string, Function][] = chars.map(char => <[string, Function]> [char.name, () => callback(char)]);
-        div.appendChild(UI.renderOptions(tuples.concat([['Back to Title', exit]])));
+        const charHeader = UI.makeHeader('Choose Your Character'); 
+        div.appendChild(charHeader);
+        const charDiv: HTMLElement = UI.makeDiv('characters');
+        chars.forEach(char => charDiv.appendChild(UI.renderCharacter(callback, char)));
+        div.appendChild(charDiv);
+        div.appendChild(UI.makeButton('Back to Title', () => Game.showTitle()))
+        return div;
+    }
+
+    static renderCharacter(callback: Function, character: Player): HTMLElement {
+        let filename = character.imageSrc || 'assets/The_Reject_-_Done.png';
+        const div: HTMLElement = UI.makeDiv('character');
+        div.appendChild(UI.makeElem('h2', character.name));
+        const img: HTMLImageElement = UI.makeImg(filename, 'profile');
+        img.alt = character.name;
+        img.onclick = () => callback(character);
+        div.appendChild(img);
         return div;
     }
 
