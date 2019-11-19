@@ -122,11 +122,19 @@ class UI {
         for (let i = 0; i < statuses.length; i++) {
             div.classList.add(`status-${Strings.cssSanitize(c.statuses[i].getName())}`);
         }
-        let name = c.name;
+        let namePara = UI.makePara(c.name, 'name');
         if (c.traits.length > 0) {
-            name = `${name} (${c.traits.map(tuple => Strings.powerTuple([tuple[0].name, tuple[1]])).join(', ')})`;
+            namePara.appendChild(document.createTextNode(' ('));
+            c.traits.forEach(tuple => {
+                let nameString = tuple[0].name;
+                if (tuple[1] > 1) {
+                    nameString += Strings.power(tuple[1]);
+                }
+                namePara.appendChild(UI.makeTooltip(nameString, tuple[0].describe()));
+            });
+            namePara.appendChild(document.createTextNode(')'));
         }
-        div.appendChild(UI.makePara(name, 'name'));
+        div.appendChild(namePara);
         //health, energy, etc.
         const statsDiv = UI.makeDiv('stats');
         statsDiv.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
