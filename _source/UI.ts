@@ -125,12 +125,15 @@ class UI {
         let namePara = UI.makePara(c.name, 'name');
         if (c.traits.length > 0) {
             namePara.appendChild(document.createTextNode(' ('));
-            c.traits.forEach(tuple => {
+            c.traits.forEach((tuple, i) => {
                 let nameString = tuple[0].name;
                 if (tuple[1] > 1) {
                     nameString += Strings.power(tuple[1]);
                 }
                 namePara.appendChild(UI.makeTooltip(nameString, tuple[0].describe()));
+                if (i < c.traits.length - 1) {
+                    namePara.appendChild(document.createTextNode(', '));
+                }
             });
             namePara.appendChild(document.createTextNode(')'));
         }
