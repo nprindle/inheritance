@@ -124,7 +124,7 @@ class UI {
         }
         let name = c.name;
         if (c.traits.length > 0) {
-            name = `${name} (${c.traitNames.map(tuple => Strings.powerTuple(tuple)).join(', ')})`;
+            name = `${name} (${c.traits.map(tuple => Strings.powerTuple([tuple[0].name, tuple[1]])).join(', ')})`;
         }
         div.appendChild(UI.makePara(name, 'name'));
         //health, energy, etc.

@@ -9,8 +9,7 @@ abstract class Combatant {
     energy: number;
     maxEnergy: number;
     tools: Tool[];
-    traits: Trait[];
-    traitNames: [string, number][];
+    traits: [Trait, number][];
     statuses: AbstractStatus[];
     deathFunc: Function;
     afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
@@ -26,7 +25,6 @@ abstract class Combatant {
         this.maxEnergy = energy;
         this.tools = tools;
         this.traits = [];
-        this.traitNames = [];
         traits.forEach(trait => this.addTrait(trait));
         this.deathFunc = function() {};
         this.afterToolFunc = function() {};
@@ -40,7 +38,7 @@ abstract class Combatant {
     startFight(other: Combatant): void {
         this.opponent = other;
         this.statuses = [];
-        this.traits.forEach(trait => trait.startFight(this));
+        this.traits.forEach(trait => trait[0].startFight(this));
         this.tools.forEach(tool => tool.startFight());
         this.refresh();
     }
@@ -203,35 +201,22 @@ abstract class Combatant {
 
     addTrait(trait: Trait): void {
         trait.apply(this);
-        this.traits.push(trait);
-        let name = trait.name;
-        for (let i = 0; i < this.traitNames.length; i++) {
-            let current = this.traitNames[i];
-            if (current[0] === name) {
+        for (let i = 0; i < this.traits.length; i++) {
+            let current = this.traits[i];
+            if (current[0].name === trait.name) {
                 current[1] = current[1] + 1;
                 return;
             }
         }
-        this.traitNames.push([name, 1]);
+        this.traits.push([trait, 1]);
     }
 
     removeTrait(index: number): void {
-        let trait = this.traits[index];
-        trait.remove(this);
-        this.traits.splice(index, 1);
-        //remove effects of the trait...
-        trait.removeEffects(this);
-        //remove trait name
-        let name = trait.name;
-        for (let i = 0; i < this.traitNames.length; i++) {
-            let current = this.traitNames[i];
-            if (current[0] === name) {
-                current[1] = current[1] - 1;
-                if (current[1] === 0) {
-                    this.traitNames.splice(i, 1);
-                }
-                return;
-            }
+        let traitTuple = this.traits[index];
+        traitTuple[0].remove(this);
+        traitTuple[1]--;
+        if (traitTuple[1] <= 0) {
+            this.traits.splice(index, 1);
         }
     }
 
