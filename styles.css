@@ -168,9 +168,10 @@ button.main-menu {
 
 button.main-menu:active {
     position: fixed;
-    top: 21px;
+    bottom: 19px;
     right: 19px;
     left: auto;
+    top: auto;
 }
 
 .fakeclick {
