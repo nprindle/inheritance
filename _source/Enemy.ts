@@ -25,7 +25,7 @@ class Enemy extends Combatant {
 
     clone(): Enemy {
         let copy = new Enemy(this.name, this.health, this.energy, this.utilityFunction, this.tools.map(x => x.clone()), [], this.imageSrc);
-        copy.traits.forEach(tuple => {
+        this.traits.forEach(tuple => {
             for (let i = 0; i < tuple[1]; i++) {
                 copy.addTrait(tuple[0].clone());
             }

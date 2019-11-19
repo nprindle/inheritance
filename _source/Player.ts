@@ -29,7 +29,7 @@ class Player extends Combatant {
         let p = new Player(this.name, this.health, this.energy,
             this.tools.map(x => x.clone()), [], this.imageSrc);
         //TODO: is this atrocious enough to be fixed
-        p.traits.forEach(tuple => {
+        this.traits.forEach(tuple => {
             for (let i = 0; i < tuple[1]; i++) {
                 p.addTrait(tuple[0].clone());
             }
