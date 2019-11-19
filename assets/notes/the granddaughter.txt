@@ -1,5 +1,6 @@
 Character:The Granddaughter
 A Letter In The Mail
+September 29, 198{E}
 Dear Ms. {Loremipsum},
     I regret to inform you that your grandfather, Dr. {Loremipsum}, has passed away. As I am sure you are already aware, he named you his sole beneficiary.
     While it is not a condition of you receiving your inheritance, he requested that you visit his tower at some point in the coming months.
