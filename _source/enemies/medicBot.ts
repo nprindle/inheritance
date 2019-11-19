@@ -12,4 +12,4 @@ enemies.add('medicbot',
         ],
         []
     ),
-EnemyTags.level3);
+EnemyTags.level2);
