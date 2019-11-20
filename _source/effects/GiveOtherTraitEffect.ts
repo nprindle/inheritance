@@ -9,7 +9,7 @@ class GiveOtherTraitEffect extends AbstractEffect {
         super();
         this.trait = trait;
         if (trait == null) {
-            console.log("Null trait in trait effect");
+            debugLog("Null trait in trait effect");
         }
     }
 

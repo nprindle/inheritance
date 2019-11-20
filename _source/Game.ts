@@ -33,7 +33,7 @@ class Game {
         UI.fillScreen(
             UI.renderCharacterSelect(Game.newRun, Game.showTitle, ...charas)
         );
-        console.log(characters.getAll());
+        debugLog(characters.getAll());
     }
 
     static newRun(character: Player): void {

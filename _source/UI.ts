@@ -118,7 +118,7 @@ class UI {
         }
         const div: HTMLElement = UI.makeDiv(which);
         if (c.imageSrc) {
-            console.log(c.imageSrc);
+            debugLog(c.imageSrc);
             div.appendChild(UI.makeImg(c.imageSrc, 'profile'));
         }
         const statuses: AbstractStatus[] = c.statuses.filter(status => status.isValid());
@@ -345,7 +345,7 @@ class UI {
     }
 
     static renderFloor(floor: Floor) {
-        console.log(floor);
+        debugLog(floor);
         const div: HTMLElement = UI.makeDiv("map");
         div.innerHTML = '';
         for (let i = 0; i < floor.height; i++) {
