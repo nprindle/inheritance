@@ -4,7 +4,7 @@
 /// <reference path="../AiUtilityFunctions.ts" />
 
 enemies.add('crickettron',
-    new Enemy('Cricket-Tron', 15, 5, AiUtilityFunctions.cautiousUtility, [
+    new Enemy('Cricket-Tron', 25, 5, AiUtilityFunctions.cautiousUtility, [
         modifiers.get('strengthening').apply(tools.get('mallet'))
     ], []),
 EnemyTags.level2);
