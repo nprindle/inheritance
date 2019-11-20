@@ -6,7 +6,8 @@ enum SoundEffects {
 
 enum MusicTracks {
     Foyer = 'the_foyer.ogg',
-    MainTheme = 'main_theme.ogg'
+    MainTheme = 'main_theme.ogg',
+    ProtoInh = 'the_prototype_inheritance.ogg'
 }
 
 class SoundManager {
@@ -24,7 +25,8 @@ class SoundManager {
         };
         this.musicElems = {
             'main_theme.ogg': newAudioElement(),
-            'the_foyer.ogg': newAudioElement()
+            'the_foyer.ogg': newAudioElement(),
+            'the_prototype_inheritance.ogg': newAudioElement()
         }
         let container: HTMLElement = document.getElementById('audio');
         Object.keys(SoundEffects).forEach(key => {
