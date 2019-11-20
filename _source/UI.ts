@@ -5,6 +5,8 @@ class UI {
 
     static redrawFunction: Function;
 
+    private static onMapScreen: boolean;
+
     static makeDiv(c?: string, cList?: string[], id?: string) {
         const div: HTMLElement = document.createElement('div');
         if (c) {
@@ -419,7 +421,7 @@ class UI {
     static handleKeyDown(e: KeyboardEvent): void {
         let dir: Direction | undefined = Directions.fromKey(e.key);
         // Arrow keys should move the player between rooms
-        if (dir !== undefined && Game.currentRun) {
+        if (dir !== undefined && Game.currentRun && UI.isOnMapScreen()) {
             e.preventDefault();
             Game.currentRun.shiftPlayer(dir);
         }
@@ -597,9 +599,20 @@ class UI {
     }
 
     static fillScreen(...elems: HTMLElement[]): void {
+        UI.onMapScreen = false;
         const gameview = document.getElementById('gameview');
         gameview.innerHTML = '';
         elems.forEach(elem => gameview.appendChild(elem));
+    }
+
+    static showMapScreen(): void {
+        UI.fillScreen(UI.renderGameView(Game.currentRun.currentFloor, Game.currentRun.player));
+        // TODO: this is a total hack
+        UI.onMapScreen = true;
+    }
+
+    static isOnMapScreen(): boolean {
+        return UI.onMapScreen;
     }
 
     static announce(text: string): void {
