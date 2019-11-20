@@ -5,9 +5,10 @@
 
 //TODO: implement Flow status and make Catburglar interesting
 
-characters.addSorted('catburglar', new Player('The Catburglar', 10, 10,
+characters.addSorted('catburglar', new Player('The Catburglar', 9, 9,
     [
         tools.get('claws')!,
+        tools.get('radio')!,
         tools.get('holoarmor')!,
         tools.get('coupdegrace')!
     ],
