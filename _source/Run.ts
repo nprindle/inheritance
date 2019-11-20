@@ -92,4 +92,22 @@ class Run {
         this.playerCoordinates = coords;
     }
 
+    // Move the player in a given direction, if possible
+    shiftPlayer(dir: Direction): void {
+        if (!this.playerCoordinates || !this.currentFloor) {
+            return;
+        }
+        let currentRoom = this.currentFloor.getRoomAt(this.playerCoordinates);
+        // If the direction is blocked, don't jump over the wall
+        if (!currentRoom || currentRoom.getBlockedDirections().indexOf(dir) > -1) {
+            return;
+        }
+        let offset = Directions.getOffset(dir);
+        let coord = this.playerCoordinates.applyOffset(offset);
+        let room = this.currentFloor.getRoomAt(coord);
+        if (room) {
+            room.enter();
+        }
+    }
+
 }

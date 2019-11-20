@@ -262,9 +262,6 @@ class UI {
         div.appendChild(UI.makeHeader("Shop"));
         div.appendChild(UI.makePara("You have " + player.currency + " scrip."));
 
-
-
-
         const itemsPane: HTMLElement = UI.makeDiv("shoplistscontainer");
         const modifiersPane: HTMLElement = UI.makeDiv("shoplist");
         modifiersPane.appendChild(UI.makeHeader("Tool Modifiers"));
@@ -419,6 +416,15 @@ class UI {
         }
     }
 
+    static handleKeyDown(e: KeyboardEvent): void {
+        let dir: Direction | undefined = Directions.fromKey(e.key);
+        // Arrow keys should move the player between rooms
+        if (dir !== undefined && Game.currentRun) {
+            e.preventDefault();
+            Game.currentRun.shiftPlayer(dir);
+        }
+    }
+
     static renderMainTitle(): HTMLElement {
         return UI.makeImg('assets/final_logo.png', 'logo');
     }
@@ -553,7 +559,7 @@ class UI {
 
     static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('charselect');
-        const charHeader = UI.makeHeader('Choose Your Character'); 
+        const charHeader = UI.makeHeader('Choose Your Character');
         div.appendChild(charHeader);
         const charDiv: HTMLElement = UI.makeDiv('characters');
         chars.forEach(char => charDiv.appendChild(UI.renderCharacter(callback, char)));

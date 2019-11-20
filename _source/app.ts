@@ -27,9 +27,14 @@ window.onload = function() {
     NotePool.unlockSpecificNote("Tutorial");
 
     //TODO: is there any better way to do this?
-    
+
     const button: HTMLElement = UI.makeButton('Enter the Game', () => Game.showTitle());
     UI.fillScreen(button);
+
+    // Attack keyboard input listener
+    document.onkeydown = (e: KeyboardEvent) => {
+        UI.handleKeyDown(e);
+    };
 }
 
 if (window.innerHeight === 0) {
@@ -38,3 +43,4 @@ if (window.innerHeight === 0) {
     window.console.log('enemies', enemies);
     window.console.log('characters', characters);
 }
+
