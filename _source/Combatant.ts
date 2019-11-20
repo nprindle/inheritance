@@ -38,7 +38,11 @@ abstract class Combatant {
     startFight(other: Combatant): void {
         this.opponent = other;
         this.statuses = [];
-        this.traits.forEach(trait => trait[0].startFight(this));
+        this.traits.forEach(trait => {
+            for (let i = 0; i < trait[1]; i++) {
+                trait[0].startFight(this);
+            }
+        });
         this.tools.forEach(tool => tool.startFight());
         this.refresh();
     }
