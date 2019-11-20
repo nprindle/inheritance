@@ -42,6 +42,15 @@ class Room {
         return this.roomEvent.roomType;
     }
 
+    getIcon(): RoomIcon {
+        return this.roomEvent.roomIcon;
+    }
+
+    // Returns true if some of this room's neighbors are further from the entrance.
+    hasFurtherNeighbors(): boolean {
+        return this.exits.some(exit => exit.distanceFromEntrance > this.distanceFromEntrance);
+    }
+
     // Get the coordinates of all exits from this room
     getExitCoordinates(): Coordinates[] {
         return this.exits.map(e => e.coordinates);

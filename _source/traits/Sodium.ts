@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('sodium',
     new Trait('Sodium', new DefenseStatus(-2)),
-    TraitTags.curse
+    TraitTags.curse, TraitTags.randomable
 );

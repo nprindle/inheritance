@@ -4,9 +4,11 @@
 /// <reference path="../UI.ts" />
 /// <reference path="../floors.ts" />
 /// <reference path="../Random.ts" />
+/// <reference path="../SoundManager.ts" />
 
 class Floor {
     floorName: string;
+    song: MusicTracks;
 
     width: number;
     height: number;
@@ -21,8 +23,9 @@ class Floor {
 
     constructor(level: number, currentRun: Run) {
         this.currentRun = currentRun
-        let floorSettings = floors[level];
+        let floorSettings: FloorConfig = floors[level];
         this.floorName = floorSettings.name;
+        this.song = floorSettings.song;
         this.width = floorSettings.getWidth();
         this.height = floorSettings.getHeight();
 
@@ -60,12 +63,16 @@ class Floor {
             assignableRooms.push(newRoom);
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
         }
-        let minExitDistance = Math.ceil(maxRoomDistance * 3.0 / 4);
-        let potentialExits = Arrays.flatten(this.rooms).filter(x => x.distanceFromEntrance >= minExitDistance);
-        let exitRoom = Random.fromArray(potentialExits);
-        exitRoom.roomEvent = new EmptyRoomEvent(RoomType.Exit);
+        //only add exit if the floor supports it
+        if (floorSettings.modifiers.indexOf(FloorModifiers.NO_EXIT) === -1) {
+            let potentialExits = Arrays.flatten(this.rooms)
+                .filter(room => !room.hasFurtherNeighbors())
+                .sort((a, b) => b.distanceFromEntrance - a.distanceFromEntrance);
+            let exitRoom = potentialExits[0];
+            exitRoom.roomEvent = new ExitRoomEvent();
+            assignableRooms = assignableRooms.filter(room => room !== exitRoom);
+        }
 
-        assignableRooms = assignableRooms.filter(room => room !== exitRoom);
         assignableRooms = Random.shuffle(assignableRooms);
         let events = floorSettings.getEvents();
         for (let i = 0; i < events.length && i < assignableRooms.length; i++) {
@@ -87,11 +94,15 @@ class Floor {
     }
 
     redraw(): void {
-        UI.fillScreen(UI.renderGameView(this, Game.currentRun.player));
+        UI.showMapScreen();
     }
 
     end(): void {
         document.body.removeChild(this.div);
+    }
+
+    getRoomAt(coords: Coordinates): Room | undefined {
+        return this.rooms[coords.y] && this.rooms[coords.y][coords.x];
     }
 
     private shouldGenNewRoom(coord: Coordinates): boolean {

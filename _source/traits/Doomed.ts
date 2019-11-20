@@ -3,5 +3,5 @@
 /// <reference path="../statuses.ts" />
 traits.add('doomed',
     new Trait('Doomed', new DoomedStatus(10)),
-    TraitTags.curse
+    TraitTags.curse, TraitTags.randomable
 );

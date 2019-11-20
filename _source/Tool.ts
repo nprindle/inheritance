@@ -6,7 +6,7 @@ abstract class ToolMod {
     abstract apply(t: Tool): void;
 }
 
-class UsesMod extends ToolMod {
+class UsesPerTurnMod extends ToolMod {
 
     num: number;
 
@@ -21,6 +21,22 @@ class UsesMod extends ToolMod {
 
 }
 
+class UsesPerFightMod extends ToolMod {
+
+    num: number;
+
+    constructor(n: number) {
+        super();
+        this.num = n;
+    }
+
+    apply(t: Tool): void {
+        t.usesPerFight = this.num;
+    }
+
+}
+
+
 class Tool {
     _name: string;
     effects: AbstractEffect[];
@@ -28,7 +44,9 @@ class Tool {
     modifiers: [string, number][];
     multiplier: number;
     usesPerTurn: number;
-    usesLeft: number;
+    usesLeftThisTurn: number;
+    usesPerFight: number;
+    usesLeftThisFight: number;
 
     constructor(name: string, cost: Cost, ...effects: (AbstractEffect | ToolMod)[]) {
         this._name = name;
@@ -37,7 +55,7 @@ class Tool {
         this.modifiers = [];
         this.multiplier = 1;
         this.usesPerTurn = Infinity;
-        this.usesLeft = this.usesPerTurn;
+        this.usesPerFight = Infinity;
         for (let i = 0; i < effects.length; i++) {
             let curr = effects[i];
             if (curr instanceof AbstractEffect) {
@@ -46,6 +64,8 @@ class Tool {
                 curr.apply(this);
             }
         }
+        this.usesLeftThisTurn = this.usesPerTurn;
+        this.usesLeftThisTurn = this.usesLeftThisFight;
     }
 
     get name() {
@@ -57,7 +77,7 @@ class Tool {
     }
 
     usableBy(user: Combatant): boolean {
-        return user.canAfford(this.cost) && this.usesLeft > 0;
+        return user.canAfford(this.cost) && this.usesLeftThisFight > 0 && this.usesLeftThisTurn > 0;
     }
 
     use(user: Combatant, target: Combatant): void {
@@ -70,11 +90,16 @@ class Tool {
                 this.effects[i].activate(user, target);
             }
         }
-        this.usesLeft--;
+        this.usesLeftThisTurn--;
+        this.usesLeftThisFight--;
+    }
+
+    startFight(): void {
+        this.usesLeftThisFight = this.usesPerFight;
     }
 
     refresh(): void {
-        this.usesLeft = this.usesPerTurn;
+        this.usesLeftThisTurn = this.usesPerTurn;
     }
 
     effectsString(): string {
@@ -99,6 +124,9 @@ class Tool {
         let effectsClones = this.effects.map(x => x.clone());
         let t = new Tool(this.name, this.cost.clone(), ...effectsClones);
         t.usesPerTurn = this.usesPerTurn;
+        t.usesPerFight = this.usesPerFight;
+        t.usesLeftThisTurn = this.usesLeftThisTurn;
+        t.usesLeftThisFight = this.usesLeftThisFight;
         t.multiplier = this.multiplier;
         let modifiers: [string, number][] = [];
         for (let i = 0; i < this.modifiers.length; i++) {

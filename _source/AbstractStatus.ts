@@ -6,7 +6,7 @@ enum StatusCallbacks {
     USE_TOOL = 'useTool',
     TAKE_DAMAGE = 'takeDamage',
     DIE = 'die',
-    //there's no callback for runOut since that shouldn't be called over all functions
+    //there's no callback for runsOut since that shouldn't be called over all functions
 }
 
 enum StatusFolds {
@@ -66,19 +66,19 @@ abstract class AbstractStatus {
 
     //These functions are used for reducing over certain values - damage taken, amount healed, etc.
 
-    damageTakenFold(acc: number): number {
+    damageTakenFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
-    damageDealtFold(acc: number): number {
+    damageDealtFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
-    amountHealedFold(acc: number): number {
+    amountHealedFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
-    energyGainedFold(acc: number): number {
+    energyGainedFold(acc: number, affected: Combatant): number {
         return acc;
     }
 
@@ -98,6 +98,11 @@ abstract class AbstractStatus {
     abstract getDescription(): string;
     abstract getSortingNumber(): number;
     abstract getUtility(): number;
+
+    // override this if the description should be different for the player than for enemies
+    getDescriptionForPlayer(): string {
+        return this.getDescription();
+    }
 
     //Type comparisons are hard.
     abstract sameKind(other: AbstractStatus): boolean;

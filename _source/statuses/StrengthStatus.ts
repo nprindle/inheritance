@@ -6,10 +6,12 @@ class StrengthStatus extends AbstractStatus {
         super(amount, StatusValidators.NONZERO);
     }
 
-    damageDealtFold(acc: number): number {
+    @override(AbstractStatus)
+    damageDealtFold(acc: number, affected: Combatant): number {
         return Math.max(1, acc + this.amount);
     }
 
+    @override(AbstractStatus)
     add(other: AbstractStatus): boolean {
         if (other instanceof StrengthStatus) {
             this.amount += other.amount;
@@ -18,18 +20,22 @@ class StrengthStatus extends AbstractStatus {
         return false;
     }
 
+    @override(AbstractStatus)
     sameKind(other: AbstractStatus): boolean {
         return other instanceof StrengthStatus;
     }
 
+    @override(AbstractStatus)
     clone(): StrengthStatus {
         return new StrengthStatus(this.amount);
     }
 
+    @override(AbstractStatus)
     getName(): string {
         return 'strength';
     }
 
+    @override(AbstractStatus)
     getDescription(): string {
         if (this.amount > 0) {
             return `Deal ${this.amount} more damage whenever you attack.`;
@@ -38,10 +44,12 @@ class StrengthStatus extends AbstractStatus {
         }
     }
 
+    @override(AbstractStatus)
     getSortingNumber(): number {
         return 0;
     }
 
+    @override(AbstractStatus)
     getUtility(): number {
         return 2 * this.amount;
     }

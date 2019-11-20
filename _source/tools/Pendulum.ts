@@ -9,6 +9,6 @@ tools.add('pendulum',
             new TargetStatusPredicate(new DoomedStatus(1)),
             new GiveOtherStatusEffect(new DoomedStatus(-1)),
             new GiveOtherStatusEffect(new DoomedStatus(10))
-        ), new UsesMod(1)
+        ), new UsesPerTurnMod(1)
     )
 );

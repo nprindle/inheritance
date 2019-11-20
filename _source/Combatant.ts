@@ -9,14 +9,15 @@ abstract class Combatant {
     energy: number;
     maxEnergy: number;
     tools: Tool[];
-    traits: Trait[];
-    traitNames: [string, number][];
+    traits: [Trait, number][];
     statuses: AbstractStatus[];
     deathFunc: Function;
     afterToolFunc: Function; //hacky, to make sure tools are done being used before fights end
-    opponent: Combatant;
+    opponent?: Combatant;
+    imageSrc?: string;
+    specialDamageFunction: (x: number) => any;
 
-    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[]) {
+    constructor(name: string, health: number, energy: number, tools: Tool[], traits: Trait[], image?: string) {
         this.name = name;
         this.health = health;
         this.maxHealth = health;
@@ -24,11 +25,12 @@ abstract class Combatant {
         this.maxEnergy = energy;
         this.tools = tools;
         this.traits = [];
-        this.traitNames = [];
         traits.forEach(trait => this.addTrait(trait));
         this.deathFunc = function() {};
         this.afterToolFunc = function() {};
         this.statuses = [];
+        this.imageSrc = image;
+        this.specialDamageFunction = x => {};
     };
 
     abstract clone(): Combatant;
@@ -36,7 +38,12 @@ abstract class Combatant {
     startFight(other: Combatant): void {
         this.opponent = other;
         this.statuses = [];
-        this.traits.forEach(trait => trait.startFight(this));
+        this.traits.forEach(trait => {
+            for (let i = 0; i < trait[1]; i++) {
+                trait[0].startFight(this);
+            }
+        });
+        this.tools.forEach(tool => tool.startFight());
         this.refresh();
     }
 
@@ -66,8 +73,12 @@ abstract class Combatant {
         if (damage === 0) {
             return;
         }
+        if (damage > this.health) {
+            damage = this.health;
+        }
         this.health -= damage;
         this.statusCallback(StatusCallbacks.TAKE_DAMAGE);
+        this.specialDamageFunction(damage);
         if (this.health <= 0) {
             this.health = 0;
             this.die();
@@ -186,42 +197,30 @@ abstract class Combatant {
 
     removeStatus(remove: AbstractStatus): void {
         //call the runOut callback on all the ones that run out...
-        this.statuses.filter(status => status.sameKind(remove)).forEach(status => status.runsOut(this, this.opponent));
+        this.statuses.filter(status => status.sameKind(remove)).forEach(status => {
+            status.runsOut(this, this.opponent);
+        });
         this.statuses = this.statuses.filter(status => !status.sameKind(remove));
     }
 
     addTrait(trait: Trait): void {
         trait.apply(this);
-        this.traits.push(trait);
-        let name = trait.name;
-        for (let i = 0; i < this.traitNames.length; i++) {
-            let current = this.traitNames[i];
-            if (current[0] === name) {
+        for (let i = 0; i < this.traits.length; i++) {
+            let current = this.traits[i];
+            if (current[0].name === trait.name) {
                 current[1] = current[1] + 1;
                 return;
             }
         }
-        this.traitNames.push([name, 1]);
+        this.traits.push([trait, 1]);
     }
 
     removeTrait(index: number): void {
-        let trait = this.traits[index];
-        trait.remove(this);
-        this.traits.splice(index, 1);
-        //remove effects of the trait...
-        trait.removeEffects(this);
-        //remove trait name
-        let name = trait.name;
-        for (let i = 0; i < this.traitNames.length; i++) {
-            let current = this.traitNames[i];
-            if (current[0] === name) {
-                current[1] = current[1] - 1;
-                if (current[1] === 0) {
-                    this.traitNames.splice(i, 1);
-                }
-                console.log(this.traitNames, this.traits);
-                return;
-            }
+        let traitTuple = this.traits[index];
+        traitTuple[0].remove(this);
+        traitTuple[1]--;
+        if (traitTuple[1] <= 0) {
+            this.traits.splice(index, 1);
         }
     }
 
@@ -233,7 +232,7 @@ abstract class Combatant {
 
     statusFold(fold: StatusFolds, value: number): number {
         const foldingCallbacks: Function[] = this.statuses.map(x => <Function> x[fold].bind(x));
-        const result: number = foldingCallbacks.reduce((acc, x) => x(acc), value);
+        const result: number = foldingCallbacks.reduce((acc, x) => x(acc, this), value);
         this.statusBookkeeping();
         return result;
     }

@@ -9,7 +9,8 @@ class EnergyDebtStatus extends AbstractStatus {
         super(amount, StatusValidators.POSITIVE);
     }
 
-    energyGainedFold(acc: number): number {
+    @override(AbstractStatus)
+    energyGainedFold(acc: number, affected: Combatant): number {
         if (acc >= this.amount) {
           acc -= this.amount;
           this.amount = 0;
@@ -20,6 +21,7 @@ class EnergyDebtStatus extends AbstractStatus {
         }
     }
 
+    @override(AbstractStatus)
     add(other: AbstractStatus): boolean {
         if (other instanceof EnergyDebtStatus) {
             this.amount += other.amount;
@@ -28,27 +30,33 @@ class EnergyDebtStatus extends AbstractStatus {
         return false;
     }
 
+    @override(AbstractStatus)
     sameKind(other: AbstractStatus): boolean {
         return other instanceof EnergyDebtStatus;
     }
 
+    @override(AbstractStatus)
     clone(): EnergyDebtStatus {
         return new EnergyDebtStatus(this.amount);
     }
 
+    @override(AbstractStatus)
     getName(): string {
         return 'energy Debt';
     }
 
+    @override(AbstractStatus)
     getDescription(): string {
         //TODO: describe this better
         return `The next ${this.amount} Energy you gain will not count.`;
     }
 
+    @override(AbstractStatus)
     getSortingNumber(): number {
         return 10;
     }
 
+    @override(AbstractStatus)
     getUtility(): number {
         return -2 * this.amount;
     }

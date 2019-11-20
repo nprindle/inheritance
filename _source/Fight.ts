@@ -14,6 +14,7 @@ class Fight {
     readyToEnd: boolean;
 
     constructor(p: Player, e: Enemy, inRoom?: Room) {
+        Game.currentRun.addStatistic(RunStatistics.ENEMIES_FOUGHT, 1);
         this.player = p;
         this.enemy = e;
         p.startFight(e);
@@ -60,14 +61,14 @@ class Fight {
     }
 
     makeNextEnemyMove(moveSequence: number[]): void {
-        console.log(moveSequence);
+        debugLog(moveSequence);
         if(moveSequence.length <= 0) {
             UI.fakeClick(this.enemyButtons[this.enemyButtons.length - 1]);
             return;
         } else {
             let move = moveSequence.shift();
             if (move !== undefined) {
-                console.log("Move: " + move);
+                debugLog("Move: " + move);
                 UI.fakeClick(this.enemyButtons[move]);
                 window.setTimeout(() => {
                     this.makeNextEnemyMove(moveSequence);
@@ -111,10 +112,14 @@ class Fight {
     end(): void {
         this.player.endFight();
         this.enemy.endFight();
-        if (this.inRoom) {
-            this.inRoom.continueFloor();
+        if (this.enemy.isFinalBoss) {
+            Game.showVictory(Game.currentRun);
         } else {
-            this.endCallback();
+            if (this.inRoom) {
+                this.inRoom.continueFloor();
+            } else {
+                this.endCallback();
+            }
         }
     }
 

@@ -4,11 +4,11 @@
 
 characters.addSorted('kid', new Player('The Granddaughter', 15, 10,
     [
-        tools.get('wrench')!,
-        tools.get('poisonray')!,
+        tools.get('mallet')!,
+        tools.get('veil')!,
         tools.get('lighter')!,
         tools.get('jacket')!,
         tools.get('thumbtack')!
     ],
-    []
-), 0);
+    [], 'assets/thegranddaughter.png', 'tiles/character tiles/granddaughter.png'
+), 0, CharacterTags.inFinalGame);

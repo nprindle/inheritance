@@ -1,5 +1,16 @@
 /// <reference path="Player.ts" />
 /// <reference path="Fight.ts" />
+/// <reference path="floors.ts" />
+
+enum RunStatistics {
+    DAMAGE_TAKEN,
+    DAMAGE_DEALT,
+    MODIFIERS_TAKEN,
+    TRAITS_GAINED,
+    SCRIP_EARNED,
+    ENEMIES_FOUGHT,
+    SCRIP_SPENT
+}
 
 class Run {
 
@@ -8,30 +19,61 @@ class Run {
     seenEnemies: string[];
     seenModifiers: string[];
     seenTraits: string[];
-    numEvents: number;
+    floorNumber: number;
     currentFloor: Floor;
+    statistics: Record<RunStatistics, number>;
 
     constructor(player: Player) {
         this.player = player;
+        player.specialDamageFunction = x => this.addStatistic(RunStatistics.DAMAGE_TAKEN, x);
         this.player.setDeathFunc(() => Game.showGameOver(this));
         this.playerCoordinates = new Coordinates( { x: 0, y: 0 } );
-        this.numEvents = 0;
+        this.floorNumber = 0;
         this.seenEnemies = [];
         this.seenModifiers = [];
         this.seenTraits = [];
+        this.statistics = [0, 0, 0, 0, 0, 0, 0];
     }
 
     start(): void {
-        this.nextEvent();
+        this.nextFloor();
     }
 
-    nextEvent(): void {
-        this.numEvents++;
-        this.currentFloor = new Floor(0, this);
+    addStatistic(statistic: RunStatistics, change: number): void {
+        this.statistics[statistic] += change;
+    }
+
+    statisticString(statistic: RunStatistics): string {
+        const amount: number = this.statistics[statistic];
+        switch (statistic) {
+            case RunStatistics.DAMAGE_DEALT:
+                return `You dealt ${amount} damage.`;
+            case RunStatistics.DAMAGE_TAKEN:
+                return `You took ${amount} damage.`;
+            case RunStatistics.ENEMIES_FOUGHT:
+                return `You fought ${amount} enemies.`;
+            case RunStatistics.MODIFIERS_TAKEN:
+                return `You took ${amount} modifiers.`;
+            case RunStatistics.TRAITS_GAINED:
+                return `You gained ${amount} traits.`;
+            case RunStatistics.SCRIP_EARNED:
+                return `You gathered ${amount} scrip.`;
+            case RunStatistics.SCRIP_SPENT:
+                return `You spent ${amount} scrip.`;
+        }
+    }
+
+    nextFloor(): void {
+        if (this.floorNumber >= floors.length) {
+            this.floorNumber %= floors.length;
+        }
+        this.currentFloor = new Floor(this.floorNumber, this);
         this.playerCoordinates = this.currentFloor.entranceRoom.coordinates;
         this.currentFloor.redraw();
         UI.announce(this.currentFloor.floorName);
+        SoundManager.playSong(this.currentFloor.song);
         this.currentFloor.entranceRoom.enter();
+        this.floorNumber++;
     }
 
     nextModifier(...tagSets: ModifierTags[][]): Modifier {
@@ -46,21 +88,26 @@ class Run {
       return traits.selectRandomUnseen(this.seenTraits, ...tagSets);
     }
 
-    offerModifier(): void {
-        // TODO: don't do an unsafe assertion here
-        let m = modifiers.selectRandomUnseen(this.seenModifiers)!;
-        UI.fillScreen(UI.renderModifier(m, this.player, () => this.nextEvent()));
-    }
-
-    startFight(): void {
-        // TODO: don't do an unsafe assertion here
-        let enemy = enemies.selectRandomUnseen(this.seenEnemies)!;
-        let f = new Fight(this.player, enemy);
-        f.setEndCallback(() => this.nextEvent());
-    }
-
     movePlayer(coords: Coordinates): void {
         this.playerCoordinates = coords;
+    }
+
+    // Move the player in a given direction, if possible
+    shiftPlayer(dir: Direction): void {
+        if (!this.playerCoordinates || !this.currentFloor) {
+            return;
+        }
+        let currentRoom = this.currentFloor.getRoomAt(this.playerCoordinates);
+        // If the direction is blocked, don't jump over the wall
+        if (!currentRoom || currentRoom.getBlockedDirections().indexOf(dir) > -1) {
+            return;
+        }
+        let offset = Directions.getOffset(dir);
+        let coord = this.playerCoordinates.applyOffset(offset);
+        let room = this.currentFloor.getRoomAt(coord);
+        if (room) {
+            room.enter();
+        }
     }
 
 }

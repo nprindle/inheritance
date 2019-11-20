@@ -16,6 +16,18 @@ html {
     flex-direction: column;
 }
 
+.player>.profile,
+.enemy>.profile {
+    position: absolute;
+    max-width: 25%;
+    z-index: -99;
+    opacity: 0.25;
+}
+
+.arena .player .profile {
+    transform: scaleX(-1);
+}
+
 .player>.stats,
 .enemy>.stats {
     display: flex;
@@ -89,7 +101,6 @@ html {
 .tooltip-container {
     text-decoration: underline;
     position: relative;
-    background-color: white;
 }
 
 .tooltip-container .tooltip {
@@ -136,15 +147,31 @@ button:active {
 
 button.endturn {
     position: fixed;
-    top: 16px;
-    right: 16px;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
 }
 
 button.endturn:active {
     position: fixed;
-    top: 17px;
-    right: 15px;
+    top: 21px;
+    right: 19px;
     left: auto;
+}
+
+button.main-menu {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 20px;
+}
+
+button.main-menu:active {
+    position: fixed;
+    bottom: 19px;
+    right: 19px;
+    left: auto;
+    top: auto;
 }
 
 .fakeclick {
@@ -168,6 +195,7 @@ button.endturn:active {
 .credits,
 .journal,
 .note,
+.settings,
 .charselect {
     display: flex;
     flex-direction: column;
@@ -175,6 +203,43 @@ button.endturn:active {
     align-content: center;
     justify-content: space-between;
     margin: 0;
+}
+
+.charselect .characters {
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    justify-content: space-between;
+    margin: 0% 15%;
+    flex-wrap: wrap;
+    max-height: 50%;
+}
+
+.charselect .character {
+    max-height: 50%;
+    max-width: 25%;
+    margin: 0% 1%;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+}
+
+.charselect .profile {
+    max-width: 75%;
+    margin: 0% 1%;
+    align-self: center;
+    cursor: pointer;
+}
+
+.charselect h2 {
+    text-align: center;
+}
+
+.settings p {
+    font-size: 18px;
+    display: flex;
+    align-content: center;
 }
 
 .titlescreen>.buttons,
@@ -192,6 +257,10 @@ button.endturn:active {
     flex-direction: row;
 }
 
+.gamejournalbutton {
+    font-size: 32px;
+}
+
 .notetitle {
     font-family: monospace;
 }
@@ -207,11 +276,46 @@ button.endturn:active {
     text-align: justify;
 }
 
+.shop {
+    margin-left: 20px;
+}
+
+.shoplistscontainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.shoplist {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+.shopitem {
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+}
+
+.shop button {
+    font-size: 24px;
+    margin: 20px;
+}
+
+.shopitem button {
+    margin: 10px;
+    font-size: 16px;
+}
+
+.shopitem p {
+    margin-left: 10px;
+}
+
 .titlescreen button,
 .credits button,
 .journal button,
 .note button,
-.charselect button {
+.charselect button,
+.settings button {
     font-size: 24px;
     padding: 5px;
     border-width: 2px;
@@ -220,7 +324,7 @@ button.endturn:active {
 }
 
 .logo {
-    background: url(assets/titletexturebig.png) repeat;
+    background: url(assets/titletexture_newlogo2.png) repeat;
     animation: bgscroll infinite linear 36s;
     display: block;
     margin: 25px;
@@ -338,21 +442,77 @@ button.endturn:active {
 }
 
 .room {
-    border: 3px solid transparent;
+    border-color: transparent;
 }
 
-.blocked-left {
-    border-left: 3px solid black;
+.room::before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    top: 0;
+    left: 0;
+    border-top: 4px solid black;
+    border-right: 4px solid transparent;
 }
 
-.blocked-right {
-    border-right: 3px solid black;
+.room::after {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    top: 0;
+    right: 0;
+    border-top: 4px solid black;
+    border-left: 4px solid transparent;
 }
 
-.blocked-up {
-    border-top: 3px solid black;
+.room-corners::before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    bottom: 0;
+    left: 0;
+    border-left: 4px solid black;
+    border-top: 4px solid transparent;
 }
 
-.blocked-down {
-    border-bottom: 3px solid black;
+.room-corners::after {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    bottom: 0;
+    right: 0;
+    border-right: 4px solid black;
+    border-top: 4px solid transparent;
+}
+
+.blur {
+    filter: blur(5px);
+    font-weight: bolder;
+}
+
+.enter-wrap {
+    display: flex;
+    width: 100%;
+    align-content: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 64px;
+}
+
+.enter-button {
+    font-size: 48px;
+    padding: 20px;
+    box-shadow: 4px 4px #000;
+    border: 2px solid #000;
+}
+
+.enter-button:active {
+    position: relative;
+    top: 2px;
+    left: 2px;
+    box-shadow: 2px 2px #000;
 }

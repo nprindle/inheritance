@@ -24,4 +24,19 @@ namespace Directions {
         }
     }
 
+    export function fromKey(code: string): Direction | undefined {
+        switch (code) {
+            case "ArrowLeft":
+                return Direction.Left;
+            case "ArrowUp":
+                return Direction.Up;
+            case "ArrowRight":
+                return Direction.Right;
+            case "ArrowDown":
+                return Direction.Down;
+            default:
+                return undefined;
+        }
+    }
+
 }

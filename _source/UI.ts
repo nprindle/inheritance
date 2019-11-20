@@ -1,8 +1,12 @@
+/// <reference path="SoundManager.ts" />
 /// <reference path="map/Floor.ts" />
+/// <reference path="Random.ts" />
 
 class UI {
 
     static redrawFunction: Function;
+
+    private static onMapScreen: boolean;
 
     static makeDiv(c?: string, cList?: string[], id?: string) {
         const div: HTMLElement = document.createElement('div');
@@ -58,7 +62,7 @@ class UI {
         return b;
     }
 
-    static makeImg(src: string, c?: string, id?: string): HTMLElement {
+    static makeImg(src: string, c?: string, id?: string): HTMLImageElement {
         const img: HTMLImageElement = document.createElement('img');
         img.src = src;
         if (c) {
@@ -71,7 +75,7 @@ class UI {
     }
 
     static makeRoomIcon(str: string): HTMLElement {
-        return UI.makeImg(`assets/temp_${str}.png`, 'room-icon');
+        return UI.makeImg(`assets/${str}`, 'room-icon');
     }
 
     static makeTooltip(name: string, desc: string): HTMLElement {
@@ -79,6 +83,20 @@ class UI {
         const tooltip = UI.makeElem('span', desc, 'tooltip');
         span.appendChild(tooltip);
         return span;
+    }
+
+    static makeSlider(label: string, min: number, max: number, value: number, changeCallback: Function): HTMLElement {
+        const input = document.createElement('input');
+        input.type = 'range';
+        input.min = `${min}`;
+        input.max = `${max}`;
+        input.value = `${value}`;
+        input.onchange = function (this: GlobalEventHandlers, ev: Event) {
+            changeCallback(this);
+        }
+        const para = UI.makePara(`${label}: `);
+        para.appendChild(input);
+        return para;
     }
 
     static fakeClick(elem: HTMLElement): void {
@@ -99,15 +117,30 @@ class UI {
             which = 'enemy';
         }
         const div: HTMLElement = UI.makeDiv(which);
+        if (c.imageSrc) {
+            debugLog(c.imageSrc);
+            div.appendChild(UI.makeImg(c.imageSrc, 'profile'));
+        }
         const statuses: AbstractStatus[] = c.statuses.filter(status => status.isValid());
         for (let i = 0; i < statuses.length; i++) {
             div.classList.add(`status-${Strings.cssSanitize(c.statuses[i].getName())}`);
         }
-        let name = c.name;
+        let namePara = UI.makePara(c.name, 'name');
         if (c.traits.length > 0) {
-          name = `${name} (${c.traitNames.map(tuple => Strings.powerTuple(tuple)).join(', ')})`;
+            namePara.appendChild(document.createTextNode(' ('));
+            c.traits.forEach((tuple, i) => {
+                let nameString = tuple[0].name;
+                if (tuple[1] > 1) {
+                    nameString += Strings.power(tuple[1]);
+                }
+                namePara.appendChild(UI.makeTooltip(nameString, tuple[0].describe()));
+                if (i < c.traits.length - 1) {
+                    namePara.appendChild(document.createTextNode(', '));
+                }
+            });
+            namePara.appendChild(document.createTextNode(')'));
         }
-        div.appendChild(UI.makePara(name, 'name'));
+        div.appendChild(namePara);
         //health, energy, etc.
         const statsDiv = UI.makeDiv('stats');
         statsDiv.appendChild(UI.makePara(`Health: ${c.health} / ${c.maxHealth}`, 'health'));
@@ -120,7 +153,7 @@ class UI {
             const statusPara: HTMLElement = UI.makePara('');
             const statusSpans: HTMLElement[] = statuses.map(status => {
                 const name = `${status.amount} ${Strings.capitalize(status.getName())}`;
-                const desc = status.getDescription();
+                const desc =  (which == 'player') ? status.getDescriptionForPlayer() : status.getDescription();
                 return UI.makeTooltip(name, desc);
             });
             for (let i = 0; i < statusSpans.length; i++) {
@@ -174,7 +207,10 @@ class UI {
     static renderCombatTool(t: Tool, c?: Combatant, i?: number, target?: Combatant, isTurn?: boolean, buttonArr?: HTMLElement[]) {
         const div: HTMLElement = UI.renderTool(t);
         if (t.usesPerTurn < Infinity) {
-            div.appendChild(UI.makePara(`(${t.usesLeft} use(s) left this turn)`));
+            div.appendChild(UI.makePara(`(${t.usesLeftThisTurn} use(s) left this turn)`));
+        }
+        if (t.usesPerFight < Infinity) {
+            div.appendChild(UI.makePara(`(${t.usesLeftThisFight} use(s) left this fight)`));
         }
         if (c && i !== undefined && target !== undefined) {
             let b = UI.makeButton('Use', function(e: MouseEvent) {
@@ -195,7 +231,9 @@ class UI {
             div.appendChild(UI.makePara(`usable ${t.usesPerTurn} time(s) per turn`));
         }
         div.appendChild(UI.makeButton(`Apply ${m.name}`, function(e: MouseEvent) {
+            SoundManager.playSoundEffect(SoundEffects.Modifier);
             m.apply(t);
+            Game.currentRun.addStatistic(RunStatistics.MODIFIERS_TAKEN, 1);
             callback(true);
         }, false, 'apply'));
         return div;
@@ -222,14 +260,78 @@ class UI {
         return mainDiv;
     }
 
+    static renderShopMenu(shop: Shop, player: Player, exitCallback: Function): HTMLElement {
+        const div: HTMLElement = UI.makeDiv("shop");
+        div.appendChild(UI.makeHeader("Shop"));
+        div.appendChild(UI.makePara("You have " + player.currency + " scrip."));
+
+        const itemsPane: HTMLElement = UI.makeDiv("shoplistscontainer");
+        const modifiersPane: HTMLElement = UI.makeDiv("shoplist");
+        modifiersPane.appendChild(UI.makeHeader("Tool Modifiers"));
+        shop.getModifierListings().forEach((listing: ShopModifierListing) => {
+            let modifier = listing.modifier;
+            let price = listing.price;
+            let canAffordItem = (price <= player.currency);
+            modifiersPane.appendChild(this.renderShopModifierListing(modifier, price, canAffordItem, () => {
+                // make sure player can afford purchase
+                if (canAffordItem) {
+                    UI.fillScreen(UI.renderModifier(modifier, player, (taken) => {
+                        if (taken) {
+                            shop.sellModifier(listing, player);
+                        }
+                        // go back to the shop screen
+                        UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
+                    }));
+                }
+            }));
+        });
+        itemsPane.appendChild(modifiersPane);
+
+        const traitsPane: HTMLElement = UI.makeDiv("shoplist");
+        traitsPane.appendChild(UI.makeHeader("Character Traits"));
+        shop.getTraitListings().forEach((listing: ShopTraitListing) => {
+            let trait = listing.trait;
+            let price = listing.price;
+            let canAffordItem = (price <= player.currency);
+            traitsPane.appendChild(this.renderShopTraitListing(trait, price, canAffordItem, () => {
+                shop.sellTrait(listing, player);
+                // refresh this screen after inventory is changed
+                UI.fillScreen(UI.renderShopMenu(shop, player, exitCallback));
+            }));
+        });
+        itemsPane.appendChild(traitsPane);
+
+        div.appendChild(itemsPane);
+        div.appendChild(UI.makeButton("Exit shop", exitCallback));
+        return div;
+    }
+
+    static renderShopModifierListing(modifier: Modifier, price:number, enabled: boolean, purchaseCallback: Function): HTMLElement {
+        const div: HTMLElement = UI.makeDiv("shopitem");
+        div.appendChild(this.makePara(modifier.name));
+        div.appendChild(this.makePara(modifier.describe()));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback, !enabled));
+        return div;
+    }
+
+    static renderShopTraitListing(trait: Trait, price: number, enabled: boolean, purchaseCallback: Function) {
+        const div: HTMLElement = UI.makeDiv("shopitem");
+        div.appendChild(this.makePara(trait.name));
+        div.appendChild(this.makePara(trait.describe()));
+        div.appendChild(UI.makeButton("Purchase for " + price + " scrip", purchaseCallback, !enabled));
+        return div;
+    }
+
     static renderTrait(t: Trait, p: Player, exitCallback: Function, refusable: boolean = true) {
         const mainDiv: HTMLElement = UI.makeDiv('offer');
         const div: HTMLElement = UI.makeDiv('trait');
         div.appendChild(UI.makePara(`${t.name} Potion`, 'name'));
         div.appendChild(UI.makePara(t.describe(), 'desc'));
         div.appendChild(UI.makeButton('Drink', function() {
-          p.addTrait(t);
-          exitCallback(true);
+            SoundManager.playSoundEffect(SoundEffects.Trait);
+            p.addTrait(t);
+            Game.currentRun.addStatistic(RunStatistics.TRAITS_GAINED, 1);
+            exitCallback(true);
         }))
         if (refusable) {
             div.appendChild(UI.makeButton('No Thank You', function() {
@@ -243,7 +345,7 @@ class UI {
     }
 
     static renderFloor(floor: Floor) {
-        console.log(floor);
+        debugLog(floor);
         const div: HTMLElement = UI.makeDiv("map");
         div.innerHTML = '';
         for (let i = 0; i < floor.height; i++) {
@@ -271,14 +373,10 @@ class UI {
 
         if (room.seen || room.visited) {
             div.classList.add("visible");
-            room.getBlockedDirections().forEach(d => {
-                let className = `blocked-${Direction[d].toLowerCase()}`;
-                div.classList.add(className);
-            });
             if (hasPlayer) {
-                div.appendChild(UI.makeRoomIcon('player'));
-            } else if (room.getRoomType() !== RoomType.Empty) {
-                div.appendChild(UI.makeRoomIcon(room.getRoomType()));
+                div.appendChild(UI.makeRoomIcon(Game.currentRun.player.floorIcon));
+            } else if (room.getIcon() !== RoomIcon.NONE) {
+                div.appendChild(UI.makeRoomIcon(room.getIcon()));
             }
         }
         if (exitHasPlayer) {
@@ -291,7 +389,43 @@ class UI {
         } else {
             div.classList.add("unvisited");
         }
+
+        const boxShadowAttributes = ['-moz-box-shadow', '-webkit-box-shadow', 'box-shadow'];
+        const shadows = room.getBlockedDirections().map(d => UI.directionToBoxShadow(d, 4, 'black')).join(', ');
+        for (let attr of boxShadowAttributes) {
+            div.style[attr] = shadows;
+        }
+
+        // Apply invisible element in order to exploit it for its ::before and
+        // ::after
+        const cornerDiv: HTMLElement = UI.makeDiv("room-corners");
+        div.appendChild(cornerDiv);
+
         return div;
+    }
+
+    // Convert a direction to the string representing the value of a box shadow
+    // CSS property of a given width in pixels to make a border on that side
+    static directionToBoxShadow(dir: Direction, width: number, color: string): string {
+        switch (dir) {
+            case Direction.Right:
+                return `inset -${width}px 0px 0px 0px ${color}`;
+            case Direction.Up:
+                return `inset 0px ${width}px 0px 0px ${color}`;
+            case Direction.Left:
+                return `inset ${width}px 0px 0px 0px ${color}`;
+            case Direction.Down:
+                return `inset 0px -${width}px 0px 0px ${color}`;
+        }
+    }
+
+    static handleKeyDown(e: KeyboardEvent): void {
+        let dir: Direction | undefined = Directions.fromKey(e.key);
+        // Arrow keys should move the player between rooms
+        if (dir !== undefined && Game.currentRun && UI.isOnMapScreen()) {
+            e.preventDefault();
+            Game.currentRun.shiftPlayer(dir);
+        }
     }
 
     static renderMainTitle(): HTMLElement {
@@ -306,9 +440,19 @@ class UI {
     }
 
     static renderGameView(floor: Floor, player: Player): HTMLElement {
-        const div = UI.makeDiv('game');
-        div.appendChild(UI.renderFloor(floor));
-        div.appendChild(UI.renderCombatantSidebar(player));
+        const div = UI.makeDiv();
+        const container = UI.makeDiv('game');
+        container.appendChild(UI.renderFloor(floor));
+        container.appendChild(UI.renderCombatantSidebar(player));
+        let menuButton = UI.makeButton('Main Menu', () => Game.showTitle(), false, 'main-menu');
+        container.appendChild(menuButton);
+        div.append(container);
+
+        let journalHTML = UI.renderJournal(() => Game.resumeRun(), NotePool.getUnlockedNotes());
+
+        let journalButton = UI.makeButton("Journal", () => UI.fillScreen(journalHTML), false, 'gamejournalbutton');
+        div.appendChild(journalButton);
+
         return div;
     }
 
@@ -343,10 +487,14 @@ class UI {
         return div;
     }
 
-    static renderJournal(callback: Function, exit: Function, unlockedNotes: Note[]): HTMLElement {
+    static renderJournal(exit: () => void, unlockedNotes: Note[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('journal');
         div.appendChild(UI.makeHeader('Unlocked Files'));
-        const noteTuples: [string, Function][] = unlockedNotes.map(note => <[string, Function]> [note.title, () => callback(note)]);
+
+        function noteDisplayFunction(note:Note) {
+            UI.fillScreen(UI.renderNote(() => UI.fillScreen(div), note));
+        }
+        const noteTuples: [string, Function][] = unlockedNotes.map(note => <[string, Function]> [note.title, () => noteDisplayFunction(note)]);
         div.appendChild(UI.renderOptions(noteTuples.concat([['Close Journal', exit]])));
         return div;
     }
@@ -357,18 +505,92 @@ class UI {
 
         const noteBodyContainer: HTMLElement = UI.makeDiv('notebodycontainer');
         let paragraphs: string[] = note.content.split("\n");
-        paragraphs.forEach(paragraph => noteBodyContainer.appendChild(UI.makePara(paragraph, 'notebody')));
+        paragraphs.forEach(paragraph => noteBodyContainer.appendChild(UI.renderNoteParagraph(paragraph)));
 
         div.appendChild(noteBodyContainer);
         div.appendChild(UI.makeButton("Close", exit));
         return div;
     }
 
+    static renderNoteParagraph(text: string): HTMLElement {
+        const p = UI.makePara('', 'notebody');
+        const split = text.split(/[{}]/g);
+        split.map((str, i) => {
+            switch (i % 2) {
+                case 0:
+                    return document.createTextNode(str);
+                case 1:
+                    return UI.makeElem('span', str, 'blur');
+            }
+        }).forEach(elem => p.appendChild(elem));
+        return p;
+    }
+
+    static renderScripReward(exit: Function, reward: number) {
+        const div: HTMLElement = UI.makeDiv('note');
+        div.appendChild(UI.makeHeader(`You found ${reward} scrip!`));
+        div.appendChild(UI.makeButton("Continue", exit));
+        return div;
+    }
+
+    static renderSettings(exit: Function): HTMLElement {
+        const div = UI.makeDiv('settings');
+        div.appendChild(UI.makeHeader('Settings'));
+        let volume = Settings.getVolumePercent();
+        div.appendChild(UI.makeSlider('Volume', 0, 100, volume, t => {
+            Settings.setVolumePercent(parseInt(t.value));
+            SoundManager.playSoundEffect(SoundEffects.Noise);
+            Save.saveSettings();
+        }));
+
+        div.appendChild(UI.makeButton("Reset Game", () => {
+            UI.fillScreen(UI.renderResetConfirm(() => UI.fillScreen(UI.renderSettings(exit))));
+        }))
+
+        div.appendChild(UI.makeButton('Back', exit));
+        return div;
+    }
+
+    static renderResetConfirm(cancelExitCallback: Function): HTMLElement {
+        const div = UI.makeDiv('settings');
+        div.appendChild(UI.makeHeader('Are you sure you want to reset the game?'));
+        div.appendChild(UI.makePara("All progress will be lost, and settings will be restored to defaults."));
+        div.appendChild(UI.makeButton('Cancel', cancelExitCallback));
+        div.appendChild(UI.makeButton('Reset Game', () => Game.resetGame()));
+        return div;
+    }
+
     static renderCharacterSelect(callback: Function, exit: Function, ...chars: Player[]): HTMLElement {
         const div: HTMLElement = UI.makeDiv('charselect');
-        div.appendChild(UI.makeHeader('Choose Your Character'));
-        const tuples: [string, Function][] = chars.map(char => <[string, Function]> [char.name, () => callback(char)]);
-        div.appendChild(UI.renderOptions(tuples.concat([['Back to Title', exit]])));
+        const charHeader = UI.makeHeader('Choose Your Character');
+        div.appendChild(charHeader);
+        const charDiv: HTMLElement = UI.makeDiv('characters');
+        chars.forEach(char => charDiv.appendChild(UI.renderCharacterObject(callback, char)));
+        charDiv.appendChild(UI.renderCharacter('assets/random.png', 'Random', () => callback(Random.fromArray(chars))));
+        div.appendChild(charDiv);
+        div.appendChild(UI.makeButton('Back to Title', exit))
+        return div;
+    }
+
+    static renderCharacterObject(callback: Function, character: Player): HTMLElement {
+        let filename = character.imageSrc || 'assets/The_Reject_-_Done.png';
+        return UI.renderCharacter(filename, character.name, () => callback(character));
+    }
+
+    static renderCharacter(filename: string, name: string, callback: Function): HTMLElement {
+        const div: HTMLElement = UI.makeDiv('character');
+        div.appendChild(UI.makeElem('h2', name));
+        const img: HTMLImageElement = UI.makeImg(filename, 'profile');
+        img.alt = name;
+        img.onclick = () => callback();
+        div.appendChild(img);
+        return div;
+    }
+
+    static renderRun(run: Run): HTMLElement{
+        const div = UI.makeDiv('run-stats');
+        const descs: string[] = Object.keys(RunStatistics).map(stat => run.statisticString(RunStatistics[stat])).filter(x => !!x);
+        descs.forEach(desc => div.appendChild(UI.makePara(desc)));
         return div;
     }
 
@@ -383,9 +605,20 @@ class UI {
     }
 
     static fillScreen(...elems: HTMLElement[]): void {
+        UI.onMapScreen = false;
         const gameview = document.getElementById('gameview');
         gameview.innerHTML = '';
         elems.forEach(elem => gameview.appendChild(elem));
+    }
+
+    static showMapScreen(): void {
+        UI.fillScreen(UI.renderGameView(Game.currentRun.currentFloor, Game.currentRun.player));
+        // TODO: this is a total hack
+        UI.onMapScreen = true;
+    }
+
+    static isOnMapScreen(): boolean {
+        return UI.onMapScreen;
     }
 
     static announce(text: string): void {

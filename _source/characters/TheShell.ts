@@ -12,5 +12,5 @@ characters.addSorted('shell', new Player('The Shell', 10, 4,
      ],
      [
          traits.get('voltaic')!
-     ]
-), 4);
+     ], 'assets/the_shell.png', 'tiles/character tiles/the shell.png'
+), 4, CharacterTags.inFinalGame);
