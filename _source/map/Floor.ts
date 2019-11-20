@@ -94,7 +94,7 @@ class Floor {
     }
 
     redraw(): void {
-        UI.fillScreen(UI.renderGameView(this, Game.currentRun.player));
+        UI.showMapScreen();
     }
 
     end(): void {

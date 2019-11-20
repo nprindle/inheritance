@@ -50,7 +50,7 @@ class Game {
     }
 
     static resumeRun(): void {
-        UI.fillScreen(UI.renderGameView(Game.currentRun.currentFloor, Game.currentRun.player));
+        UI.showMapScreen();
     }
 
     // clears local storage and restarts game
