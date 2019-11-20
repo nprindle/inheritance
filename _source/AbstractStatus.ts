@@ -99,6 +99,11 @@ abstract class AbstractStatus {
     abstract getSortingNumber(): number;
     abstract getUtility(): number;
 
+    // override this if the description should be different for the player than for enemies
+    getDescriptionForPlayer(): string {
+        return this.getDescription();
+    }
+
     //Type comparisons are hard.
     abstract sameKind(other: AbstractStatus): boolean;
 

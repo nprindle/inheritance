@@ -49,6 +49,11 @@ class ConfusionStatus extends AbstractStatus {
     }
 
     @override(AbstractStatus)
+    getDescriptionForPlayer(): string {
+        return 'Become unable to see tool descriptions';
+    }
+
+    @override(AbstractStatus)
     getSortingNumber(): number {
         return 10;
     }
