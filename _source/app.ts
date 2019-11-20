@@ -31,7 +31,7 @@ window.onload = function() {
     div.appendChild(button);
     UI.fillScreen(div);
 
-    // Attack keyboard input listener
+    // Attach keyboard input listener
     document.onkeydown = (e: KeyboardEvent) => {
         UI.handleKeyDown(e);
     };

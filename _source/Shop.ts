@@ -48,7 +48,7 @@ class Shop {
     }
 
     sellModifier(listing: ShopModifierListing, player: Player) {
-        console.log("Tried to sell" + listing.modifier.name);
+        debugLog("Tried to sell" + listing.modifier.name);
 
         // make sure player can afford this item
         if (listing.price <= player.currency) {
@@ -62,7 +62,7 @@ class Shop {
     }
 
     sellTrait(listing: ShopTraitListing, player: Player) {
-        console.log("Tried to sell" + listing.trait.name);
+        debugLog("Tried to sell" + listing.trait.name);
 
         // make sure player can afford this item
         if (listing.price <= player.currency) {

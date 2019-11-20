@@ -66,17 +66,18 @@ class AI {
             dummyHuman.endTurn();
 
             let consequence = this.scoreFunction(dummyBot, dummyHuman);
-            //console.log("Sequence " + movesList + "has utility score of " + consequence);
             if (consequence >= this.bestSequenceScore) {
                 this.bestSequenceScore = consequence;
                 this.bestSequence = movesList;
             }
         }
 
-        let finishTime = new Date();
-        let duration = finishTime.getTime() - startTime.getTime();
-        console.log("Sim time (milliseconds): " + duration);
-        console.log("Selected outcome utility: " + this.bestSequenceScore);
+        debug(() => {
+            let finishTime = new Date();
+            let duration = finishTime.getTime() - startTime.getTime();
+            console.log("Sim time (milliseconds): " + duration);
+            console.log("Selected outcome utility: " + this.bestSequenceScore);
+        });
     }
 
     static bestMoveSequence(aiCombatant: Enemy, humanCombatant: Player, simIterations: number) {
@@ -86,6 +87,7 @@ class AI {
         return sim.bestSequence;
     }
 
+    @ondebug
     debugChosenSequence() {
         // clone a simulation of the combatants
         let dummyBot = this.botCopy.clone();
