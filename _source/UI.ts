@@ -150,7 +150,7 @@ class UI {
             const statusPara: HTMLElement = UI.makePara('');
             const statusSpans: HTMLElement[] = statuses.map(status => {
                 const name = `${status.amount} ${Strings.capitalize(status.getName())}`;
-                const desc = status.getDescription();
+                const desc =  (which == 'player') ? status.getDescriptionForPlayer() : status.getDescription();
                 return UI.makeTooltip(name, desc);
             });
             for (let i = 0; i < statusSpans.length; i++) {
