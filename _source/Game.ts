@@ -73,8 +73,8 @@ class Game {
     static showCredits(): void {
         UI.fillScreen(
             UI.renderCredits([
-                new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming'),
-                new CreditsEntry('Grace Rarer', 'Programming'),
+                new CreditsEntry('May Lawver', 'Team Lead', 'Design', 'Programming', 'Writing'),
+                new CreditsEntry('Grace Rarer', 'Programming', 'Design'),
                 new CreditsEntry('Pranay Rapolu', 'Music'),
                 new CreditsEntry('Prindle', 'Programming'),
                 new CreditsEntry('Mitchell Philipp', 'Programming'),
