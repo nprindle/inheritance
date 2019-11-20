@@ -1,5 +1,6 @@
 /// <reference path="SoundManager.ts" />
 /// <reference path="map/Floor.ts" />
+/// <reference path="Random.ts" />
 
 class UI {
 
@@ -564,19 +565,24 @@ class UI {
         const charHeader = UI.makeHeader('Choose Your Character');
         div.appendChild(charHeader);
         const charDiv: HTMLElement = UI.makeDiv('characters');
-        chars.forEach(char => charDiv.appendChild(UI.renderCharacter(callback, char)));
+        chars.forEach(char => charDiv.appendChild(UI.renderCharacterObject(callback, char)));
+        charDiv.appendChild(UI.renderCharacter('assets/random.png', 'Random', () => callback(Random.fromArray(chars))));
         div.appendChild(charDiv);
-        div.appendChild(UI.makeButton('Back to Title', () => Game.showTitle()))
+        div.appendChild(UI.makeButton('Back to Title', exit))
         return div;
     }
 
-    static renderCharacter(callback: Function, character: Player): HTMLElement {
+    static renderCharacterObject(callback: Function, character: Player): HTMLElement {
         let filename = character.imageSrc || 'assets/The_Reject_-_Done.png';
+        return UI.renderCharacter(filename, character.name, () => callback(character));
+    }
+
+    static renderCharacter(filename: string, name: string, callback: Function): HTMLElement {
         const div: HTMLElement = UI.makeDiv('character');
-        div.appendChild(UI.makeElem('h2', character.name));
+        div.appendChild(UI.makeElem('h2', name));
         const img: HTMLImageElement = UI.makeImg(filename, 'profile');
-        img.alt = character.name;
-        img.onclick = () => callback(character);
+        img.alt = name;
+        img.onclick = () => callback();
         div.appendChild(img);
         return div;
     }
