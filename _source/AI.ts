@@ -87,10 +87,8 @@ class AI {
         return sim.bestSequence;
     }
 
+    @ondebug
     debugChosenSequence() {
-        if (!DEBUG) {
-            return;
-        }
         // clone a simulation of the combatants
         let dummyBot = this.botCopy.clone();
         let dummyHuman = this.humanCopy.clone();

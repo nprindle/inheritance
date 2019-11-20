@@ -14,6 +14,15 @@ const debugLog = function(...a: any[]) {
     }
 }
 
+const ondebug = (target: Object, propertyKey: string, descr: TypedPropertyDescriptor<(...args: any[]) => void>) => {
+    const original = descr.value;
+    descr.value = (...args: any[]) => {
+        if (DEBUG) {
+            original(args);
+        }
+    }
+}
+
 // Enforces that a method is overriden from the superclass
 // Used as an annotation: @override(superclass)
 const override = <S>(superclass: { prototype: S }) =>
