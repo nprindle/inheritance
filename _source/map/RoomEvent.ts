@@ -1,17 +1,16 @@
 /// <reference path="Floor.ts" />
 
 enum RoomIcon {
-    ENEMY = "temp_enemy.png",
-    EXIT = "temp_exit.png",
-    MODIFIER = "temp_modifier.png",
-    SHOP = "temp_shop.png",
-    TRAIT = "temp_trait.png",
+    ENEMY = "tiles/items and misc tiles/enemy.png",
+    EXIT = "tiles/items and misc tiles/exit.png",
+    MODIFIER = "tiles/items and misc tiles/modifier.png",
+    SHOP = "tiles/items and misc tiles/shop.png",
+    TRAIT = "tiles/items and misc tiles/trait.png",
     NONE = "",
-    TOOL = "temp_tool.png",
-    PLAYER = "temp_player.png",
-    BOSS = "temp_enemy.png",
-    GOLDFISH = "temp_money.png",
-    Collectible = "temp_collectible.png"
+    TOOL = "tiles/items and misc tiles/enemy.png",
+    BOSS = "tiles/items and misc tiles/boss.png",
+    GOLDFISH = "tiles/items and misc tiles/goldfish.png",
+    Collectible = "tiles/items and misc tiles/note.png"
 }
 
 abstract class RoomEvent {

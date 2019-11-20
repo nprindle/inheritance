@@ -374,7 +374,7 @@ class UI {
         if (room.seen || room.visited) {
             div.classList.add("visible");
             if (hasPlayer) {
-                div.appendChild(UI.makeRoomIcon(RoomIcon.PLAYER));
+                div.appendChild(UI.makeRoomIcon(Game.currentRun.player.floorIcon));
             } else if (room.getIcon() !== RoomIcon.NONE) {
                 div.appendChild(UI.makeRoomIcon(room.getIcon()));
             }

@@ -12,5 +12,5 @@ characters.addSorted('catburglar', new Player('The Catburglar', 9, 9,
         tools.get('holoarmor')!,
         tools.get('coupdegrace')!
     ],
-    [traits.get('counterfeiting')!], 'assets/The_Catburgurlar.png'
+    [traits.get('counterfeiting')!], 'assets/The_Catburgurlar.png', 'tiles/character tiles/the cat.png'
 ), 2, CharacterTags.inFinalGame);
