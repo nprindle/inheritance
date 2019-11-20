@@ -36,58 +36,17 @@ window.onload = function() {
         UI.handleKeyDown(e);
     };
 
-    const images = [
+    const preloadImages = [
         'The_Catburgurlar.png',
         'The_Clone.png',
         'The_Reject_-_Done.png',
         'final_logo.png',
-        'goldfish.png',
         'random.png',
-        'temp_collectible.png',
-        'temp_enemy.png',
-        'temp_entrance.png',
-        'temp_exit.png',
-        'temp_logo.png',
-        'temp_modifier.png',
-        'temp_money.png',
-        'temp_player.png',
-        'temp_shop.png',
-        'temp_tool.png',
-        'temp_trait.png',
         'the_shell.png',
         'thegranddaughter.png',
-        'tiles/arch block.png',
-        'tiles/base block.png',
-        'tiles/character tiles/granddaughter.png',
-        'tiles/character tiles/the cat.png',
-        'tiles/character tiles/the clone.png',
-        'tiles/character tiles/the reject.png',
-        'tiles/character tiles/the shell.png',
-        'tiles/crack top.png',
-        'tiles/horizontal block.png',
-        'tiles/items and misc tiles/boss.png',
-        'tiles/items and misc tiles/enemy.png',
-        'tiles/items and misc tiles/exit.png',
-        'tiles/items and misc tiles/goldfish.png',
-        'tiles/items and misc tiles/modifier.png',
-        'tiles/items and misc tiles/note.png',
-        'tiles/items and misc tiles/shop.png',
-        'tiles/items and misc tiles/trait.png',
-        'tiles/ivy top 2.png',
-        'tiles/ivy top.png',
-        'tiles/nosferatu block.png',
-        'tiles/picture block.png',
-        'tiles/vertical wall.png',
-        'titletexture.png',
-        'titletexture3.png',
-        'titletexture4.png',
-        'titletexture_newlogo.png',
-        'titletexture_newlogo2.png',
-        'titletexturebig.png',
-        'titletexturebright.png',
     ]
 
-    for (let img of images) {
+    for (let img of preloadImages) {
         let el = new Image();
         // let el: HTMLImageElement = document.createElement('img');
         el.src = img;
