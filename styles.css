@@ -493,3 +493,26 @@ button.main-menu:active {
     filter: blur(5px);
     font-weight: bolder;
 }
+
+.enter-wrap {
+    display: flex;
+    width: 100%;
+    align-content: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 64px;
+}
+
+.enter-button {
+    font-size: 48px;
+    padding: 20px;
+    box-shadow: 4px 4px #000;
+    border: 2px solid #000;
+}
+
+.enter-button:active {
+    position: relative;
+    top: 2px;
+    left: 2px;
+    box-shadow: 2px 2px #000;
+}

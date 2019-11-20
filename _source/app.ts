@@ -28,8 +28,10 @@ window.onload = function() {
 
     //TODO: is there any better way to do this?
 
-    const button: HTMLElement = UI.makeButton('Enter the Game', () => Game.showTitle());
-    UI.fillScreen(button);
+    const button: HTMLElement = UI.makeButton('Enter the Game', () => Game.showTitle(), false, 'enter-button');
+    const div: HTMLElement = UI.makeDiv('enter-wrap');
+    div.appendChild(button);
+    UI.fillScreen(div);
 
     // Attack keyboard input listener
     document.onkeydown = (e: KeyboardEvent) => {
