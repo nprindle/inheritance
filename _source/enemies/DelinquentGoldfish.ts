@@ -4,5 +4,5 @@
 /// <reference path="../AiUtilityFunctions.ts" />
 
 enemies.add('delinquentgoldfish',
-    new Enemy('Delinquent Goldfish', 100, 2, AiUtilityFunctions.aggressiveUtility, [tools.get('switchblade')!, tools.get('splash')!], [traits.get('golden')!]),
+    new Enemy('Delinquent Goldfish', 100, 2, AiUtilityFunctions.aggressiveUtility, [tools.get('switchblade')!, tools.get('splash')!], [traits.get('golden')!], 'assets/goldfish.png'),
 EnemyTags.goldfish);
