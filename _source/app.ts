@@ -23,8 +23,6 @@ window.onload = function() {
     NotePool.reloadAllNotes();
     // Try to load any unlocked notes if present
     Save.loadNotes();
-    // unlock the tutorial at the start of the game.
-    NotePool.unlockSpecificNote("Tutorial");
 
     //TODO: is there any better way to do this?
 

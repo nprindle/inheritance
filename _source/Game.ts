@@ -45,6 +45,17 @@ class Game {
             return;
         }
 
+        // if the tutorial note is not yet unlocked (i.e., this is the first run), we unlock and show it
+        let tutorialNote: Note = NotePool.getNoteByTitle("Tutorial");
+        if (!tutorialNote.unlocked) {
+            // unlock the tutorial if it hasn't been seen yet
+            tutorialNote.unlocked = true;
+            // show the tutorial note, and then start the run when the player closes that note
+            UI.fillScreen(UI.renderNote((() => Game.newRun(character)), tutorialNote));
+            Save.saveNotes(); // save the fact that we've unlocked the tutoral
+            return;
+        }
+
         Game.currentRun = new Run(character);
         Game.currentRun.start();
     }
