@@ -35,6 +35,22 @@ window.onload = function() {
     document.onkeydown = (e: KeyboardEvent) => {
         UI.handleKeyDown(e);
     };
+
+    const preloadImages = [
+        'The_Catburgurlar.png',
+        'The_Clone.png',
+        'The_Reject_-_Done.png',
+        'final_logo.png',
+        'random.png',
+        'the_shell.png',
+        'thegranddaughter.png',
+    ]
+
+    for (let img of preloadImages) {
+        let el = new Image();
+        // let el: HTMLImageElement = document.createElement('img');
+        el.src = img;
+    }
 }
 
 if (window.innerHeight === 0) {
