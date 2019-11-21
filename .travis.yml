@@ -9,12 +9,21 @@ install:
 script:
 - npm run build-all
 
+before_deploy:
+- "mkdir dist"
+- "cp built.js dist"
+- "cp *.html dist"
+- "cp *.css dist"
+- "cp -R assets dist"
+
 deploy:
   provider: pages
   github_token:
     secure: e+rPm7kIyX2Bdxv39Evi+FLwTlPiDpr+WF2xJAyH3Aw69QeB5AFJGnf1BmTlMI+XzovhnZAY1eaTU1qu5itEi6sTtf8ev0+nr+rZVAH7B3HzZ9BMGe8phQ5+mfbs8+s0PEHTohTQpAIVH051vk2SNwgtUdcj1pyQU3Hk88H6+RpG16ESnqKcDgkboVpv4Rk5CnyWvx6ZKT7czL8UOWush7+fFhllnxsmNtQYTYfEa6rFHMukRDcuGa67VNeq73tqWGYs/WIjn4nkAVPrqKqP5johzw8YSOXOVUh9quRiRd5GREdZYHx+0X5UZo+Udn/15LomgLmzjA8VOPmC0uzWZ88hml1zZzT8B30j75qQBaZgLQFRLir3NaZGzrvrHmtQC8ftjbCSPpDL02gea6UCcd4kh7c4XIuL5V7jxb5XMw/BmJxLjsqP08dgcrBhBIzwGKoJfQXuKBJ2S5Ndkvx31fL1GQuFRZWGhx2knDhRjdIjExEMJyjfKg+sh2SesSjyIXoj9eoHLgFQQJCc60izMZZJddW7tC/LeUL9yQAmIBXFxNXA3UgeoRg6x1u+nQ3O/n4DHUCmyQc3hZCpoDK/E/Uz25nlW5lZHGgoJx+LxSRh6O7HhoYKcWIOd103aiPBThK+aI7d7D8+XqI6/rQCCq3KivnUfmRCi8isKkMWPy4=
+  project_name: inheritance
   skip-cleanup: true
   keep_history: true
   on:
     branch: master
   target_branch: gh-pages
+  local_dir: dist
