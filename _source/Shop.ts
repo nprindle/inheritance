@@ -53,7 +53,7 @@ class Shop {
         // make sure player can afford this item
         if (listing.price <= player.currency) {
             // make sure that this shop can sell the specified item
-            if (this.modifiersForSale.indexOf(listing) != -1) {
+            if (this.modifiersForSale.includes(listing)) {
                 this.modifiersForSale.splice(this.modifiersForSale.indexOf(listing), 1); // remove item from shop inventory
                 // we don't need to apply the modifier here because it is done by the Offer Modifier screen
                 player.payCurrency(listing.price);
@@ -67,7 +67,7 @@ class Shop {
         // make sure player can afford this item
         if (listing.price <= player.currency) {
            // make sure that this shop can sell the specified item
-            if (this.traitsForSale.indexOf(listing) != -1) {
+            if (this.traitsForSale.includes(listing)) {
                 this.traitsForSale.splice(this.traitsForSale.indexOf(listing), 1); // remove item from shop inventory
                 player.addTrait(listing.trait);
                 player.payCurrency(listing.price);

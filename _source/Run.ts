@@ -99,7 +99,7 @@ class Run {
         }
         let currentRoom = this.currentFloor.getRoomAt(this.playerCoordinates);
         // If the direction is blocked, don't jump over the wall
-        if (!currentRoom || currentRoom.getBlockedDirections().indexOf(dir) > -1) {
+        if (!currentRoom || currentRoom.getBlockedDirections().includes(dir)) {
             return;
         }
         let offset = Directions.getOffset(dir);

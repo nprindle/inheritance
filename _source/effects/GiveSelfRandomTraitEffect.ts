@@ -20,7 +20,7 @@ class GiveSelfRandomTraitEffect extends AbstractEffect {
     }
 
     toString(): string {
-        if (this.tags.indexOf(TraitTags.coupdegracereward) !== -1) {
+        if (this.tags.includes(TraitTags.coupdegracereward)) {
             return `gain Cunning`;
         } else {
             return `gain a random trait`;

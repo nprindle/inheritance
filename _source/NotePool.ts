@@ -52,11 +52,7 @@ class NotePool {
         NotePool.notes.forEach(note => {
             let currentID: number = note.id;
             // each note is unlocked only if its ID is contained in the list of unlocked note IDs
-            if (unlockedIDs.indexOf(currentID) > -1) {
-                note.unlocked = true;
-            } else {
-                note.unlocked = false;
-            }
+            note.unlocked = unlockedIDs.includes(currentID);
         });
         Save.saveNotes();
     }

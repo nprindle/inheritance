@@ -64,7 +64,7 @@ class Floor {
             maxRoomDistance = Math.max(maxRoomDistance, newRoom.distanceFromEntrance);
         }
         //only add exit if the floor supports it
-        if (floorSettings.modifiers.indexOf(FloorModifiers.NO_EXIT) === -1) {
+        if (!floorSettings.modifiers.includes(FloorModifiers.NO_EXIT)) {
             let potentialExits = Arrays.flatten(this.rooms)
                 .filter(room => !room.hasFurtherNeighbors())
                 .sort((a, b) => b.distanceFromEntrance - a.distanceFromEntrance);

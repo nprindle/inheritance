@@ -23,7 +23,7 @@ class ItemPoolEntry<T extends { clone: () => T }, E> {
     }
 
     hasTags(...tags: E[]) { //returns true if it has any of the tags
-        return tags.length === 0 || this.tags.some(x => tags.indexOf(x) !== -1);
+        return tags.length === 0 || this.tags.some(x => tags.includes(x));
     }
 
 }
@@ -67,7 +67,7 @@ class ItemPool<T extends { clone: () => T }, E> {
     // sets match, clean items matching the first tag set out of the seen array
     // and recalculate.
     selectUnseenTags(seen: string[], tags: E[] = [], ...fallbacks: E[][]): string[] {
-        const unseen = (k: string) => seen.indexOf(k) < 0;
+        const unseen = (k: string) => !seen.includes(k);
         let unseenMatching: string[] = [];
         let tagsMatch = this.keys.filter((k) => this.items[k].hasTags(...tags));
         for (let ts of [tags, ...fallbacks]) {

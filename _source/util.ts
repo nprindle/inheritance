@@ -1,3 +1,22 @@
+// Polyfills
+
+interface Array<T> {
+    includes(elem: T): boolean;
+}
+
+if (!Array.prototype.includes) {
+    Object.defineProperty(Array.prototype, 'includes', {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: function(e) {
+            return this.indexOf(e) !== -1;
+        }
+    });
+}
+
+// Debug-specific stuff
+
 const DEBUG: boolean = false;
 
 // Given a callback, only call it if in debug mode
@@ -30,5 +49,5 @@ const override = <S>(superclass: { prototype: S }) =>
         proto: Pick<S, K>,
         fields: K,
         descr: TypedPropertyDescriptor<C>,
-    ) => { }
+    ) => { };
 
