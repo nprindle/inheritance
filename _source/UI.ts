@@ -14,8 +14,8 @@ class UI {
             div.classList.add(c);
         }
         if (cList) {
-            for (let i = 0; i < cList.length; i++) {
-                div.classList.add(cList[i]);
+            for (let c of cList) {
+                div.classList.add(c);
             }
         }
         if (id) {
@@ -245,8 +245,8 @@ class UI {
         div.appendChild(UI.makePara(m.name, 'name'));
         div.appendChild(UI.makePara(m.describe(), 'desc'));
         const toolDiv: HTMLElement = UI.makeDiv('tools');
-        for (let i = 0; i < p.tools.length; i++) {
-            toolDiv.appendChild(UI.renderOfferTool(p.tools[i], m, exitCallback));
+        for (let tool of p.tools) {
+            toolDiv.appendChild(UI.renderOfferTool(tool, m, exitCallback));
         }
         div.appendChild(toolDiv);
         if (refusable) {
@@ -458,8 +458,8 @@ class UI {
 
     static renderOptions(options: [string, Function][]): HTMLElement {
         const buttons: HTMLElement = UI.makeDiv('buttons');
-        for (let i = 0; i < options.length; i++) {
-            buttons.appendChild(UI.makeButton(options[i][0], options[i][1]));
+        for (let option of options) {
+            buttons.appendChild(UI.makeButton(option[0], option[1]));
         }
         return buttons;
     }

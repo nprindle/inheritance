@@ -99,8 +99,8 @@ abstract class Combatant {
 
     refresh(): void {
         this.gainEnergy(this.maxEnergy - this.energy);
-        for (let i = 0; i < this.tools.length; i++) {
-            this.tools[i].refresh();
+        for (let tool of this.tools) {
+            tool.refresh();
         }
     }
 
@@ -116,11 +116,9 @@ abstract class Combatant {
     }
 
     payBatteryAmount(amount: number): void {
-        for (let i = 0; i < this.statuses.length; i++) {
-            if (this.statuses[i].getName() === 'battery') {
-                this.statuses[i].amount -= amount;
-                break;
-            }
+        let battery = this.statuses.find(s => s.getName() === 'battery');
+        if (battery) {
+            battery.amount -= amount;
         }
         this.statusBookkeeping();
     }
@@ -180,8 +178,8 @@ abstract class Combatant {
     }
 
     addStatus(status: AbstractStatus): void {
-        for (let i = 0; i < this.statuses.length; i++) {
-            let done = this.statuses[i].add(status);
+        for (let current of this.statuses) {
+            let done = current.add(status);
             if (done) {
                 return;
             }
@@ -205,8 +203,7 @@ abstract class Combatant {
 
     addTrait(trait: Trait): void {
         trait.apply(this);
-        for (let i = 0; i < this.traits.length; i++) {
-            let current = this.traits[i];
+        for (let current of this.traits) {
             if (current[0].name === trait.name) {
                 current[1] = current[1] + 1;
                 return;

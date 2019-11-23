@@ -13,8 +13,8 @@ class Cost {
         this.energyCost = 0;
         this.healthCost = 0;
         this.batteryCost = 0;
-        for (let i = 0; i < costs.length; i++) {
-            this.addTuple(costs[i]);
+        for (let c of costs) {
+            this.addTuple(c);
         }
     }
 

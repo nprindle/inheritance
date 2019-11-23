@@ -56,8 +56,7 @@ class Tool {
         this.multiplier = 1;
         this.usesPerTurn = Infinity;
         this.usesPerFight = Infinity;
-        for (let i = 0; i < effects.length; i++) {
-            let curr = effects[i];
+        for (let curr of effects) {
             if (curr instanceof AbstractEffect) {
                 this.effects.push(curr);
             } else if (curr instanceof ToolMod) {
@@ -86,8 +85,8 @@ class Tool {
         }
         user.pay(this.cost);
         for (let i = 0; i < this.multiplier; i++) {
-            for (let i = 0; i < this.effects.length; i++) {
-                this.effects[i].activate(user, target);
+            for (let effect of this.effects) {
+                effect.activate(user, target);
             }
         }
         this.usesLeftThisTurn--;
@@ -104,16 +103,16 @@ class Tool {
 
     effectsString(): string {
         let acc = [];
-        for (let i = 0; i < this.effects.length; i++) {
-            acc.push(Strings.capitalize(this.effects[i].toString()) + '.');
+        for (let effect of this.effects) {
+            acc.push(Strings.capitalize(effect.toString()) + '.');
         }
         return acc.join(' ');
     }
 
     addModifierString(str: string): void {
-        for (let i = 0; i < this.modifiers.length; i++) {
-            if (this.modifiers[i][0] === str) {
-                this.modifiers[i][1]++;
+        for (let mod of this.modifiers) {
+            if (mod[0] === str) {
+                mod[1]++;
                 return;
             }
         }
@@ -130,7 +129,8 @@ class Tool {
         t.multiplier = this.multiplier;
         let modifiers: [string, number][] = [];
         for (let i = 0; i < this.modifiers.length; i++) {
-            modifiers[i] = [this.modifiers[i][0], this.modifiers[i][1]];
+            let mod = this.modifiers[i];
+            modifiers[i] = [mod[0], mod[1]];
         }
         t.modifiers = modifiers;
         return t;

@@ -29,8 +29,7 @@ class Modifier {
         this.usesPerTurn = Infinity;
         this.transferEnergyToHealth = false;
         this.costAdd = new Cost();
-        for (let i = 0; i < args.length; i++) {
-            let curr = args[i];
+        for (let curr of args) {
             if (curr instanceof AbstractEffect) {
                 this.effects.push(curr);
             } else if (curr instanceof Array && typeof curr[0] === 'number' && typeof curr[1] === 'number') {
@@ -69,8 +68,8 @@ class Modifier {
             t.cost.healthCost += t.cost.energyCost;
             t.cost.energyCost = 0;
         }
-        for (let i = 0; i < this.effects.length; i++) {
-            t.effects.push(this.effects[i].clone());
+        for (let effect of this.effects) {
+            t.effects.push(effect.clone());
         }
         return t;
     }

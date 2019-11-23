@@ -40,10 +40,10 @@ class Random {
         const weight = Random.between(0, totalWeight);
         let totalIndex = 0;
         //index into the array
-        for (let i = 0; i < arr.length; i++) {
-            totalIndex += arr[i][1];
+        for (let curr of arr) {
+            totalIndex += curr[1];
             if (totalIndex >= weight) {
-                return arr[i][0];
+                return curr[0];
             }
         }
         return arr[0][0];

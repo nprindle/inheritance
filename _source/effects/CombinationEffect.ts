@@ -10,15 +10,15 @@ class CombinationEffect extends AbstractEffect { //combine multiple effects
     }
 
     effect(user: Combatant, foe: Combatant): void {
-        for (let i = 0; i < this.effects.length; i++) {
-            this.effects[i].activate(user, foe);
+        for (let effect of this.effects) {
+            effect.activate(user, foe);
         }
     }
 
     toString(): string {
         let acc = [];
-        for (let i = 0; i < this.effects.length; i++) {
-            acc.push(this.effects[i].toString());
+        for (let effect of this.effects) {
+            acc.push(effect.toString());
         }
         return acc.join(' and ');
     }
