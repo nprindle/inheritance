@@ -47,8 +47,8 @@ if (!Array.prototype.includes) {
         enumerable: false,
         configurable: false,
         writable: false,
-        value: function(e) {
-            return this.indexOf(e) !== -1;
+        value: function<T>(elem: T) {
+            return this.indexOf(elem) !== -1;
         }
     });
 }
@@ -58,7 +58,7 @@ if (!Array.prototype.find) {
         enumerable: false,
         configurable: false,
         writable: false,
-        value: function(predicate, thisArg?) {
+        value: function<T>(predicate: (elem: T) => boolean, thisArg?: Object) {
             let len = this.length >>> 0;
             let k = 0;
             while (k < len) {
@@ -78,7 +78,7 @@ if (!Array.prototype.findIndex) {
         enumerable: false,
         configurable: false,
         writable: false,
-        value: function(predicate, thisArg?) {
+        value: function<T>(predicate: (elem: T) => boolean, thisArg?: Object) {
             let len = this.length >>> 0;
             let k = 0;
             while (k < len) {
