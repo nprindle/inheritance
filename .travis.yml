@@ -10,11 +10,8 @@ script:
 - npm run build-all
 
 before_deploy:
-- "mkdir dist"
-- "cp built.js dist"
-- "cp *.html dist"
-- "cp *.css dist"
-- "cp -R assets dist"
+- scripts/before_deploy/make_dist.sh
+- scripts/before_deploy/build_demo.sh
 
 deploy:
   provider: pages
