@@ -10,5 +10,3 @@ _source/tools.ts
 _source/traits.ts
 _source/predicates.ts
 _source/NoteResources.ts
-
-!dist/*
