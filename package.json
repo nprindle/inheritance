@@ -12,8 +12,7 @@
   },
   "main": "built.js",
   "dependencies": {
-    "connect": "^3.7.0",
-    "serve-static": "^1.14.1"
+    "live-server": "^1.2.1"
   },
   "devDependencies": {
     "typescript": "^3.6.4"
@@ -24,7 +23,7 @@
     "compile": "tsc --project _source",
     "preprocess": "node _preprocess.js",
     "postprocess": "node _postprocess.js",
-    "start": "node server.js"
+    "start": "npx live-server ."
   },
   "homepage": "https://github.com/maymoonsley/inheritance#readme"
 }
