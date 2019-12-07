@@ -14,28 +14,34 @@ with rec {
 
   clean = import ./cleanTypescript.nix { inherit (pkgs) lib; };
 
-  inheritance = with pkgs; stdenv.mkDerivation {
+  inheritance = pkgs.stdenv.mkDerivation {
     name = "inheritance";
-    buildInputs = [
+    buildInputs = with pkgs; [
+      makeWrapper
+
       nodejs
       nodePackages.typescript
+      nodePackages.live-server
     ];
 
     src = clean ../.;
 
-    buildPhase = ''
-      npm run build-all
-    '';
+    buildPhase = "npm run build-all";
 
     installPhase = ''
       mkdir -p $out/bin
-      cp built.js $out/bin
-      cp -R assets $out/bin
-      cp index.html $out/bin
-      cp server.js $out/bin
+      cp built.js $out
+      cp -R assets $out
+      cp *.css $out
+      cp *.html $out
+
+      makeWrapper \
+        ${pkgs.nodePackages.live-server}/bin/live-server \
+        $out/bin/inheritance \
+        --add-flags "$out"
     '';
 
-    meta = with stdenv.lib; {
+    meta = with pkgs.stdenv.lib; {
       description = "The Prototype Inheritance";
     };
   };
