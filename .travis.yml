@@ -11,7 +11,8 @@ script:
 
 before_deploy:
 - "scripts/before_deploy/make_dist.sh dist"
-- "scripts/before_deploy/build_demo.sh dist gh-pages"
+# Uncomment to build demo version
+# - "scripts/before_deploy/build_demo.sh dist gh-pages"
 
 deploy:
   provider: pages
